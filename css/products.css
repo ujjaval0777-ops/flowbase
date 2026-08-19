@@ -1,0 +1,654 @@
+/* ============================================
+   FlowBase Products — products.css
+   Extends dashboard.css design system
+   ============================================ */
+
+/* ============================================
+   PAGE HEADER
+   ============================================ */
+.prd-page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.prd-page-header-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.prd-page-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: 3px;
+  letter-spacing: -0.01em;
+}
+
+.prd-page-subtitle {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+}
+
+.prd-page-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+  align-items: center;
+}
+
+.prd-btn-primary {
+  background-color: var(--color-primary);
+  color: #fff;
+  border-color: var(--color-primary);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.prd-btn-primary:hover {
+  background-color: var(--color-primary-dark);
+  border-color: var(--color-primary-dark);
+}
+
+.prd-btn-primary svg {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+.btn-ghost svg {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  margin-right: 2px;
+}
+
+/* ============================================
+   TOOLBAR (search + filters)
+   ============================================ */
+.prd-toolbar {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.prd-search-wrap {
+  position: relative;
+  flex: 1;
+  min-width: 200px;
+}
+
+.prd-search-icon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 14px;
+  height: 14px;
+  color: var(--color-text-muted);
+  pointer-events: none;
+}
+
+.prd-search-input {
+  width: 100%;
+  padding: 7px 12px 7px 32px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-family: var(--font-family);
+  font-size: 13px;
+  color: var(--color-text);
+  background-color: var(--color-bg);
+  outline: none;
+  transition: border-color var(--transition);
+}
+
+.prd-search-input:focus {
+  border-color: var(--color-primary);
+  background-color: var(--color-surface);
+}
+
+.prd-search-input::placeholder {
+  color: var(--color-text-muted);
+}
+
+.prd-filters {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.prd-select {
+  padding: 7px 28px 7px 10px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-family: var(--font-family);
+  font-size: 12.5px;
+  color: var(--color-text);
+  background-color: var(--color-bg);
+  outline: none;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b6b6b' stroke-width='2' stroke-linecap='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  transition: border-color var(--transition);
+}
+
+.prd-select:focus {
+  border-color: var(--color-primary);
+}
+
+.prd-btn-sm {
+  padding: 7px 12px;
+  font-size: 12.5px;
+  white-space: nowrap;
+}
+
+/* ============================================
+   TABLE CARD
+   ============================================ */
+.prd-table-card {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.prd-data-table {
+  min-width: 820px;
+}
+
+/* Product name / sku / category cells */
+.prd-sku {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+  font-family: 'Courier New', monospace;
+}
+
+.prd-category {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  background-color: var(--color-bg);
+  padding: 2px 7px;
+  border-radius: 3px;
+  border: 1px solid var(--color-border-light);
+  white-space: nowrap;
+}
+
+.prd-stock-num {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.prd-stock-num.warning { color: var(--color-warning); }
+.prd-stock-num.danger  { color: var(--color-danger); }
+
+/* Status badge for active/inactive */
+.badge-inactive {
+  background-color: var(--color-bg);
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-border);
+}
+
+/* Actions dropdown */
+.prd-actions-wrap {
+  position: relative;
+  display: inline-block;
+}
+
+.prd-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 10px;
+  font-size: 12px;
+  font-weight: 500;
+  font-family: var(--font-family);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-surface);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all var(--transition);
+  white-space: nowrap;
+}
+
+.prd-action-btn:hover {
+  border-color: var(--color-primary-muted);
+  color: var(--color-primary);
+  background-color: var(--color-primary-light);
+}
+
+.prd-action-btn svg {
+  width: 12px;
+  height: 12px;
+  transition: transform var(--transition);
+}
+
+.prd-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  z-index: 150;
+  min-width: 140px;
+  display: none;
+  overflow: hidden;
+}
+
+.prd-dropdown.open {
+  display: block;
+}
+
+.prd-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-family: var(--font-family);
+  color: var(--color-text);
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  transition: background-color var(--transition);
+}
+
+.prd-dropdown-item:hover {
+  background-color: var(--color-bg);
+}
+
+.prd-dropdown-item.danger {
+  color: var(--color-danger);
+}
+
+.prd-dropdown-item.danger:hover {
+  background-color: var(--color-danger-bg);
+}
+
+.prd-dropdown-item svg {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+.prd-dropdown-divider {
+  height: 1px;
+  background-color: var(--color-border-light);
+  margin: 3px 0;
+}
+
+/* ============================================
+   PAGINATION
+   ============================================ */
+.prd-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  border-top: 1px solid var(--color-border-light);
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.prd-pagination-info {
+  font-size: 12.5px;
+  color: var(--color-text-muted);
+}
+
+.prd-pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.prd-page-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-surface);
+  cursor: pointer;
+  transition: all var(--transition);
+  color: var(--color-text-secondary);
+}
+
+.prd-page-btn:hover:not(:disabled) {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.prd-page-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.prd-page-btn svg {
+  width: 14px;
+  height: 14px;
+}
+
+.prd-page-numbers {
+  display: flex;
+  gap: 3px;
+}
+
+.prd-page-num {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 30px;
+  height: 30px;
+  padding: 0 6px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-surface);
+  cursor: pointer;
+  font-size: 12.5px;
+  font-family: var(--font-family);
+  color: var(--color-text-secondary);
+  transition: all var(--transition);
+}
+
+.prd-page-num:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.prd-page-num.active {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #fff;
+}
+
+/* ============================================
+   EMPTY STATE
+   ============================================ */
+.prd-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+  gap: 10px;
+  text-align: center;
+}
+
+.prd-empty-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-lg);
+  background-color: var(--color-bg);
+  border: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 4px;
+}
+
+.prd-empty-icon svg {
+  width: 22px;
+  height: 22px;
+  color: var(--color-text-muted);
+}
+
+.prd-empty-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+
+.prd-empty-desc {
+  font-size: 12.5px;
+  color: var(--color-text-muted);
+  max-width: 280px;
+}
+
+/* ============================================
+   MODALS
+   ============================================ */
+.prd-modal-overlay {
+  z-index: 400;
+}
+
+.prd-modal {
+  width: 560px;
+  max-width: calc(100vw - 32px);
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 0;
+}
+
+.prd-form-modal-inner,
+.prd-view-modal-inner {
+  width: 560px;
+}
+
+.prd-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid var(--color-border-light);
+  position: sticky;
+  top: 0;
+  background-color: var(--color-surface);
+  z-index: 1;
+}
+
+.prd-modal-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  color: var(--color-text-muted);
+  transition: all var(--transition);
+}
+
+.prd-modal-close:hover {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+}
+
+.prd-modal-close svg {
+  width: 16px;
+  height: 16px;
+}
+
+.prd-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  padding: 20px 24px;
+}
+
+.prd-span-full {
+  grid-column: 1 / -1;
+}
+
+.prd-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.prd-form-label {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+}
+
+.prd-req {
+  color: var(--color-danger);
+}
+
+.prd-optional {
+  color: var(--color-text-muted);
+  font-weight: 400;
+}
+
+.prd-form-input {
+  padding: 8px 10px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-family: var(--font-family);
+  font-size: 13px;
+  color: var(--color-text);
+  background-color: var(--color-surface);
+  outline: none;
+  transition: border-color var(--transition);
+  width: 100%;
+}
+
+.prd-form-input:focus {
+  border-color: var(--color-primary);
+}
+
+.prd-form-input.prd-error {
+  border-color: var(--color-danger);
+}
+
+.prd-form-error {
+  font-size: 11.5px;
+  color: var(--color-danger);
+  min-height: 14px;
+}
+
+.prd-textarea {
+  resize: vertical;
+  min-height: 72px;
+}
+
+.prd-modal .modal-actions {
+  padding: 14px 24px 20px;
+  border-top: 1px solid var(--color-border-light);
+}
+
+/* ============================================
+   VIEW MODAL CONTENT
+   ============================================ */
+.prd-view-content {
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.prd-view-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.prd-view-field {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.prd-view-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.prd-view-value {
+  font-size: 13.5px;
+  color: var(--color-text);
+  font-weight: 500;
+}
+
+.prd-view-desc {
+  padding: 12px;
+  background-color: var(--color-bg);
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+  border: 1px solid var(--color-border-light);
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 1024px) {
+  .prd-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .prd-search-wrap {
+    min-width: unset;
+  }
+
+  .prd-filters {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 768px) {
+  .prd-page-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .prd-page-actions {
+    justify-content: flex-end;
+  }
+
+  .prd-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .prd-span-full {
+    grid-column: 1;
+  }
+
+  .prd-form-modal-inner,
+  .prd-view-modal-inner {
+    width: calc(100vw - 32px);
+  }
+
+  .prd-view-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .prd-page-actions {
+    flex-wrap: wrap;
+  }
+
+  .prd-filters {
+    gap: 6px;
+  }
+
+  .prd-select {
+    font-size: 12px;
+  }
+}

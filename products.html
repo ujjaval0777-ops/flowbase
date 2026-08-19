@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Products — FlowBase</title>
+  <meta name="description" content="FlowBase Products — manage your product catalog, pricing, categories, and stock information." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/dashboard.css" />
+  <link rel="stylesheet" href="css/products.css" />
+</head>
+<body>
+
+<div class="app-shell">
+
+  <!-- SIDEBAR OVERLAY (mobile) -->
+  <div class="sidebar-overlay" id="sidebar-overlay" aria-hidden="true"></div>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar" role="navigation" aria-label="Main navigation">
+    <a class="sidebar-logo" href="dashboard.html" aria-label="FlowBase home">
+      <span class="sidebar-logo-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h7v7H4V4zm0 9h7v7H4v-7zm9-9h7v7h-7V4zm0 9h3v3h-3v-3zm4 4h3v3h-3v-3zm-4 0h3v3h-3v-3z"/></svg>
+      </span>
+      <span class="sidebar-logo-text">FLOWBASE</span>
+    </a>
+    <nav class="sidebar-nav" aria-label="Primary">
+      <div class="sidebar-nav-section">
+        <a class="nav-item" href="dashboard.html" id="nav-dashboard">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          <span>Dashboard</span>
+        </a>
+        <a class="nav-item" href="billing.html" id="nav-billing">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 2v20l3-2 3 2 3-2 3 2 3-2V2"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg>
+          <span>Billing</span>
+        </a>
+        <a class="nav-item active" href="products.html" id="nav-products" aria-current="page">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          <span>Products</span>
+        </a>
+        <a class="nav-item" href="inventory.html" id="nav-inventory">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+          <span>Inventory</span>
+        </a>
+        <a class="nav-item" href="sales.html" id="nav-sales">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/></svg>
+          <span>Sales</span>
+        </a>
+      </div>
+      <div class="nav-divider" role="separator"></div>
+    </nav>
+    <footer class="sidebar-footer">
+      <a class="nav-item" href="settings.html" id="nav-settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        <span>Settings</span>
+      </a>
+      <button class="nav-item" id="logout-btn" type="button" aria-label="Log out">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        <span>Logout</span>
+      </button>
+    </footer>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <div class="main-content">
+
+    <!-- TOP HEADER -->
+    <header class="top-header" role="banner">
+      <div class="header-left">
+        <button class="hamburger-btn" id="hamburger-btn" type="button" aria-label="Toggle sidebar" aria-expanded="false" aria-controls="sidebar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <span class="header-breadcrumb">Products</span>
+      </div>
+      <div class="header-right">
+        <button class="icon-btn" type="button" aria-label="Notifications" id="notifications-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <span class="notification-badge" aria-label="New notifications"></span>
+        </button>
+        <button class="header-profile" type="button" aria-label="Shop Admin profile" aria-haspopup="true">
+          <div class="profile-avatar" aria-hidden="true">SA</div>
+          <div class="profile-info">
+            <div class="profile-name">Shop Admin</div>
+            <div class="profile-role">Administrator</div>
+          </div>
+        </button>
+      </div>
+    </header>
+
+    <!-- PAGE BODY -->
+    <main class="page-body" id="main-content">
+
+      <!-- PAGE HEADER -->
+      <section class="prd-page-header" aria-label="Page header">
+        <div class="prd-page-header-text">
+          <h1 class="prd-page-title">Products</h1>
+          <p class="prd-page-subtitle">Manage your products, pricing, categories, and product information.</p>
+        </div>
+        <div class="prd-page-actions">
+          <button class="btn btn-ghost" id="prd-export-btn" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Export
+          </button>
+          <button class="btn prd-btn-primary" id="add-product-btn" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Add Product
+          </button>
+        </div>
+      </section>
+
+      <!-- KPI CARDS -->
+      <section aria-label="Product key performance indicators">
+        <div class="kpi-grid">
+          <div class="kpi-card" id="prd-kpi-total" role="region" aria-label="Total Products"></div>
+          <div class="kpi-card" id="prd-kpi-active" role="region" aria-label="Active Products"></div>
+          <div class="kpi-card" id="prd-kpi-categories" role="region" aria-label="Categories"></div>
+          <div class="kpi-card" id="prd-kpi-lowstock" role="region" aria-label="Low Stock Products"></div>
+        </div>
+      </section>
+
+      <!-- SEARCH & FILTERS -->
+      <section aria-label="Search and filter products">
+        <div class="prd-toolbar">
+          <div class="prd-search-wrap">
+            <svg class="prd-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="search" id="prd-search-input" class="prd-search-input" placeholder="Search products, SKU, category..." aria-label="Search products" autocomplete="off" />
+          </div>
+          <div class="prd-filters">
+            <select id="prd-filter-category" class="prd-select" aria-label="Filter by category">
+              <option value="">All Categories</option>
+              <option value="Electronics">Electronics</option>
+              <option value="Grocery">Grocery</option>
+              <option value="Clothing">Clothing</option>
+              <option value="Accessories">Accessories</option>
+              <option value="Other">Other</option>
+            </select>
+            <select id="prd-filter-status" class="prd-select" aria-label="Filter by status">
+              <option value="">All Status</option>
+              <option value="Active">Active</option>
+              <option value="Inactive">Inactive</option>
+            </select>
+            <select id="prd-filter-stock" class="prd-select" aria-label="Filter by stock">
+              <option value="">All Stock</option>
+              <option value="In Stock">In Stock</option>
+              <option value="Low Stock">Low Stock</option>
+              <option value="Out of Stock">Out of Stock</option>
+            </select>
+            <select id="prd-filter-sort" class="prd-select" aria-label="Sort products">
+              <option value="name-asc">Name A–Z</option>
+              <option value="name-desc">Name Z–A</option>
+              <option value="price-asc">Price Low to High</option>
+              <option value="price-desc">Price High to Low</option>
+              <option value="date-desc">Recently Added</option>
+            </select>
+            <button class="btn btn-ghost prd-btn-sm" id="prd-clear-filters-btn" type="button">Clear Filters</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- PRODUCTS TABLE -->
+      <section aria-label="Products table">
+        <div class="prd-table-card">
+          <div class="table-scroll-wrap">
+            <table class="data-table prd-data-table" id="products-table" aria-label="Products">
+              <thead>
+                <tr>
+                  <th scope="col">Product</th>
+                  <th scope="col">SKU</th>
+                  <th scope="col">Category</th>
+                  <th scope="col">Purchase Price</th>
+                  <th scope="col">Selling Price</th>
+                  <th scope="col">Stock</th>
+                  <th scope="col">Status</th>
+                  <th scope="col">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="products-tbody">
+                <!-- Populated by JS -->
+              </tbody>
+            </table>
+          </div>
+          <!-- Pagination -->
+          <div class="prd-pagination" id="prd-pagination" aria-label="Table pagination">
+            <span class="prd-pagination-info" id="prd-pagination-info"></span>
+            <div class="prd-pagination-controls" role="navigation" aria-label="Page navigation">
+              <button class="prd-page-btn" id="prd-prev-page-btn" type="button" aria-label="Previous page" disabled>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+              </button>
+              <div class="prd-page-numbers" id="prd-page-numbers" role="list"></div>
+              <button class="prd-page-btn" id="prd-next-page-btn" type="button" aria-label="Next page">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+</div>
+
+<!-- LOGOUT MODAL -->
+<div class="modal-overlay" id="logout-modal" role="dialog" aria-modal="true" aria-labelledby="logout-modal-title">
+  <div class="modal">
+    <h2 class="modal-title" id="logout-modal-title">Log out?</h2>
+    <p class="modal-desc">You will be signed out of FlowBase. Any unsaved changes will be lost.</p>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" id="logout-cancel" type="button">Cancel</button>
+      <button class="btn btn-danger" id="logout-confirm" type="button">Log out</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD / EDIT PRODUCT MODAL -->
+<div class="modal-overlay prd-modal-overlay" id="prd-form-modal" role="dialog" aria-modal="true" aria-labelledby="prd-form-title">
+  <div class="modal prd-modal prd-form-modal-inner">
+    <div class="prd-modal-header">
+      <h2 class="modal-title" id="prd-form-title">Add Product</h2>
+      <button class="prd-modal-close" id="prd-form-close" type="button" aria-label="Close modal">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <form id="prd-form" novalidate>
+      <input type="hidden" id="prd-form-id" />
+      <div class="prd-form-grid">
+        <div class="prd-form-group prd-span-full">
+          <label class="prd-form-label" for="prd-field-name">Product Name <span class="prd-req" aria-hidden="true">*</span></label>
+          <input class="prd-form-input" type="text" id="prd-field-name" placeholder="e.g. Wireless Mouse" autocomplete="off" />
+          <span class="prd-form-error" id="prd-err-name" aria-live="polite"></span>
+        </div>
+        <div class="prd-form-group">
+          <label class="prd-form-label" for="prd-field-sku">SKU <span class="prd-req" aria-hidden="true">*</span></label>
+          <input class="prd-form-input" type="text" id="prd-field-sku" placeholder="e.g. WM-001" autocomplete="off" />
+          <span class="prd-form-error" id="prd-err-sku" aria-live="polite"></span>
+        </div>
+        <div class="prd-form-group">
+          <label class="prd-form-label" for="prd-field-category">Category <span class="prd-req" aria-hidden="true">*</span></label>
+          <select class="prd-form-input" id="prd-field-category">
+            <option value="">Select category</option>
+            <option value="Electronics">Electronics</option>
+            <option value="Grocery">Grocery</option>
+            <option value="Clothing">Clothing</option>
+            <option value="Accessories">Accessories</option>
+            <option value="Other">Other</option>
+          </select>
+          <span class="prd-form-error" id="prd-err-category" aria-live="polite"></span>
+        </div>
+        <div class="prd-form-group">
+          <label class="prd-form-label" for="prd-field-purchase-price">Purchase Price (₹) <span class="prd-req" aria-hidden="true">*</span></label>
+          <input class="prd-form-input" type="number" id="prd-field-purchase-price" min="0" step="0.01" placeholder="0.00" />
+          <span class="prd-form-error" id="prd-err-purchase-price" aria-live="polite"></span>
+        </div>
+        <div class="prd-form-group">
+          <label class="prd-form-label" for="prd-field-selling-price">Selling Price (₹) <span class="prd-req" aria-hidden="true">*</span></label>
+          <input class="prd-form-input" type="number" id="prd-field-selling-price" min="0" step="0.01" placeholder="0.00" />
+          <span class="prd-form-error" id="prd-err-selling-price" aria-live="polite"></span>
+        </div>
+        <div class="prd-form-group">
+          <label class="prd-form-label" for="prd-field-stock">Opening Stock</label>
+          <input class="prd-form-input" type="number" id="prd-field-stock" min="0" step="1" placeholder="0" />
+          <span class="prd-form-error" id="prd-err-stock" aria-live="polite"></span>
+        </div>
+        <div class="prd-form-group">
+          <label class="prd-form-label" for="prd-field-min-stock">Minimum Stock</label>
+          <input class="prd-form-input" type="number" id="prd-field-min-stock" min="0" step="1" placeholder="0" />
+          <span class="prd-form-error" id="prd-err-min-stock" aria-live="polite"></span>
+        </div>
+        <div class="prd-form-group">
+          <label class="prd-form-label" for="prd-field-status">Status</label>
+          <select class="prd-form-input" id="prd-field-status">
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+          </select>
+        </div>
+        <div class="prd-form-group prd-span-full">
+          <label class="prd-form-label" for="prd-field-description">Description <span class="prd-optional">(Optional)</span></label>
+          <textarea class="prd-form-input prd-textarea" id="prd-field-description" placeholder="Brief product description..." rows="3"></textarea>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" type="button" id="prd-form-cancel">Cancel</button>
+        <button class="btn prd-btn-primary" type="submit" id="prd-form-submit">Add Product</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- VIEW PRODUCT MODAL -->
+<div class="modal-overlay prd-modal-overlay" id="prd-view-modal" role="dialog" aria-modal="true" aria-labelledby="prd-view-title">
+  <div class="modal prd-modal prd-view-modal-inner">
+    <div class="prd-modal-header">
+      <h2 class="modal-title" id="prd-view-title">Product Details</h2>
+      <button class="prd-modal-close" id="prd-view-close" type="button" aria-label="Close modal">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div id="prd-view-content" class="prd-view-content"><!-- Populated by JS --></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" type="button" id="prd-view-close-btn">Close</button>
+      <button class="btn prd-btn-primary" type="button" id="prd-view-edit-btn">Edit</button>
+    </div>
+  </div>
+</div>
+
+<!-- DELETE CONFIRM MODAL -->
+<div class="modal-overlay" id="prd-delete-modal" role="dialog" aria-modal="true" aria-labelledby="prd-delete-title">
+  <div class="modal">
+    <h2 class="modal-title" id="prd-delete-title">Delete Product?</h2>
+    <p class="modal-desc">This product will be removed from your product catalog.</p>
+    <input type="hidden" id="prd-delete-item-id" />
+    <div class="modal-actions">
+      <button class="btn btn-ghost" id="prd-delete-cancel" type="button">Cancel</button>
+      <button class="btn btn-danger" id="prd-delete-confirm" type="button">Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST CONTAINER -->
+<div class="toast-container" id="toast-container" aria-live="assertive" aria-atomic="false"></div>
+
+<script src="js/products.js"></script>
+</body>
+</html>

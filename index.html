@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FlowBase — Business Management System</title>
+  <meta name="description" content="FlowBase is a professional business management system for products, inventory, billing, and sales." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/index.css" />
+</head>
+<body>
+
+  <!-- ============================================
+       STICKY NAVIGATION BAR
+       ============================================ -->
+  <header class="navbar-header" id="navbar">
+    <div class="nav-container">
+
+      <!-- Left Logo -->
+      <a class="nav-logo" href="index.html" aria-label="FlowBase Home">
+        <span class="nav-logo-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M4 4h7v7H4V4zm0 9h7v7H4v-7zm9-9h7v7h-7V4zm0 9h3v3h-3v-3zm4 4h3v3h-3v-3zm-4 0h3v3h-3v-3z"/>
+          </svg>
+        </span>
+        <div class="nav-logo-brand">
+          <span class="nav-logo-text">FLOWBASE</span>
+          <span class="nav-logo-badge">SYSTEM</span>
+        </div>
+      </a>
+
+      <!-- Center Links -->
+      <nav class="nav-menu" id="nav-menu" aria-label="Primary Navigation">
+        <a class="nav-link" href="#overview">Overview</a>
+        <a class="nav-link" href="#modules">Modules</a>
+        <a class="nav-link" href="#how-it-works">How It Works</a>
+        <a class="nav-link" href="#demo">Live Demo</a>
+        <a class="nav-link" href="#insights">Insights</a>
+      </nav>
+
+      <!-- Right Action CTAs -->
+      <div class="nav-actions">
+        <a class="nav-btn-link" href="login.html">Login</a>
+        <a class="btn btn-secondary-sm" href="login.html">Create Account</a>
+        <a class="btn btn-primary-sm" href="login.html">Get Started</a>
+
+        <!-- Mobile Hamburger Toggle -->
+        <button class="hamburger-btn" id="hamburger-toggle" type="button" aria-label="Toggle Navigation Menu" aria-expanded="false" aria-controls="nav-menu">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <line x1="3" y1="6" x2="21" y2="6"/>
+            <line x1="3" y1="12" x2="21" y2="12"/>
+            <line x1="3" y1="18" x2="21" y2="18"/>
+          </svg>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- Mobile Drawer Menu -->
+  <div class="mobile-drawer" id="mobile-drawer" aria-hidden="true">
+    <div class="drawer-content">
+      <a class="drawer-link" href="#overview">Overview</a>
+      <a class="drawer-link" href="#modules">Modules</a>
+      <a class="drawer-link" href="#how-it-works">How It Works</a>
+      <a class="drawer-link" href="#demo">Live Demo</a>
+      <a class="drawer-link" href="#insights">Insights</a>
+      <div class="drawer-divider"></div>
+      <a class="drawer-link highlight" href="login.html">Sign In / Register</a>
+      <a class="btn btn-primary btn-full" href="login.html">Get Started</a>
+    </div>
+  </div>
+
+
+  <!-- ============================================
+       HERO SECTION
+       ============================================ -->
+  <section class="hero-section">
+    <div class="hero-bg-shapes" aria-hidden="true">
+      <div class="blob blob-1"></div>
+      <div class="blob blob-2"></div>
+      <div class="grid-overlay"></div>
+    </div>
+
+    <div class="hero-container">
+
+      <!-- Text Column -->
+      <div class="hero-text-wrap">
+        <div class="hero-pill reveal-up">
+          <span class="pill-dot"></span>
+          FLOWBASE MANAGEMENT SYSTEM 2.0
+        </div>
+
+        <h1 class="hero-title reveal-up">
+          Run Your Business.<br />
+          <span class="gradient-text">All in One Flow.</span>
+        </h1>
+
+        <p class="hero-subtitle reveal-up">
+          FlowBase brings products, inventory, billing, and sales together in one powerful, unified management system.
+        </p>
+
+        <div class="hero-cta-group reveal-up">
+          <a class="btn btn-primary-lg" href="login.html">
+            <span>Get Started</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+            </svg>
+          </a>
+
+          <a class="btn btn-secondary-lg" href="#overview">
+            <span>Explore FlowBase</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/>
+            </svg>
+          </a>
+        </div>
+
+        <div class="hero-ratings reveal-up">
+          <div class="avatar-stack">
+            <span class="stack-avatar bg-1">SA</span>
+            <span class="stack-avatar bg-2">FB</span>
+            <span class="stack-avatar bg-3">IN</span>
+          </div>
+          <div class="rating-info">
+            <div class="stars">★★★★★</div>
+            <span class="rating-text">Designed for speed, clarity, and daily reliability.</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Hero Dashboard Interactive Preview -->
+      <div class="hero-preview-wrap reveal-scale">
+        <div class="mockup-frame">
+          <div class="mockup-header">
+            <div class="dots">
+              <span class="dot red"></span>
+              <span class="dot yellow"></span>
+              <span class="dot green"></span>
+            </div>
+            <div class="address-bar">flowbase.system/dashboard</div>
+          </div>
+
+          <!-- Mock Dashboard Interface -->
+          <div class="mockup-body">
+            <!-- Sidebar -->
+            <div class="mock-sidebar">
+              <div class="mock-sidebar-brand">
+                <span class="logo-box"></span>
+                <span class="brand-name">FLOWBASE</span>
+              </div>
+              <div class="mock-nav active">Dashboard</div>
+              <div class="mock-nav">Billing</div>
+              <div class="mock-nav">Products</div>
+              <div class="mock-nav">Inventory</div>
+              <div class="mock-nav">Sales</div>
+            </div>
+
+            <!-- Main Workspace -->
+            <div class="mock-main">
+              <div class="mock-topbar">
+                <div class="mock-title">Dashboard Overview</div>
+                <div class="mock-admin-pill">
+                  <span class="avatar-sm">SA</span>
+                  Shop Admin
+                </div>
+              </div>
+
+              <!-- KPI Cards Grid -->
+              <div class="mock-kpis">
+                <div class="mock-kpi-card">
+                  <span class="kpi-tag">Today's Sales</span>
+                  <div class="kpi-val" id="hero-kpi-sales">₹18,450</div>
+                  <span class="kpi-badge positive">+12.4%</span>
+                </div>
+                <div class="mock-kpi-card">
+                  <span class="kpi-tag">Bills Today</span>
+                  <div class="kpi-val" id="hero-kpi-bills">42</div>
+                  <span class="kpi-badge positive">+8.2%</span>
+                </div>
+                <div class="mock-kpi-card">
+                  <span class="kpi-tag">Low Stock</span>
+                  <div class="kpi-val danger" id="hero-kpi-stock">8 items</div>
+                  <span class="kpi-badge warning">Action Needed</span>
+                </div>
+              </div>
+
+              <!-- Live Chart Preview -->
+              <div class="mock-chart-card">
+                <div class="mock-chart-header">
+                  <span>Weekly Revenue Trend</span>
+                  <span class="live-pulse">LIVE</span>
+                </div>
+                <div class="mock-chart-area">
+                  <svg class="mock-chart-svg" viewBox="0 0 500 120" preserveAspectRatio="none">
+                    <path class="chart-path-bg" d="M0,90 Q70,40 140,75 T280,30 T420,60 T500,20 L500,120 L0,120 Z"></path>
+                    <path class="chart-path-line" d="M0,90 Q70,40 140,75 T280,30 T420,60 T500,20"></path>
+                    <circle cx="280" cy="30" r="4" class="chart-point"></circle>
+                    <circle cx="500" cy="20" r="4" class="chart-point glow"></circle>
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Floating Accent Badges -->
+        <div class="floating-badge badge-1 float-anim">
+          <div class="badge-icon green">✓</div>
+          <div class="badge-content">
+            <span class="title">Billing Completed</span>
+            <span class="sub">Bill #10482 • ₹850</span>
+          </div>
+        </div>
+
+        <div class="floating-badge badge-2 float-anim-alt">
+          <div class="badge-icon orange">!</div>
+          <div class="badge-content">
+            <span class="title">Low Stock Warning</span>
+            <span class="sub">Cooking Oil 1L (7 remaining)</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ============================================
+       TRUST / VALUE STRIP
+       ============================================ -->
+  <section class="trust-strip">
+    <div class="container">
+      <div class="trust-grid">
+        <div class="trust-item reveal-up">
+          <div class="trust-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
+            </svg>
+          </div>
+          <span class="trust-text">Simple Business Management</span>
+        </div>
+
+        <div class="trust-item reveal-up" style="animation-delay: 100ms;">
+          <div class="trust-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+            </svg>
+          </div>
+          <span class="trust-text">Real-Time Inventory Visibility</span>
+        </div>
+
+        <div class="trust-item reveal-up" style="animation-delay: 200ms;">
+          <div class="trust-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+            </svg>
+          </div>
+          <span class="trust-text">Faster Billing Workflows</span>
+        </div>
+
+        <div class="trust-item reveal-up" style="animation-delay: 300ms;">
+          <div class="trust-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/>
+            </svg>
+          </div>
+          <span class="trust-text">Clear Sales Insights</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============================================
+       OVERVIEW & MODULES SECTION
+       ============================================ -->
+  <section class="section-padding overview-section" id="overview">
+    <div class="container">
+      <div class="section-header text-center reveal-up">
+        <span class="section-tag">CORE SYSTEM MODULES</span>
+        <h2 class="section-title">Everything Your Business Needs.</h2>
+        <p class="section-desc">
+          FlowBase brings your everyday business operations into one simple, unified workflow.
+        </p>
+      </div>
+
+      <div class="modules-grid" id="modules">
+
+        <!-- Module 1: Products -->
+        <div class="module-card reveal-up">
+          <div class="module-card-header">
+            <div class="module-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/>
+              </svg>
+            </div>
+            <span class="module-badge">Catalog</span>
+          </div>
+
+          <h3 class="module-title">Products Management</h3>
+          <p class="module-desc">
+            Keep your entire product catalog organized with pricing, SKU, categories, and stock details in one clear view.
+          </p>
+
+          <div class="module-preview-box">
+            <div class="mini-table">
+              <div class="mini-row head"><span>Item</span><span>Price</span></div>
+              <div class="mini-row"><span>Rice 5kg</span><span>₹320</span></div>
+              <div class="mini-row"><span>Cooking Oil 1L</span><span>₹130</span></div>
+            </div>
+          </div>
+
+          <a class="module-link" href="products.html">
+            <span>Explore Products</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </a>
+        </div>
+
+        <!-- Module 2: Inventory -->
+        <div class="module-card reveal-up" style="animation-delay: 100ms;">
+          <div class="module-card-header">
+            <div class="module-icon orange">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                <polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/>
+              </svg>
+            </div>
+            <span class="module-badge warning">Real-Time</span>
+          </div>
+
+          <h3 class="module-title">Inventory Control</h3>
+          <p class="module-desc">
+            Monitor stock levels, identify critical low-stock items automatically, and maintain full inventory accuracy.
+          </p>
+
+          <div class="module-preview-box">
+            <div class="mini-stock-bar">
+              <div class="bar-header"><span>Sugar 1kg</span><span class="stock-num text-danger">4 / 10 left</span></div>
+              <div class="bar-track"><div class="bar-fill danger" style="width: 40%;"></div></div>
+            </div>
+          </div>
+
+          <a class="module-link" href="inventory.html">
+            <span>Explore Inventory</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </a>
+        </div>
+
+        <!-- Module 3: Billing -->
+        <div class="module-card reveal-up" style="animation-delay: 200ms;">
+          <div class="module-card-header">
+            <div class="module-icon blue">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 2v20l3-2 3 2 3-2 3 2 3-2V2"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="9" y1="12" x2="15" y2="12"/>
+              </svg>
+            </div>
+            <span class="module-badge info">Fast POS</span>
+          </div>
+
+          <h3 class="module-title">Smart Billing</h3>
+          <p class="module-desc">
+            Create professional bills quickly with instant calculation, automated tax/discount totals, and clean receipts.
+          </p>
+
+          <div class="module-preview-box">
+            <div class="mini-pos-preview">
+              <div class="pos-item"><span>1x Tea 500g</span><span>₹120</span></div>
+              <div class="pos-total"><span>Total</span><span class="pos-price">₹120.00</span></div>
+            </div>
+          </div>
+
+          <a class="module-link" href="billing.html">
+            <span>Explore Billing</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </a>
+        </div>
+
+        <!-- Module 4: Sales -->
+        <div class="module-card reveal-up" style="animation-delay: 300ms;">
+          <div class="module-card-header">
+            <div class="module-icon purple">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/>
+              </svg>
+            </div>
+            <span class="module-badge purple">Analytics</span>
+          </div>
+
+          <h3 class="module-title">Sales Tracking</h3>
+          <p class="module-desc">
+            Track transaction history, revenue growth, profit margins, and daily sales trends from an integrated dashboard.
+          </p>
+
+          <div class="module-preview-box">
+            <div class="mini-sales-sparkline">
+              <div class="bar h-40"></div>
+              <div class="bar h-65"></div>
+              <div class="bar h-50"></div>
+              <div class="bar h-85"></div>
+              <div class="bar h-100 active"></div>
+            </div>
+          </div>
+
+          <a class="module-link" href="sales.html">
+            <span>Explore Sales</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </a>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============================================
+       HOW IT WORKS SECTION
+       ============================================ -->
+  <section class="section-padding workflow-section" id="how-it-works">
+    <div class="container">
+      <div class="section-header text-center reveal-up">
+        <span class="section-tag">CONNECTED WORKFLOW</span>
+        <h2 class="section-title">Your Business. One Simple Flow.</h2>
+        <p class="section-desc">
+          See how FlowBase seamlessly connects catalog, inventory, POS billing, and revenue analytics.
+        </p>
+      </div>
+
+      <!-- Horizontal Workflow Steps -->
+      <div class="workflow-grid">
+        <div class="workflow-step reveal-up" data-step="1">
+          <div class="step-num">01</div>
+          <div class="step-content">
+            <h4 class="step-title">Add Products</h4>
+            <p class="step-desc">Add product names, prices, categories, and initial stock numbers.</p>
+          </div>
+          <div class="step-popover">
+            <div class="pop-title">Catalog Synchronized</div>
+            <div class="pop-sub">Rice, Oil, Tea & 50+ items ready</div>
+          </div>
+        </div>
+
+        <div class="workflow-connector"></div>
+
+        <div class="workflow-step reveal-up" data-step="2" style="animation-delay: 150ms;">
+          <div class="step-num">02</div>
+          <div class="step-content">
+            <h4 class="step-title">Manage Inventory</h4>
+            <p class="step-desc">Stock levels update automatically as products are received or sold.</p>
+          </div>
+          <div class="step-popover">
+            <div class="pop-title">Auto Low-Stock Alert</div>
+            <div class="pop-sub">Notifies when items drop below minimum</div>
+          </div>
+        </div>
+
+        <div class="workflow-connector"></div>
+
+        <div class="workflow-step reveal-up" data-step="3" style="animation-delay: 300ms;">
+          <div class="step-num">03</div>
+          <div class="step-content">
+            <h4 class="step-title">Create Bills</h4>
+            <p class="step-desc">Generate instant customer bills with one-click items addition.</p>
+          </div>
+          <div class="step-popover">
+            <div class="pop-title">Instant Billing</div>
+            <div class="pop-sub">Calculates subtotal, tax & prints receipts</div>
+          </div>
+        </div>
+
+        <div class="workflow-connector"></div>
+
+        <div class="workflow-step reveal-up" data-step="4" style="animation-delay: 450ms;">
+          <div class="step-num">04</div>
+          <div class="step-content">
+            <h4 class="step-title">Track Sales</h4>
+            <p class="step-desc">Review today's total revenue, profit metrics, and popular products.</p>
+          </div>
+          <div class="step-popover">
+            <div class="pop-title">Revenue Logged</div>
+            <div class="pop-sub">Updates daily profit graph instantly</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============================================
+       LIVE DEMONSTRATION SECTION
+       ============================================ -->
+  <section class="section-padding demo-section" id="demo">
+    <div class="container">
+      <div class="section-header text-center reveal-up">
+        <span class="section-tag">INTERACTIVE SIMULATION</span>
+        <h2 class="section-title">See FlowBase In Action</h2>
+        <p class="section-desc">
+          Experience how adding a bill automatically decrements stock and updates revenue logs in real-time.
+        </p>
+      </div>
+
+      <div class="demo-card-wrap reveal-scale">
+        <div class="demo-controls">
+          <button class="demo-step-btn active" data-demostep="1" type="button">1. Select Product</button>
+          <button class="demo-step-btn" data-demostep="2" type="button">2. Add to Bill</button>
+          <button class="demo-step-btn" data-demostep="3" type="button">3. Complete Checkout</button>
+          <button class="demo-step-btn" data-demostep="4" type="button">4. Live Stock & Sales Update</button>
+        </div>
+
+        <div class="demo-screen">
+          <div class="demo-screen-left">
+            <div class="demo-box-header">Product Selection</div>
+            <div class="demo-product-list">
+              <div class="demo-prod-item active" id="demo-prod-1">
+                <span class="name">Basmati Rice 1kg</span>
+                <span class="price">₹160.00</span>
+                <span class="stock-tag">Stock: <strong id="demo-stock-val">15</strong></span>
+              </div>
+              <div class="demo-prod-item" id="demo-prod-2">
+                <span class="name">Cooking Oil 1L</span>
+                <span class="price">₹130.00</span>
+                <span class="stock-tag">Stock: 7</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="demo-screen-right">
+            <div class="demo-box-header">POS Terminal & Bill Summary</div>
+            <div class="demo-bill-items" id="demo-bill-items">
+              <div class="bill-empty-state">Click step buttons or play sequence to test checkout</div>
+            </div>
+
+            <div class="demo-bill-footer">
+              <div class="footer-row"><span>Subtotal:</span><span id="demo-subtotal">₹0.00</span></div>
+              <div class="footer-row grand"><span>Total Due:</span><span id="demo-grandtotal">₹0.00</span></div>
+              <button class="btn btn-primary-sm btn-full" id="demo-checkout-btn" type="button">Complete Transaction</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="demo-status-banner" id="demo-status-banner">
+          <span class="pulse-icon"></span>
+          <span id="demo-status-text">Step 1: Select a product from the catalog.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============================================
+       BUSINESS INSIGHTS & STATS SECTION
+       ============================================ -->
+  <section class="section-padding insights-section" id="insights">
+    <div class="container">
+      <div class="section-header text-center reveal-up">
+        <span class="section-tag">PERFORMANCE METRICS</span>
+        <h2 class="section-title">Know What's Happening in Your Business.</h2>
+        <p class="section-desc">
+          Real data counters demonstrating FlowBase's management metrics.
+        </p>
+      </div>
+
+      <!-- Stats Grid Counter -->
+      <div class="stats-grid">
+        <div class="stat-card reveal-up">
+          <div class="stat-icon">₹</div>
+          <div class="stat-number" data-target="184500" data-prefix="₹" id="stat-sales">₹0</div>
+          <div class="stat-label">Total Revenue Tracked</div>
+        </div>
+
+        <div class="stat-card reveal-up" style="animation-delay: 100ms;">
+          <div class="stat-icon blue">#</div>
+          <div class="stat-number" data-target="3420" id="stat-bills">0</div>
+          <div class="stat-label">Bills Completed</div>
+        </div>
+
+        <div class="stat-card reveal-up" style="animation-delay: 200ms;">
+          <div class="stat-icon orange">📦</div>
+          <div class="stat-number" data-target="1248" id="stat-products">0</div>
+          <div class="stat-label">Active Catalog Products</div>
+        </div>
+
+        <div class="stat-card reveal-up" style="animation-delay: 300ms;">
+          <div class="stat-icon green">%</div>
+          <div class="stat-number" data-target="99.4" data-suffix="%" id="stat-accuracy">0%</div>
+          <div class="stat-label">Inventory Accuracy</div>
+        </div>
+      </div>
+
+      <!-- Analytics Filterable Chart -->
+      <div class="insights-chart-card reveal-scale">
+        <div class="chart-card-top">
+          <div class="chart-card-title">
+            <h3>Sales & Profit Analytics Overview</h3>
+            <p>Interactive sales data visualization</p>
+          </div>
+          <div class="chart-filter-group" role="group" aria-label="Select timeframe">
+            <button class="filter-tab active" data-period="7days" type="button">7 Days</button>
+            <button class="filter-tab" data-period="30days" type="button">30 Days</button>
+            <button class="filter-tab" data-period="90days" type="button">90 Days</button>
+          </div>
+        </div>
+
+        <div class="chart-canvas-wrap">
+          <canvas id="landingSalesChart" height="260"></canvas>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============================================
+       WHY FLOWBASE SECTION
+       ============================================ -->
+  <section class="section-padding why-section">
+    <div class="container">
+      <div class="section-header text-center reveal-up">
+        <span class="section-tag">WHY CHOOSE FLOWBASE</span>
+        <h2 class="section-title">Built for Simpler Business Management.</h2>
+      </div>
+
+      <div class="why-grid">
+        <div class="why-card reveal-up">
+          <div class="why-icon">⚡</div>
+          <h3 class="why-title">Simple & Intuitive</h3>
+          <p class="why-desc">Designed to keep daily shop operations simple, fast, and accessible for any store admin.</p>
+        </div>
+
+        <div class="why-card reveal-up" style="animation-delay: 100ms;">
+          <div class="why-icon green">🔗</div>
+          <h3 class="why-title">Fully Connected</h3>
+          <p class="why-desc">Products, stock, billing, and sales work together in real-time without duplicate entry.</p>
+        </div>
+
+        <div class="why-card reveal-up" style="animation-delay: 200ms;">
+          <div class="why-icon blue">🚀</div>
+          <h3 class="why-title">Lightning Fast</h3>
+          <p class="why-desc">Instant bill calculations, barcode search, and real-time dashboard updates.</p>
+        </div>
+
+        <div class="why-card reveal-up" style="animation-delay: 300ms;">
+          <div class="why-icon purple">📈</div>
+          <h3 class="why-title">Scalable Architecture</h3>
+          <p class="why-desc">Built to handle growing catalog items, daily transaction volume, and multi-user access.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============================================
+       FINAL CALL TO ACTION (CTA)
+       ============================================ -->
+  <section class="cta-section">
+    <div class="cta-bg-glow" aria-hidden="true"></div>
+    <div class="container text-center">
+      <div class="cta-content reveal-scale">
+        <span class="section-tag light">GET STARTED TODAY</span>
+        <h2 class="cta-title">Ready to simplify your business operations?</h2>
+        <p class="cta-desc">
+          Bring your products, inventory, billing, and sales together with FlowBase Management System.
+        </p>
+
+        <div class="cta-btn-group">
+          <a class="btn btn-primary-lg" href="login.html">
+            <span>Get Started Now</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </a>
+
+          <a class="btn btn-secondary-lg light" href="login.html">
+            <span>Sign In</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============================================
+       FOOTER
+       ============================================ -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+
+        <!-- Footer Column 1: Brand -->
+        <div class="footer-col brand-col">
+          <a class="footer-logo" href="index.html">
+            <span class="nav-logo-mark">
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M4 4h7v7H4V4zm0 9h7v7H4v-7zm9-9h7v7h-7V4zm0 9h3v3h-3v-3zm4 4h3v3h-3v-3zm-4 0h3v3h-3v-3z"/>
+              </svg>
+            </span>
+            <span class="logo-text">FLOWBASE</span>
+          </a>
+          <div class="footer-system-tag">FLOWBASE MANAGEMENT SYSTEM</div>
+          <p class="footer-desc">
+            Simple, connected tools for smarter everyday business management.
+          </p>
+        </div>
+
+        <!-- Footer Column 2: Navigation -->
+        <div class="footer-col">
+          <h4 class="footer-heading">Navigation</h4>
+          <ul class="footer-links">
+            <li><a href="#overview">Overview</a></li>
+            <li><a href="#modules">Modules</a></li>
+            <li><a href="#how-it-works">How It Works</a></li>
+            <li><a href="#demo">Live Demo</a></li>
+            <li><a href="#insights">Insights</a></li>
+          </ul>
+        </div>
+
+        <!-- Footer Column 3: Modules -->
+        <div class="footer-col">
+          <h4 class="footer-heading">Modules</h4>
+          <ul class="footer-links">
+            <li><a href="products.html">Products Catalog</a></li>
+            <li><a href="inventory.html">Inventory Control</a></li>
+            <li><a href="billing.html">POS Billing</a></li>
+            <li><a href="sales.html">Sales Analytics</a></li>
+            <li><a href="dashboard.html">Admin Dashboard</a></li>
+          </ul>
+        </div>
+
+        <!-- Footer Column 4: Account -->
+        <div class="footer-col">
+          <h4 class="footer-heading">Account</h4>
+          <ul class="footer-links">
+            <li><a href="login.html">Sign In</a></li>
+            <li><a href="login.html">Create Account</a></li>
+            <li><a href="login.html">Demo Admin Access</a></li>
+          </ul>
+        </div>
+
+      </div>
+
+      <div class="footer-bottom">
+        <p>&copy; 2026 FlowBase Management System. All rights reserved.</p>
+        <div class="footer-legal">
+          <span>Privacy Policy</span>
+          <span>•</span>
+          <span>Terms of Service</span>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Chart.js CDN for Analytics Graph -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+
+  <!-- Landing JS -->
+  <script src="js/index.js"></script>
+</body>
+</html>

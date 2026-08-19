@@ -1,0 +1,909 @@
+/* ============================================
+   FlowBase Billing — billing.css
+   Extends dashboard.css design system
+   ============================================ */
+
+/* ============================================
+   PAGE HEADER
+   ============================================ */
+.bil-page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.bil-page-header-text { flex: 1; min-width: 0; }
+
+.bil-page-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: 3px;
+  letter-spacing: -0.01em;
+}
+
+.bil-page-subtitle {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+}
+
+.bil-page-actions { display: flex; gap: 8px; flex-shrink: 0; }
+
+.bil-btn-primary {
+  background-color: var(--color-primary);
+  color: #fff;
+  border-color: var(--color-primary);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.bil-btn-primary:hover {
+  background-color: var(--color-primary-dark);
+  border-color: var(--color-primary-dark);
+}
+
+.bil-btn-primary svg {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+/* ============================================
+   BILLING LAYOUT (two columns)
+   ============================================ */
+.bil-layout {
+  display: grid;
+  grid-template-columns: 1fr 420px;
+  gap: 16px;
+  align-items: start;
+}
+
+/* ============================================
+   PANEL SHARED
+   ============================================ */
+.bil-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px 12px;
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.bil-panel-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+/* ============================================
+   LEFT: PRODUCT SELECTION
+   ============================================ */
+.bil-products-panel {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 480px;
+}
+
+.bil-search-wrap {
+  position: relative;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.bil-search-icon {
+  position: absolute;
+  left: 26px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 14px;
+  height: 14px;
+  color: var(--color-text-muted);
+  pointer-events: none;
+}
+
+.bil-search-input {
+  width: 100%;
+  padding: 7px 12px 7px 32px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-family: var(--font-family);
+  font-size: 13px;
+  color: var(--color-text);
+  background-color: var(--color-bg);
+  outline: none;
+  transition: border-color var(--transition);
+}
+
+.bil-search-input:focus {
+  border-color: var(--color-primary);
+  background-color: var(--color-surface);
+}
+
+.bil-search-input::placeholder { color: var(--color-text-muted); }
+
+.bil-product-list {
+  flex: 1;
+  overflow-y: auto;
+  max-height: 450px;
+}
+
+.bil-product-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 11px 20px;
+  border-bottom: 1px solid var(--color-border-light);
+  gap: 12px;
+  transition: background-color var(--transition);
+}
+
+.bil-product-item:last-child { border-bottom: none; }
+.bil-product-item:hover { background-color: var(--color-bg); }
+
+.bil-product-item.out-of-stock { opacity: 0.5; }
+
+.bil-product-info { flex: 1; min-width: 0; }
+
+.bil-product-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bil-product-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 2px;
+}
+
+.bil-product-sku {
+  font-size: 11px;
+  color: var(--color-text-muted);
+  font-family: 'Courier New', monospace;
+}
+
+.bil-product-stock {
+  font-size: 11px;
+  color: var(--color-text-muted);
+}
+
+.bil-product-stock.low  { color: var(--color-warning); }
+.bil-product-stock.out  { color: var(--color-danger); }
+
+.bil-product-price-col {
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.bil-product-price {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text);
+  font-variant-numeric: tabular-nums;
+}
+
+.bil-add-btn {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--color-primary-muted);
+  border-radius: var(--radius-md);
+  background-color: var(--color-primary-light);
+  color: var(--color-primary);
+  cursor: pointer;
+  font-size: 18px;
+  line-height: 1;
+  transition: all var(--transition);
+  font-family: var(--font-family);
+}
+
+.bil-add-btn:hover {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #fff;
+}
+
+.bil-add-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.bil-add-btn svg {
+  width: 14px;
+  height: 14px;
+}
+
+.bil-no-products {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  gap: 8px;
+  text-align: center;
+}
+
+.bil-no-products svg {
+  width: 28px;
+  height: 28px;
+  color: var(--color-border);
+}
+
+.bil-no-products p {
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+/* ============================================
+   RIGHT: CURRENT BILL
+   ============================================ */
+.bil-bill-panel {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.bil-bill-panel-header {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.bil-bill-meta {
+  font-size: 11.5px;
+  color: var(--color-text-muted);
+  margin-top: 2px;
+}
+
+.bil-bill-meta strong {
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+/* Bill Items Table */
+.bil-items-area {
+  flex: 1;
+  min-height: 200px;
+  overflow-y: auto;
+  max-height: 300px;
+}
+
+.bil-empty-bill {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 20px;
+  gap: 10px;
+  text-align: center;
+}
+
+.bil-empty-bill svg {
+  width: 28px;
+  height: 28px;
+  color: var(--color-border);
+}
+
+.bil-empty-bill p {
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+.bil-items-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12.5px;
+}
+
+.bil-items-table thead th {
+  padding: 8px 12px;
+  text-align: left;
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--color-border);
+  background-color: var(--color-bg);
+  white-space: nowrap;
+}
+
+.bil-items-table thead th:first-child { padding-left: 20px; }
+.bil-items-table thead th:last-child  { padding-right: 20px; }
+.bil-items-table thead th.text-center { text-align: center; }
+.bil-items-table thead th.text-right  { text-align: right; }
+
+.bil-items-table tbody tr {
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.bil-items-table tbody tr:last-child { border-bottom: none; }
+
+.bil-items-table tbody td {
+  padding: 8px 12px;
+  vertical-align: middle;
+  color: var(--color-text);
+}
+
+.bil-items-table tbody td:first-child { padding-left: 20px; }
+.bil-items-table tbody td:last-child  { padding-right: 20px; }
+.bil-items-table tbody td.text-center { text-align: center; }
+.bil-items-table tbody td.text-right  { text-align: right; }
+
+.bil-item-name {
+  font-weight: 500;
+  font-size: 12.5px;
+  display: block;
+}
+
+.bil-item-sku {
+  font-size: 10.5px;
+  color: var(--color-text-muted);
+}
+
+.bil-qty-ctrl {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.bil-qty-btn {
+  width: 22px;
+  height: 22px;
+  border: 1px solid var(--color-border);
+  border-radius: 3px;
+  background: var(--color-surface);
+  cursor: pointer;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-secondary);
+  transition: all var(--transition);
+  font-family: var(--font-family);
+  padding: 0;
+}
+
+.bil-qty-btn:hover:not(:disabled) {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.bil-qty-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.bil-qty-input {
+  width: 36px;
+  height: 22px;
+  border: 1px solid var(--color-border);
+  border-radius: 3px;
+  text-align: center;
+  font-family: var(--font-family);
+  font-size: 12px;
+  color: var(--color-text);
+  background: var(--color-surface);
+  outline: none;
+  font-variant-numeric: tabular-nums;
+}
+
+.bil-item-discount {
+  width: 52px;
+  padding: 3px 5px;
+  border: 1px solid var(--color-border);
+  border-radius: 3px;
+  font-family: var(--font-family);
+  font-size: 12px;
+  text-align: right;
+  outline: none;
+  color: var(--color-text);
+  background: var(--color-surface);
+  font-variant-numeric: tabular-nums;
+}
+
+.bil-item-discount:focus { border-color: var(--color-primary); }
+
+.bil-item-total {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.bil-remove-btn {
+  width: 22px;
+  height: 22px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  border-radius: 3px;
+  color: var(--color-text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition);
+}
+
+.bil-remove-btn:hover {
+  background-color: var(--color-danger-bg);
+  color: var(--color-danger);
+}
+
+.bil-remove-btn svg { width: 13px; height: 13px; }
+
+/* ============================================
+   TOTALS
+   ============================================ */
+.bil-totals {
+  border-top: 1px solid var(--color-border);
+  padding: 12px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background-color: var(--color-bg);
+}
+
+.bil-totals-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13px;
+  gap: 8px;
+}
+
+.bil-totals-row > span:first-child {
+  color: var(--color-text-secondary);
+  min-width: 70px;
+}
+
+.bil-totals-row > span:last-child {
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+}
+
+.bil-grand-total-row {
+  padding-top: 8px;
+  border-top: 1px solid var(--color-border);
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.bil-grand-total-row > span:first-child {
+  color: var(--color-text);
+}
+
+.bil-discount-row,
+.bil-tax-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+  justify-content: flex-end;
+}
+
+.bil-discount-input {
+  width: 58px;
+  padding: 4px 6px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-family);
+  font-size: 12.5px;
+  text-align: right;
+  outline: none;
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
+.bil-discount-input:focus { border-color: var(--color-primary); }
+
+.bil-discount-type {
+  padding: 4px 6px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-family);
+  font-size: 12px;
+  outline: none;
+  background: var(--color-surface);
+  color: var(--color-text);
+  cursor: pointer;
+}
+
+.bil-tax-label {
+  font-size: 12.5px;
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+}
+
+.bil-discount-display { color: var(--color-danger); }
+
+/* ============================================
+   PAYMENT
+   ============================================ */
+.bil-payment-section {
+  padding: 12px 20px;
+  border-top: 1px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.bil-payment-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.bil-payment-methods {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.bil-payment-btn {
+  cursor: pointer;
+  flex: 1;
+  min-width: 80px;
+}
+
+.bil-payment-btn input[type="radio"] {
+  display: none;
+}
+
+.bil-payment-btn span {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 10px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: 12px;
+  font-family: var(--font-family);
+  color: var(--color-text-secondary);
+  transition: all var(--transition);
+  cursor: pointer;
+}
+
+.bil-payment-btn input[type="radio"]:checked + span {
+  border-color: var(--color-primary);
+  background-color: var(--color-primary-light);
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+.bil-payment-btn span svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* Cash Section */
+.bil-cash-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px;
+  background-color: var(--color-bg);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border-light);
+}
+
+.bil-cash-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.bil-cash-label {
+  font-size: 12.5px;
+  color: var(--color-text-secondary);
+}
+
+.bil-cash-input {
+  width: 110px;
+  padding: 5px 8px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-family);
+  font-size: 13px;
+  text-align: right;
+  outline: none;
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-variant-numeric: tabular-nums;
+}
+
+.bil-cash-input:focus { border-color: var(--color-primary); }
+
+.bil-change-amount {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ============================================
+   COMPLETE BILL BUTTON
+   ============================================ */
+.bil-complete-area {
+  padding: 14px 20px 20px;
+  border-top: 1px solid var(--color-border-light);
+}
+
+.bil-btn-complete {
+  width: 100%;
+  padding: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background-color: var(--color-primary);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-family: var(--font-family);
+  transition: background-color var(--transition);
+}
+
+.bil-btn-complete:hover { background-color: var(--color-primary-dark); }
+.bil-btn-complete:disabled { opacity: 0.5; cursor: not-allowed; }
+.bil-btn-complete svg { width: 16px; height: 16px; }
+
+/* ============================================
+   VIEW BILL MODAL
+   ============================================ */
+.bil-modal-overlay { z-index: 400; }
+
+.bil-view-modal-inner {
+  width: 500px;
+  max-width: calc(100vw - 32px);
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 0;
+}
+
+.bil-view-content {
+  padding: 20px 24px;
+}
+
+.bil-invoice {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.bil-invoice-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.bil-invoice-brand {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-primary);
+  letter-spacing: 0.06em;
+}
+
+.bil-invoice-meta {
+  text-align: right;
+  font-size: 12.5px;
+  color: var(--color-text-secondary);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.bil-invoice-meta strong { color: var(--color-text); }
+
+.bil-invoice-items-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.bil-invoice-items-table thead th {
+  padding: 7px 8px;
+  font-size: 10.5px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-muted);
+  border-bottom: 1px solid var(--color-border);
+  text-align: left;
+}
+
+.bil-invoice-items-table thead th:last-child { text-align: right; }
+.bil-invoice-items-table thead th.text-right { text-align: right; }
+
+.bil-invoice-items-table tbody td {
+  padding: 7px 8px;
+  border-bottom: 1px solid var(--color-border-light);
+  color: var(--color-text);
+}
+
+.bil-invoice-items-table tbody td:last-child { text-align: right; font-variant-numeric: tabular-nums; }
+.bil-invoice-items-table tbody td.text-right  { text-align: right; font-variant-numeric: tabular-nums; }
+.bil-invoice-items-table tbody tr:last-child td { border-bottom: none; }
+
+.bil-invoice-totals {
+  border-top: 1px solid var(--color-border);
+  padding-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.bil-invoice-total-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+}
+
+.bil-invoice-total-row > span:first-child { color: var(--color-text-secondary); }
+.bil-invoice-total-row > span:last-child  { font-variant-numeric: tabular-nums; font-weight: 500; }
+
+.bil-invoice-grand-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 15px;
+  font-weight: 700;
+  padding-top: 8px;
+  border-top: 1px solid var(--color-border);
+}
+
+.bil-invoice-footer {
+  text-align: center;
+  font-size: 12px;
+  color: var(--color-text-muted);
+  border-top: 1px solid var(--color-border-light);
+  padding-top: 12px;
+}
+
+/* ============================================
+   PRINT STYLES
+   ============================================ */
+.bil-print-area { display: none; }
+
+@media print {
+  body > * { display: none !important; }
+  .bil-print-area {
+    display: block !important;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    color: #000;
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+
+  .bill-print-brand {
+    font-size: 18px;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 4px;
+  }
+
+  .bill-print-meta {
+    text-align: center;
+    font-size: 12px;
+    color: #555;
+    margin-bottom: 12px;
+  }
+
+  .bill-print-divider {
+    border: none;
+    border-top: 1px dashed #ccc;
+    margin: 10px 0;
+  }
+
+  .bill-print-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+  }
+
+  .bill-print-table th,
+  .bill-print-table td {
+    padding: 5px 4px;
+    text-align: left;
+  }
+
+  .bill-print-table th { border-bottom: 1px solid #999; }
+  .bill-print-table .text-right { text-align: right; }
+
+  .bill-print-total-section {
+    margin-top: 8px;
+    border-top: 1px dashed #ccc;
+    padding-top: 8px;
+  }
+
+  .bill-print-total-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    padding: 2px 0;
+  }
+
+  .bill-print-grand {
+    font-weight: 700;
+    font-size: 14px;
+    border-top: 1px solid #000;
+    padding-top: 5px;
+    margin-top: 5px;
+  }
+
+  .bill-print-footer {
+    text-align: center;
+    margin-top: 16px;
+    font-size: 11px;
+    color: #777;
+  }
+}
+
+/* ============================================
+   RECENT BILLS TABLE
+   ============================================ */
+/* Uses shared .data-table from dashboard.css */
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 1200px) {
+  .bil-layout {
+    grid-template-columns: 1fr 380px;
+  }
+}
+
+@media (max-width: 960px) {
+  .bil-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .bil-bill-panel {
+    order: -1;
+  }
+}
+
+@media (max-width: 768px) {
+  .bil-page-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .bil-page-actions {
+    justify-content: flex-end;
+  }
+}
+
+@media (max-width: 480px) {
+  .bil-payment-methods {
+    flex-direction: row;
+  }
+
+  .bil-payment-btn span {
+    padding: 6px 8px;
+    font-size: 11px;
+  }
+
+  .bil-items-table { font-size: 11.5px; }
+}

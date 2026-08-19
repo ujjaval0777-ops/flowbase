@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard — FlowBase</title>
+  <meta name="description" content="FlowBase shop admin dashboard. Monitor today's sales, profits, top-selling products, and low stock at a glance." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/dashboard.css" />
+</head>
+<body>
+
+<!-- ============================================
+     APP SHELL
+     ============================================ -->
+<div class="app-shell">
+
+  <!-- SIDEBAR OVERLAY (mobile) -->
+  <div class="sidebar-overlay" id="sidebar-overlay" aria-hidden="true"></div>
+
+  <!-- ==========================================
+       SIDEBAR
+       ========================================== -->
+  <aside class="sidebar" id="sidebar" role="navigation" aria-label="Main navigation">
+
+    <!-- Logo -->
+    <a class="sidebar-logo" href="dashboard.html" aria-label="FlowBase home">
+      <span class="sidebar-logo-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M4 4h7v7H4V4zm0 9h7v7H4v-7zm9-9h7v7h-7V4zm0 9h3v3h-3v-3zm4 4h3v3h-3v-3zm-4 0h3v3h-3v-3z"/>
+        </svg>
+      </span>
+      <span class="sidebar-logo-text">FLOWBASE</span>
+    </a>
+
+    <!-- Navigation -->
+    <nav class="sidebar-nav" aria-label="Primary">
+
+      <div class="sidebar-nav-section">
+        <a class="nav-item active" href="dashboard.html" aria-current="page" id="nav-dashboard">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          <span>Dashboard</span>
+        </a>
+        <a class="nav-item" href="billing.html" id="nav-billing">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 2v20l3-2 3 2 3-2 3 2 3-2V2"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg>
+          <span>Billing</span>
+        </a>
+        <a class="nav-item" href="products.html" id="nav-products">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          <span>Products</span>
+        </a>
+        <a class="nav-item" href="inventory.html" id="nav-inventory">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+          <span>Inventory</span>
+        </a>
+        <a class="nav-item" href="sales.html" id="nav-sales">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/></svg>
+          <span>Sales</span>
+        </a>
+      </div>
+
+      <div class="nav-divider" role="separator"></div>
+
+    </nav>
+
+    <!-- Sidebar Footer -->
+    <footer class="sidebar-footer">
+      <a class="nav-item" href="settings.html" id="nav-settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        <span>Settings</span>
+      </a>
+      <button class="nav-item" id="logout-btn" type="button" aria-label="Log out">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        <span>Logout</span>
+      </button>
+    </footer>
+
+  </aside>
+
+  <!-- ==========================================
+       MAIN CONTENT
+       ========================================== -->
+  <div class="main-content">
+
+    <!-- ======================================
+         TOP HEADER
+         ====================================== -->
+    <header class="top-header" role="banner">
+
+      <div class="header-left">
+        <button class="hamburger-btn" id="hamburger-btn" type="button" aria-label="Toggle sidebar" aria-expanded="false" aria-controls="sidebar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <span class="header-breadcrumb">Dashboard</span>
+      </div>
+
+      <div class="header-right">
+
+        <!-- Search -->
+        <div class="search-wrapper">
+          <div class="header-search" role="search">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input
+              type="search"
+              id="search-input"
+              placeholder="Search..."
+              aria-label="Search dashboard"
+              autocomplete="off"
+            />
+          </div>
+          <div class="search-results" id="search-results" role="listbox" aria-label="Search results"></div>
+        </div>
+
+        <!-- Notifications -->
+        <button class="icon-btn" type="button" aria-label="Notifications" id="notifications-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <span class="notification-badge" aria-label="New notifications"></span>
+        </button>
+
+        <!-- Profile -->
+        <button class="header-profile" type="button" aria-label="Shop Admin profile" aria-haspopup="true">
+          <div class="profile-avatar" aria-hidden="true">SA</div>
+          <div class="profile-info">
+            <div class="profile-name">Shop Admin</div>
+            <div class="profile-role">Administrator</div>
+          </div>
+        </button>
+
+      </div>
+    </header>
+
+    <!-- ======================================
+         PAGE BODY
+         ====================================== -->
+    <main class="page-body" id="main-content">
+
+      <!-- WELCOME -->
+      <section class="welcome-section" aria-label="Welcome">
+        <div class="welcome-text">
+          <h1 id="welcome-greeting">Good morning, Shop Admin</h1>
+          <p>Here's how your shop is performing today.</p>
+        </div>
+        <div class="welcome-date" id="welcome-date" aria-live="polite"></div>
+      </section>
+
+      <!-- KPI CARDS -->
+      <section aria-label="Key performance indicators">
+        <div class="kpi-grid">
+          <div class="kpi-card" id="kpi-sales" role="region" aria-label="Today's Sales"></div>
+          <div class="kpi-card" id="kpi-bills" role="region" aria-label="Bills Today"></div>
+          <div class="kpi-card" id="kpi-profit" role="region" aria-label="Today's Profit"></div>
+          <div class="kpi-card" id="kpi-stock" role="region" aria-label="Low Stock"></div>
+        </div>
+      </section>
+
+      <!-- SALES OVERVIEW CHART -->
+      <section aria-label="Sales overview">
+        <div class="chart-card">
+          <div class="section-header">
+            <h2 class="section-title">Sales Overview</h2>
+            <div class="chart-controls" role="group" aria-label="Chart time range">
+              <button class="chart-filter-btn active" data-filter="today"  type="button" aria-pressed="false">Today</button>
+              <button class="chart-filter-btn"        data-filter="7days"  type="button" aria-pressed="true">7 Days</button>
+              <button class="chart-filter-btn"        data-filter="30days" type="button" aria-pressed="false">30 Days</button>
+            </div>
+          </div>
+          <div class="chart-wrapper" role="img" aria-label="Sales over time line chart">
+            <canvas id="salesChart"></canvas>
+          </div>
+        </div>
+      </section>
+
+      <!-- TOP PRODUCTS + LOW STOCK -->
+      <div class="two-col-row">
+
+        <!-- Top Selling Products -->
+        <section aria-label="Top selling products">
+          <div class="table-card">
+            <div class="section-header">
+              <h2 class="section-title">Top Selling Products</h2>
+            </div>
+            <div class="table-scroll-wrap">
+              <table class="data-table" aria-label="Top selling products">
+                <thead>
+                  <tr>
+                    <th scope="col">Product</th>
+                    <th scope="col">Units Sold</th>
+                    <th scope="col">Revenue</th>
+                    <th scope="col">Profit</th>
+                  </tr>
+                </thead>
+                <tbody id="top-products-body">
+                  <!-- Populated by JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- Low Stock -->
+        <section aria-label="Low stock products">
+          <div class="table-card">
+            <div class="section-header">
+              <h2 class="section-title">Low Stock</h2>
+              <button class="section-action" id="view-inventory-link" type="button">View Inventory</button>
+            </div>
+            <div class="table-scroll-wrap">
+              <table class="data-table" aria-label="Low stock products">
+                <thead>
+                  <tr>
+                    <th scope="col">Product</th>
+                    <th scope="col">Current</th>
+                    <th scope="col">Minimum</th>
+                    <th scope="col">Status</th>
+                  </tr>
+                </thead>
+                <tbody id="low-stock-body">
+                  <!-- Populated by JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+      </div>
+
+      <!-- RECENT BILLS + QUICK ACTIONS -->
+      <div class="two-col-row">
+
+        <!-- Recent Bills -->
+        <section aria-label="Recent bills" style="grid-column: 1 / -1;">
+          <div class="bills-table-card">
+            <div class="section-header">
+              <h2 class="section-title">Recent Bills</h2>
+              <button class="section-action" id="view-all-sales-link" type="button">View All Sales</button>
+            </div>
+            <div class="table-scroll-wrap">
+              <table class="data-table" aria-label="Recent bills">
+                <thead>
+                  <tr>
+                    <th scope="col">Bill No.</th>
+                    <th scope="col">Time</th>
+                    <th scope="col">Items</th>
+                    <th scope="col">Amount</th>
+                    <th scope="col">Status</th>
+                  </tr>
+                </thead>
+                <tbody id="recent-bills-body">
+                  <!-- Populated by JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+      </div>
+
+      <!-- QUICK ACTIONS -->
+      <section aria-label="Quick actions">
+        <div class="quick-actions-card">
+          <div class="section-header" style="margin-bottom: 0;">
+            <h2 class="section-title">Quick Actions</h2>
+          </div>
+          <div class="quick-actions-grid">
+            <button class="qa-btn qa-btn-primary" id="qa-new-bill" type="button">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              New Bill
+            </button>
+            <button class="qa-btn qa-btn-secondary" id="qa-add-product" type="button">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Add Product
+            </button>
+            <button class="qa-btn qa-btn-secondary" id="qa-view-sales" type="button">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/></svg>
+              View Sales
+            </button>
+            <button class="qa-btn qa-btn-secondary" id="qa-check-inventory" type="button">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+              Check Inventory
+            </button>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+</div>
+
+<!-- ============================================
+     LOGOUT MODAL
+     ============================================ -->
+<div class="modal-overlay" id="logout-modal" role="dialog" aria-modal="true" aria-labelledby="logout-modal-title">
+  <div class="modal">
+    <h2 class="modal-title" id="logout-modal-title">Log out?</h2>
+    <p class="modal-desc">You will be signed out of FlowBase. Any unsaved changes will be lost.</p>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" id="logout-cancel" type="button">Cancel</button>
+      <button class="btn btn-danger" id="logout-confirm" type="button">Log out</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST CONTAINER -->
+<div class="toast-container" id="toast-container" aria-live="assertive" aria-atomic="false"></div>
+
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<!-- Dashboard JS -->
+<script src="js/dashboard.js"></script>
+
+</body>
+</html>

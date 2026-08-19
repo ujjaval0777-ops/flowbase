@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign in — FlowBase Management System</title>
+  <meta name="description" content="FlowBase Management System — All-in-one business management platform for products, inventory, billing, and sales." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/login.css" />
+</head>
+<body>
+
+<!-- ============================================
+     LOGIN PAGE
+     ============================================ -->
+<div class="login-page">
+
+  <!-- ==========================================
+       LEFT — BRAND PANEL
+       ========================================== -->
+  <section class="login-brand" aria-label="FlowBase branding">
+    <div class="login-brand-inner">
+
+      <!-- Logo -->
+      <div class="login-brand-logo" aria-label="FlowBase Management System">
+        <span class="login-brand-logo-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M4 4h7v7H4V4zm0 9h7v7H4v-7zm9-9h7v7h-7V4zm0 9h3v3h-3v-3zm4 4h3v3h-3v-3zm-4 0h3v3h-3v-3z"/>
+          </svg>
+        </span>
+        <span class="login-brand-logo-text">FLOWBASE</span>
+      </div>
+
+      <!-- Headline -->
+      <div class="login-brand-system-badge">MANAGEMENT SYSTEM</div>
+      <h1 class="login-brand-headline">
+        Manage your business operations<br>
+        <span>with simplicity and control.</span>
+      </h1>
+
+      <p class="login-brand-desc">
+        Products, inventory, billing and sales — all in one place.
+      </p>
+
+      <!-- Abstract UI preview cards (inspired by dashboard) -->
+      <div class="login-brand-preview" aria-hidden="true">
+
+        <div class="preview-card">
+          <div class="preview-card-icon">
+            <svg viewBox="0 0 24 24">
+              <line x1="18" y1="20" x2="18" y2="10"/>
+              <line x1="12" y1="20" x2="12" y2="4"/>
+              <line x1="6" y1="20" x2="6" y2="14"/>
+              <line x1="2" y1="20" x2="22" y2="20"/>
+            </svg>
+          </div>
+          <div class="preview-card-info">
+            <div class="preview-card-label">Today's Sales</div>
+            <div class="preview-card-value">₹18,450</div>
+          </div>
+          <span class="preview-card-badge badge-success">+12.4%</span>
+        </div>
+
+        <div class="preview-card">
+          <div class="preview-card-icon">
+            <svg viewBox="0 0 24 24">
+              <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+              <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+              <line x1="12" y1="22.08" x2="12" y2="12"/>
+            </svg>
+          </div>
+          <div class="preview-card-info">
+            <div class="preview-card-label">Low Stock Items</div>
+            <div class="preview-card-value">8 products</div>
+          </div>
+          <span class="preview-card-badge badge-warning">Action needed</span>
+        </div>
+
+        <div class="preview-card">
+          <div class="preview-card-icon">
+            <svg viewBox="0 0 24 24">
+              <path d="M4 2v20l3-2 3 2 3-2 3 2 3-2V2"/>
+              <line x1="9" y1="8" x2="15" y2="8"/>
+              <line x1="9" y1="12" x2="15" y2="12"/>
+              <line x1="9" y1="16" x2="13" y2="16"/>
+            </svg>
+          </div>
+          <div class="preview-card-info">
+            <div class="preview-card-label">Bills Today</div>
+            <div class="preview-card-value">42 completed</div>
+          </div>
+          <span class="preview-card-badge badge-success">+8.2%</span>
+        </div>
+
+      </div>
+      <!-- /preview cards -->
+
+    </div>
+  </section>
+
+  <!-- ==========================================
+       RIGHT — AUTHENTICATION PANEL
+       ========================================== -->
+  <main class="login-panel" id="main-content">
+
+    <!-- Mobile Header Branding -->
+    <div class="mobile-brand" aria-label="FlowBase Management System">
+      <div class="mobile-brand-logo">
+        <span class="mobile-brand-logo-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M4 4h7v7H4V4zm0 9h7v7H4v-7zm9-9h7v7h-7V4zm0 9h3v3h-3v-3zm4 4h3v3h-3v-3zm-4 0h3v3h-3v-3z"/>
+          </svg>
+        </span>
+        <span class="mobile-brand-logo-text">FLOWBASE</span>
+      </div>
+      <div class="mobile-brand-tag">MANAGEMENT SYSTEM</div>
+    </div>
+
+    <!-- Authentication Card -->
+    <div class="login-card" id="auth-card" role="region" aria-label="Authentication form">
+
+      <!-- ====================================
+           LOGIN VIEW
+           ==================================== -->
+      <div class="auth-view active" id="login-view">
+
+        <!-- Card Header -->
+        <div class="login-card-header">
+          <h2 class="login-card-title">Welcome Back</h2>
+          <p class="login-card-subtitle">Sign in to your FlowBase account.</p>
+        </div>
+
+        <!-- Login Form -->
+        <form class="login-form" id="login-form" novalidate autocomplete="on">
+
+          <!-- General error banner -->
+          <div class="login-form-error" id="login-form-error" role="alert" aria-live="assertive">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="12" y1="8" x2="12" y2="12"/>
+              <line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+            <span id="login-form-error-text">Invalid email or password.</span>
+          </div>
+
+          <!-- Email Field -->
+          <div class="form-group" id="login-email-group">
+            <label class="form-label" for="login-email">Email Address</label>
+            <div class="input-wrapper">
+              <span class="input-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24">
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                  <polyline points="22,6 12,13 2,6"/>
+                </svg>
+              </span>
+              <input
+                type="email"
+                id="login-email"
+                name="email"
+                class="form-input"
+                placeholder="Enter your email address"
+                autocomplete="email"
+                aria-describedby="login-email-error"
+                aria-required="true"
+              />
+            </div>
+            <div class="field-error" id="login-email-error" role="alert" aria-live="polite">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="12" y1="8" x2="12" y2="12"/>
+                <line x1="12" y1="16" x2="12.01" y2="16"/>
+              </svg>
+              <span id="login-email-error-text">Email address is required.</span>
+            </div>
+          </div>
+
+          <!-- Password Field -->
+          <div class="form-group" id="login-password-group">
+            <label class="form-label" for="login-password">Password</label>
+            <div class="input-wrapper">
+              <span class="input-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                </svg>
+              </span>
+              <input
+                type="password"
+                id="login-password"
+                name="password"
+                class="form-input has-toggle"
+                placeholder="Enter your password"
+                autocomplete="current-password"
+                aria-describedby="login-password-error"
+                aria-required="true"
+              />
+              <button
+                type="button"
+                class="password-toggle"
+                id="login-password-toggle"
+                aria-label="Show password"
+                aria-controls="login-password"
+              >
+                <svg viewBox="0 0 24 24" class="eye-icon" aria-hidden="true">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+              </button>
+            </div>
+            <div class="field-error" id="login-password-error" role="alert" aria-live="polite">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="12" y1="8" x2="12" y2="12"/>
+                <line x1="12" y1="16" x2="12.01" y2="16"/>
+              </svg>
+              <span id="login-password-error-text">Password is required.</span>
+            </div>
+          </div>
+
+          <!-- Remember Me + Forgot Password -->
+          <div class="login-form-meta">
+            <label class="checkbox-label" for="remember-me">
+              <input
+                type="checkbox"
+                class="checkbox-input"
+                id="remember-me"
+                name="remember"
+                aria-label="Remember me on this device"
+              />
+              <span class="checkbox-custom" aria-hidden="true"></span>
+              <span class="checkbox-text">Remember me</span>
+            </label>
+
+            <button
+              type="button"
+              class="forgot-link"
+              id="forgot-password-btn"
+              aria-haspopup="dialog"
+            >
+              Forgot password?
+            </button>
+          </div>
+
+          <!-- Submit Button -->
+          <button
+            type="submit"
+            class="login-btn"
+            id="login-submit-btn"
+            aria-live="polite"
+          >
+            <span class="btn-spinner" aria-hidden="true"></span>
+            <span id="login-btn-text">Sign In</span>
+          </button>
+
+        </form>
+
+        <!-- Sign Up Link -->
+        <div class="login-signup">
+          Don't have an account?
+          <button type="button" class="auth-switch-btn" id="goto-signup-btn">Create Account</button>
+        </div>
+
+      </div>
+      <!-- /login-view -->
+
+
+      <!-- ====================================
+           CREATE ACCOUNT VIEW
+           ==================================== -->
+      <div class="auth-view" id="signup-view">
+
+        <!-- Card Header -->
+        <div class="login-card-header">
+          <h2 class="login-card-title">Create your FlowBase account</h2>
+          <p class="login-card-subtitle">Set up your account to start managing your business.</p>
+        </div>
+
+        <!-- Signup Form -->
+        <form class="login-form" id="signup-form" novalidate autocomplete="on">
+
+          <!-- General error banner -->
+          <div class="login-form-error" id="signup-form-error" role="alert" aria-live="assertive">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="12" y1="8" x2="12" y2="12"/>
+              <line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+            <span id="signup-form-error-text">An account with this email already exists.</span>
+          </div>
+
+          <!-- Full Name Field -->
+          <div class="form-group" id="signup-fullname-group">
+            <label class="form-label" for="signup-fullname">Full Name *</label>
+            <div class="input-wrapper">
+              <span class="input-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                  <circle cx="12" cy="7" r="4"/>
+                </svg>
+              </span>
+              <input
+                type="text"
+                id="signup-fullname"
+                name="fullname"
+                class="form-input"
+                placeholder="Enter your full name"
+                autocomplete="name"
+                aria-describedby="signup-fullname-error"
+                aria-required="true"
+              />
+            </div>
+            <div class="field-error" id="signup-fullname-error" role="alert" aria-live="polite">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="12" y1="8" x2="12" y2="12"/>
+                <line x1="12" y1="16" x2="12.01" y2="16"/>
+              </svg>
+              <span id="signup-fullname-error-text">Full name is required.</span>
+            </div>
+          </div>
+
+          <!-- Email Address Field -->
+          <div class="form-group" id="signup-email-group">
+            <label class="form-label" for="signup-email">Email Address *</label>
+            <div class="input-wrapper">
+              <span class="input-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24">
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                  <polyline points="22,6 12,13 2,6"/>
+                </svg>
+              </span>
+              <input
+                type="email"
+                id="signup-email"
+                name="email"
+                class="form-input"
+                placeholder="Enter your email address"
+                autocomplete="email"
+                aria-describedby="signup-email-error"
+                aria-required="true"
+              />
+            </div>
+            <div class="field-error" id="signup-email-error" role="alert" aria-live="polite">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="12" y1="8" x2="12" y2="12"/>
+                <line x1="12" y1="16" x2="12.01" y2="16"/>
+              </svg>
+              <span id="signup-email-error-text">Please enter a valid email address.</span>
+            </div>
+          </div>
+
+          <!-- Password Field -->
+          <div class="form-group" id="signup-password-group">
+            <label class="form-label" for="signup-password">Password *</label>
+            <div class="input-wrapper">
+              <span class="input-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                </svg>
+              </span>
+              <input
+                type="password"
+                id="signup-password"
+                name="password"
+                class="form-input has-toggle"
+                placeholder="Create a password (min. 8 characters)"
+                autocomplete="new-password"
+                aria-describedby="signup-password-error"
+                aria-required="true"
+                minlength="8"
+              />
+              <button
+                type="button"
+                class="password-toggle"
+                id="signup-password-toggle"
+                aria-label="Show password"
+                aria-controls="signup-password"
+              >
+                <svg viewBox="0 0 24 24" class="eye-icon" aria-hidden="true">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+              </button>
+            </div>
+            <div class="field-error" id="signup-password-error" role="alert" aria-live="polite">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="12" y1="8" x2="12" y2="12"/>
+                <line x1="12" y1="16" x2="12.01" y2="16"/>
+              </svg>
+              <span id="signup-password-error-text">Password must be at least 8 characters.</span>
+            </div>
+          </div>
+
+          <!-- Confirm Password Field -->
+          <div class="form-group" id="signup-confirm-group">
+            <label class="form-label" for="signup-confirm">Confirm Password *</label>
+            <div class="input-wrapper">
+              <span class="input-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                  <polyline points="22 4 12 14.01 9 11.01"/>
+                </svg>
+              </span>
+              <input
+                type="password"
+                id="signup-confirm"
+                name="confirm_password"
+                class="form-input has-toggle"
+                placeholder="Re-enter your password"
+                autocomplete="new-password"
+                aria-describedby="signup-confirm-error"
+                aria-required="true"
+              />
+              <button
+                type="button"
+                class="password-toggle"
+                id="signup-confirm-toggle"
+                aria-label="Show confirm password"
+                aria-controls="signup-confirm"
+              >
+                <svg viewBox="0 0 24 24" class="eye-icon" aria-hidden="true">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+              </button>
+            </div>
+            <div class="field-error" id="signup-confirm-error" role="alert" aria-live="polite">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="12" y1="8" x2="12" y2="12"/>
+                <line x1="12" y1="16" x2="12.01" y2="16"/>
+              </svg>
+              <span id="signup-confirm-error-text">Passwords do not match.</span>
+            </div>
+          </div>
+
+          <!-- Submit Button -->
+          <button
+            type="submit"
+            class="login-btn"
+            id="signup-submit-btn"
+            aria-live="polite"
+          >
+            <span class="btn-spinner" aria-hidden="true"></span>
+            <span id="signup-btn-text">Create Account</span>
+          </button>
+
+        </form>
+
+        <!-- Login Switch Link -->
+        <div class="login-signup">
+          Already have an account?
+          <button type="button" class="auth-switch-btn" id="goto-login-btn">Sign In</button>
+        </div>
+
+      </div>
+      <!-- /signup-view -->
+
+    </div>
+    <!-- /login-card -->
+
+    <!-- Footer -->
+    <footer class="login-footer">
+      &copy; 2026 FlowBase Management System. All rights reserved.
+    </footer>
+
+  </main>
+  <!-- /login-panel -->
+
+</div>
+<!-- /login-page -->
+
+
+<!-- ============================================
+     MODAL — Forgot Password
+     ============================================ -->
+<div class="modal-overlay" id="forgot-modal" role="dialog" aria-modal="true" aria-labelledby="forgot-modal-title">
+  <div class="modal">
+    <div class="modal-icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24">
+        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+      </svg>
+    </div>
+    <h2 class="modal-title" id="forgot-modal-title">Forgot Password?</h2>
+    <p class="modal-desc">
+      Password recovery will be available when account authentication is connected.
+    </p>
+    <div class="modal-actions">
+      <button class="btn btn-primary" id="forgot-modal-close" type="button">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================
+     TOAST CONTAINER
+     ============================================ -->
+<div class="toast-container" id="toast-container" aria-live="assertive" aria-atomic="false"></div>
+
+<!-- Login JS -->
+<script src="js/login.js"></script>
+
+</body>
+</html>
+
