@@ -9,10 +9,7 @@
 function resolveApiBaseUrl() {
   const custom = localStorage.getItem('flowbase_api_base_url');
   if (custom) return custom;
-  if (window.location.port === '8000') {
-    return `${window.location.origin}/api/v1`;
-  }
-  return 'http://127.0.0.1:8000/api/v1';
+  return 'https://backend-x6ay.onrender.com/api/v1';
 }
 const API_BASE_URL = resolveApiBaseUrl();
 
