@@ -23,66 +23,84 @@ let activeDateFilter = 'today';
 let viewingSaleId    = null;
 
 // ============================================
-// LOCAL STORAGE
+// LOAD DATA FROM BACKEND
 // ============================================
-function loadSales() {
+async function loadData() {
+  const shopId = await ensureActiveShop();
+  if (!shopId) return;
+
   try {
-    const stored = localStorage.getItem(LS_SALES_KEY);
-    salesData = stored ? JSON.parse(stored) : [];
-  } catch (e) { salesData = []; }
+    const [rawProducts, rawSales] = await Promise.all([
+      apiRequest(`/shops/${shopId}/products`),
+      apiRequest(`/sales/${shopId}`).catch(() => [])
+    ]);
+
+    productsData = (rawProducts || []).map(p => ({
+      id: p.id,
+      name: p.name,
+      sku: p.sku || `PRD-${String(p.id).padStart(3, '0')}`,
+      category_id: p.category_id,
+      purchasePrice: Number(p.purchase_price || 0),
+      sellingPrice: Number(p.selling_price || 0),
+      currentStock: Number(p.stock_quantity || 0),
+      minimumStock: Number(p.low_stock_threshold || 5),
+    }));
+
+    try {
+      localStorage.setItem(LS_INV_KEY, JSON.stringify(productsData));
+    } catch (_) {}
+
+    salesData = (rawSales || []).map(s => {
+      const items = (s.sale_items || []).map(si => {
+        const prd = productsData.find(p => p.id === si.product_id);
+        return {
+          productId: si.product_id,
+          name: si.product_name || (prd ? prd.name : `Product #${si.product_id}`),
+          sku: si.product_sku || (prd ? prd.sku : ''),
+          price: Number(si.unit_price || 0),
+          qty: Number(si.quantity || 0),
+          discount: Number(si.discount || 0),
+          total: Number(si.total_price || (si.quantity * si.unit_price))
+        };
+      });
+
+      const subtotal = Number(s.subtotal || items.reduce((acc, i) => acc + i.total, 0));
+      const discountAmt = Number(s.discount || 0);
+      const taxAmt = Number(s.tax || 0);
+      const grandTotal = Number(s.total_amount || (subtotal - discountAmt + taxAmt));
+
+      return {
+        id: s.id,
+        billNo: s.bill_number || `FB-${String(s.id).padStart(6, '0')}`,
+        createdAt: s.created_at ? new Date(s.created_at).getTime() : Date.now(),
+        items,
+        subtotal,
+        discountType: 'fixed',
+        discountValue: discountAmt,
+        discountAmt,
+        taxPercent: 0,
+        taxAmt,
+        grandTotal,
+        paymentMethod: s.payment_method || 'Cash',
+        amountReceived: grandTotal,
+        change: 0,
+        status: s.status === 'cancelled' ? 'Cancelled' : 'Completed'
+      };
+    });
+
+    try {
+      localStorage.setItem(LS_SALES_KEY, JSON.stringify(salesData));
+    } catch (_) {}
+
+    renderKPIs();
+    applyFilters();
+  } catch (err) {
+    console.error('Failed to load sales data:', err);
+    showToast(err.message || 'Failed to load sales data', 'warning');
+  }
 }
 
-function saveSales() {
-  try { localStorage.setItem(LS_SALES_KEY, JSON.stringify(salesData)); } catch (e) {}
-}
-
-function loadProducts() {
-  try {
-    const stored = localStorage.getItem(LS_INV_KEY);
-    productsData = stored ? JSON.parse(stored) : [];
-  } catch (e) { productsData = []; }
-}
-
-function saveProducts() {
-  try { localStorage.setItem(LS_INV_KEY, JSON.stringify(productsData)); } catch (e) {}
-}
-
-// ============================================
-// UTILITIES
-// ============================================
-function formatINR(val) {
-  return '₹' + Number(val).toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
-}
-
-function escHtml(str) {
-  return String(str)
-    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-}
-
-function formatDateTime(ts) {
-  if (!ts) return '—';
-  const d = new Date(ts);
-  return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) +
-    ' ' + d.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
-}
-
-function formatDate(ts) {
-  if (!ts) return '—';
-  return new Date(ts).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
-}
-
-function formatTime(ts) {
-  if (!ts) return '—';
-  return new Date(ts).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
-}
-
-function startOfDay(date) {
-  const d = new Date(date);
-  d.setHours(0, 0, 0, 0);
-  return d.getTime();
-}
-
-function findProduct(id) { return productsData.find(p => p.id === id); }
+function findProduct(id) { return productsData.find(p => String(p.id) === String(id)); }
 
 // ============================================
 // KPI CARDS
@@ -357,7 +375,7 @@ function initSearchAndFilters() {
 // VIEW SALE MODAL
 // ============================================
 function openViewSale(saleId) {
-  const sale = salesData.find(s => s.id === saleId);
+  const sale = salesData.find(s => String(s.id) === String(saleId) || s.billNo === saleId);
   if (!sale) return;
   viewingSaleId = saleId;
 
@@ -429,7 +447,7 @@ function initViewSaleModal() {
 // PRINT SALE
 // ============================================
 function printSale(saleId) {
-  const sale = salesData.find(s => s.id === saleId);
+  const sale = salesData.find(s => String(s.id) === String(saleId) || s.billNo === saleId);
   if (!sale) return;
 
   const printArea = document.getElementById('sal-print-area');
@@ -599,7 +617,6 @@ function initLogout() {
   if (!logoutBtn) return;
   logoutBtn.addEventListener('click',    () => openModal('logout-modal'));
   document.getElementById('logout-cancel')?.addEventListener('click',  () => closeModal('logout-modal'));
-  document.getElementById('logout-confirm')?.addEventListener('click', () => { closeModal('logout-modal'); showToast('Logged out successfully.', 'success'); });
 }
 
 // ============================================
@@ -624,12 +641,10 @@ function showToast(message, type = 'default') {
 // ============================================
 // INIT
 // ============================================
-document.addEventListener('DOMContentLoaded', () => {
-  loadSales();
-  loadProducts();
-
-  renderKPIs();
-  applyFilters();
+document.addEventListener('DOMContentLoaded', async () => {
+  if (typeof initAuthGuard === 'function') {
+    if (!initAuthGuard({ requireAuth: true })) return;
+  }
 
   initSearchAndFilters();
   initTableActions();
@@ -641,4 +656,6 @@ document.addEventListener('DOMContentLoaded', () => {
   initLogout();
   initModalOverlayClose();
   initEscClose();
+
+  await loadData();
 });

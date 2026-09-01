@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Products — FlowBase</title>
-  <meta name="description" content="FlowBase Products — manage your product catalog, pricing, categories, and stock information." />
+  <meta name="description" content="FlowBase Products — manage your product catalog, categories, pricing, and stock information." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -13,57 +13,77 @@
 </head>
 <body>
 
+<!-- ============================================
+     APP SHELL
+     ============================================ -->
 <div class="app-shell">
 
   <!-- SIDEBAR OVERLAY (mobile) -->
   <div class="sidebar-overlay" id="sidebar-overlay" aria-hidden="true"></div>
 
-  <!-- SIDEBAR -->
+  <!-- ==========================================
+       SIDEBAR
+       ========================================== -->
   <aside class="sidebar" id="sidebar" role="navigation" aria-label="Main navigation">
+
+    <!-- Logo -->
     <a class="sidebar-logo" href="dashboard.html" aria-label="FlowBase home">
       <span class="sidebar-logo-mark" aria-hidden="true">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h7v7H4V4zm0 9h7v7H4v-7zm9-9h7v7h-7V4zm0 9h3v3h-3v-3zm4 4h3v3h-3v-3zm-4 0h3v3h-3v-3z"/></svg>
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M4 4h7v7H4V4zm0 9h7v7H4v-7zm9-9h7v7h-7V4zm0 9h3v3h-3v-3zm4 4h3v3h-3v-3zm-4 0h3v3h-3v-3z"/>
+        </svg>
       </span>
       <span class="sidebar-logo-text">FLOWBASE</span>
     </a>
+
+    <!-- Navigation -->
     <nav class="sidebar-nav" aria-label="Primary">
       <div class="sidebar-nav-section">
         <a class="nav-item" href="dashboard.html" id="nav-dashboard">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
           <span>Dashboard</span>
         </a>
-        <a class="nav-item" href="billing.html" id="nav-billing">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 2v20l3-2 3 2 3-2 3 2 3-2V2"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg>
-          <span>Billing</span>
-        </a>
         <a class="nav-item active" href="products.html" id="nav-products" aria-current="page">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
           <span>Products</span>
         </a>
-        <a class="nav-item" href="inventory.html" id="nav-inventory">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
-          <span>Inventory</span>
+        <a class="nav-item" href="billing.html" id="nav-billing">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+          <span>POS Billing</span>
         </a>
-        <a class="nav-item" href="sales.html" id="nav-sales">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/></svg>
-          <span>Sales</span>
+        <a class="nav-item" href="purchases_expenses.html" id="nav-purchases">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          <span>Purchases &amp; Expenses</span>
+        </a>
+        <a class="nav-item" href="employees.html" id="nav-employees">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          <span>Employees</span>
         </a>
       </div>
       <div class="nav-divider" role="separator"></div>
     </nav>
+
+    <!-- Sidebar Footer -->
     <footer class="sidebar-footer">
-      <a class="nav-item" href="settings.html" id="nav-settings">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-        <span>Settings</span>
-      </a>
-      <button class="nav-item" id="logout-btn" type="button" aria-label="Log out">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-        <span>Logout</span>
+      <button class="nav-item" id="theme-toggle-btn" type="button" aria-label="Toggle Dark Mode" style="width:100%; border:none; background:none; text-align:left; cursor:pointer;">
+        <span class="theme-toggle-icon" aria-hidden="true" style="display:flex; align-items:center; justify-content:center;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </span>
+        <span class="theme-toggle-label">Dark Mode</span>
+      </button>
+      <button class="nav-item logout-nav-item" id="logout-btn" type="button" aria-label="Log out" style="width:100%; border:none; background:none; text-align:left; cursor:pointer;">
+        <span class="nav-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        </span>
+        <span class="nav-label">Logout</span>
       </button>
     </footer>
+
   </aside>
 
-  <!-- MAIN CONTENT -->
+  <!-- ==========================================
+       MAIN CONTENT
+       ========================================== -->
   <div class="main-content">
 
     <!-- TOP HEADER -->
@@ -75,11 +95,8 @@
         <span class="header-breadcrumb">Products</span>
       </div>
       <div class="header-right">
-        <button class="icon-btn" type="button" aria-label="Notifications" id="notifications-btn">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-          <span class="notification-badge" aria-label="New notifications"></span>
-        </button>
-        <button class="header-profile" type="button" aria-label="Shop Admin profile" aria-haspopup="true">
+        <!-- Profile Button -->
+        <button class="header-profile" id="header-user-btn" type="button" aria-label="Shop Admin profile" style="background:none; border:none; cursor:pointer;">
           <div class="profile-avatar" aria-hidden="true">SA</div>
           <div class="profile-info">
             <div class="profile-name">Shop Admin</div>
@@ -96,15 +113,19 @@
       <section class="prd-page-header" aria-label="Page header">
         <div class="prd-page-header-text">
           <h1 class="prd-page-title">Products</h1>
-          <p class="prd-page-subtitle">Manage your products, pricing, categories, and product information.</p>
+          <p class="prd-page-subtitle">Manage your product catalog, categories, pricing, and stock levels.</p>
         </div>
         <div class="prd-page-actions">
+          <button class="btn btn-ghost" id="manage-categories-btn" type="button">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h7"/></svg>
+            Categories
+          </button>
           <button class="btn btn-ghost" id="prd-export-btn" type="button">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
             Export
           </button>
           <button class="btn prd-btn-primary" id="add-product-btn" type="button">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
             Add Product
           </button>
         </div>
@@ -113,14 +134,53 @@
       <!-- KPI CARDS -->
       <section aria-label="Product key performance indicators">
         <div class="kpi-grid">
-          <div class="kpi-card" id="prd-kpi-total" role="region" aria-label="Total Products"></div>
-          <div class="kpi-card" id="prd-kpi-active" role="region" aria-label="Active Products"></div>
-          <div class="kpi-card" id="prd-kpi-categories" role="region" aria-label="Categories"></div>
-          <div class="kpi-card" id="prd-kpi-lowstock" role="region" aria-label="Low Stock Products"></div>
+          <div class="kpi-card" id="prd-kpi-total">
+            <div class="kpi-card-header">
+              <span class="kpi-label">Total Products</span>
+              <span class="kpi-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+              </span>
+            </div>
+            <div class="kpi-value" id="kpi-val-total">0</div>
+            <div class="kpi-footer"><span class="kpi-compare">Active catalog entries</span></div>
+          </div>
+
+          <div class="kpi-card" id="prd-kpi-categories">
+            <div class="kpi-card-header">
+              <span class="kpi-label">Categories</span>
+              <span class="kpi-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h7"/></svg>
+              </span>
+            </div>
+            <div class="kpi-value" id="kpi-val-categories">0</div>
+            <div class="kpi-footer"><span class="kpi-compare">Product groups</span></div>
+          </div>
+
+          <div class="kpi-card" id="prd-kpi-lowstock">
+            <div class="kpi-card-header">
+              <span class="kpi-label">Low Stock</span>
+              <span class="kpi-icon warning" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              </span>
+            </div>
+            <div class="kpi-value" id="kpi-val-lowstock" style="color:var(--color-warning);">0</div>
+            <div class="kpi-footer"><span class="kpi-compare">Near threshold</span></div>
+          </div>
+
+          <div class="kpi-card" id="prd-kpi-outstock">
+            <div class="kpi-card-header">
+              <span class="kpi-label">Out of Stock</span>
+              <span class="kpi-icon danger" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+              </span>
+            </div>
+            <div class="kpi-value" id="kpi-val-outstock" style="color:var(--color-danger);">0</div>
+            <div class="kpi-footer"><span class="kpi-compare">Needs restocking</span></div>
+          </div>
         </div>
       </section>
 
-      <!-- SEARCH & FILTERS -->
+      <!-- SEARCH & FILTERS TOOLBAR -->
       <section aria-label="Search and filter products">
         <div class="prd-toolbar">
           <div class="prd-search-wrap">
@@ -130,18 +190,8 @@
           <div class="prd-filters">
             <select id="prd-filter-category" class="prd-select" aria-label="Filter by category">
               <option value="">All Categories</option>
-              <option value="Electronics">Electronics</option>
-              <option value="Grocery">Grocery</option>
-              <option value="Clothing">Clothing</option>
-              <option value="Accessories">Accessories</option>
-              <option value="Other">Other</option>
             </select>
-            <select id="prd-filter-status" class="prd-select" aria-label="Filter by status">
-              <option value="">All Status</option>
-              <option value="Active">Active</option>
-              <option value="Inactive">Inactive</option>
-            </select>
-            <select id="prd-filter-stock" class="prd-select" aria-label="Filter by stock">
+            <select id="prd-filter-stock" class="prd-select" aria-label="Filter by stock status">
               <option value="">All Stock</option>
               <option value="In Stock">In Stock</option>
               <option value="Low Stock">Low Stock</option>
@@ -150,50 +200,58 @@
             <select id="prd-filter-sort" class="prd-select" aria-label="Sort products">
               <option value="name-asc">Name A–Z</option>
               <option value="name-desc">Name Z–A</option>
-              <option value="price-asc">Price Low to High</option>
-              <option value="price-desc">Price High to Low</option>
-              <option value="date-desc">Recently Added</option>
+              <option value="price-asc">Price: Low to High</option>
+              <option value="price-desc">Price: High to Low</option>
+              <option value="stock-asc">Stock: Low to High</option>
+              <option value="stock-desc">Stock: High to Low</option>
             </select>
-            <button class="btn btn-ghost prd-btn-sm" id="prd-clear-filters-btn" type="button">Clear Filters</button>
+            <button class="btn btn-ghost prd-btn-sm" id="prd-clear-filters-btn" type="button">Clear</button>
           </div>
         </div>
       </section>
 
-      <!-- PRODUCTS TABLE -->
-      <section aria-label="Products table">
-        <div class="prd-table-card">
-          <div class="table-scroll-wrap">
-            <table class="data-table prd-data-table" id="products-table" aria-label="Products">
-              <thead>
-                <tr>
-                  <th scope="col">Product</th>
-                  <th scope="col">SKU</th>
-                  <th scope="col">Category</th>
-                  <th scope="col">Purchase Price</th>
-                  <th scope="col">Selling Price</th>
-                  <th scope="col">Stock</th>
-                  <th scope="col">Status</th>
-                  <th scope="col">Actions</th>
-                </tr>
-              </thead>
-              <tbody id="products-tbody">
-                <!-- Populated by JS -->
-              </tbody>
-            </table>
+      <!-- PRODUCTS TABLE CARD -->
+      <section class="table-card prd-table-card" aria-label="Products list">
+        <div class="table-responsive prd-table-responsive" tabindex="0" role="region" aria-label="Products table scroll area">
+          <table class="data-table prd-table" id="products-table" aria-label="Products">
+            <thead>
+              <tr>
+                <th scope="col" class="prd-th-sortable" data-sort="name">Product</th>
+                <th scope="col">SKU</th>
+                <th scope="col">Category</th>
+                <th scope="col" class="text-right prd-th-sortable" data-sort="purchasePrice">Cost Price</th>
+                <th scope="col" class="text-right prd-th-sortable" data-sort="sellingPrice">Selling Price</th>
+                <th scope="col" class="text-right prd-th-sortable" data-sort="currentStock">Stock</th>
+                <th scope="col">Status</th>
+                <th scope="col" class="text-right" style="padding-right:20px;">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="products-tbody">
+              <!-- Populated by JS -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- TABLE FOOTER -->
+        <div class="table-footer prd-table-footer">
+          <div class="prd-pagination-info" id="prd-pagination-info" aria-live="polite">Showing 0 of 0 products</div>
+          <div class="prd-page-size-wrap">
+            <label for="prd-page-size" class="prd-page-size-label">Rows:</label>
+            <select id="prd-page-size" class="prd-select prd-select-sm" aria-label="Rows per page">
+              <option value="10" selected>10</option>
+              <option value="25">25</option>
+              <option value="50">50</option>
+            </select>
           </div>
-          <!-- Pagination -->
-          <div class="prd-pagination" id="prd-pagination" aria-label="Table pagination">
-            <span class="prd-pagination-info" id="prd-pagination-info"></span>
-            <div class="prd-pagination-controls" role="navigation" aria-label="Page navigation">
-              <button class="prd-page-btn" id="prd-prev-page-btn" type="button" aria-label="Previous page" disabled>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
-              </button>
-              <div class="prd-page-numbers" id="prd-page-numbers" role="list"></div>
-              <button class="prd-page-btn" id="prd-next-page-btn" type="button" aria-label="Next page">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
-              </button>
-            </div>
-          </div>
+          <nav class="prd-pagination-controls" aria-label="Pagination">
+            <button class="prd-page-btn" id="prd-prev-page-btn" type="button" aria-label="Previous page" disabled>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+            </button>
+            <div class="prd-page-numbers" id="prd-page-numbers" role="list"></div>
+            <button class="prd-page-btn" id="prd-next-page-btn" type="button" aria-label="Next page" disabled>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+          </nav>
         </div>
       </section>
 
@@ -201,114 +259,156 @@
   </div>
 </div>
 
-<!-- LOGOUT MODAL -->
-<div class="modal-overlay" id="logout-modal" role="dialog" aria-modal="true" aria-labelledby="logout-modal-title">
-  <div class="modal">
-    <h2 class="modal-title" id="logout-modal-title">Log out?</h2>
-    <p class="modal-desc">You will be signed out of FlowBase. Any unsaved changes will be lost.</p>
+<!-- ============================================
+     MANAGE CATEGORIES MODAL
+     ============================================ -->
+<div class="modal-overlay" id="category-manage-modal" role="dialog" aria-modal="true" aria-labelledby="cat-modal-title">
+  <div class="modal modal-md">
+    <div class="modal-header">
+      <h2 class="modal-title" id="cat-modal-title">Product Categories</h2>
+      <button class="modal-close" id="cat-manage-close" type="button" aria-label="Close modal">&times;</button>
+    </div>
+
+    <!-- Add Category Form -->
+    <form id="cat-add-form" onsubmit="return false;" style="display:flex; gap:8px; margin-bottom:16px; align-items:flex-end;">
+      <div style="flex:1;">
+        <label class="form-label" for="new-cat-name">Category Name *</label>
+        <input type="text" id="new-cat-name" class="form-input" placeholder="e.g. Beverages, Footwear" required />
+      </div>
+      <div style="flex:1;">
+        <label class="form-label" for="new-cat-desc">Description</label>
+        <input type="text" id="new-cat-desc" class="form-input" placeholder="Optional notes" />
+      </div>
+      <button class="btn prd-btn-primary" type="submit" style="white-space:nowrap; height:38px;">Add</button>
+    </form>
+
+    <!-- Categories List -->
+    <div style="font-weight:600; font-size:11px; color:var(--color-text-muted); margin-bottom:8px; text-transform:uppercase; letter-spacing:0.05em;">Existing Categories</div>
+    <div id="category-items-list" style="max-height:240px; overflow-y:auto; margin-bottom:16px; border:1px solid var(--color-border-light); border-radius:var(--radius-md);">
+      <!-- Populated by JS -->
+    </div>
+
     <div class="modal-actions">
-      <button class="btn btn-ghost" id="logout-cancel" type="button">Cancel</button>
-      <button class="btn btn-danger" id="logout-confirm" type="button">Log out</button>
+      <button class="btn btn-ghost" id="cat-manage-close-btn" type="button">Close</button>
     </div>
   </div>
 </div>
 
-<!-- ADD / EDIT PRODUCT MODAL -->
-<div class="modal-overlay prd-modal-overlay" id="prd-form-modal" role="dialog" aria-modal="true" aria-labelledby="prd-form-title">
-  <div class="modal prd-modal prd-form-modal-inner">
-    <div class="prd-modal-header">
-      <h2 class="modal-title" id="prd-form-title">Add Product</h2>
-      <button class="prd-modal-close" id="prd-form-close" type="button" aria-label="Close modal">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      </button>
+<!-- ============================================
+     EDIT CATEGORY MODAL
+     ============================================ -->
+<div class="modal-overlay" id="category-edit-modal" role="dialog" aria-modal="true">
+  <div class="modal modal-sm">
+    <div class="modal-header">
+      <h2 class="modal-title">Edit Category</h2>
+      <button class="modal-close" id="cat-edit-close" type="button" aria-label="Close modal">&times;</button>
     </div>
-    <form id="prd-form" novalidate>
-      <input type="hidden" id="prd-form-id" />
-      <div class="prd-form-grid">
-        <div class="prd-form-group prd-span-full">
-          <label class="prd-form-label" for="prd-field-name">Product Name <span class="prd-req" aria-hidden="true">*</span></label>
-          <input class="prd-form-input" type="text" id="prd-field-name" placeholder="e.g. Wireless Mouse" autocomplete="off" />
-          <span class="prd-form-error" id="prd-err-name" aria-live="polite"></span>
-        </div>
-        <div class="prd-form-group">
-          <label class="prd-form-label" for="prd-field-sku">SKU <span class="prd-req" aria-hidden="true">*</span></label>
-          <input class="prd-form-input" type="text" id="prd-field-sku" placeholder="e.g. WM-001" autocomplete="off" />
-          <span class="prd-form-error" id="prd-err-sku" aria-live="polite"></span>
-        </div>
-        <div class="prd-form-group">
-          <label class="prd-form-label" for="prd-field-category">Category <span class="prd-req" aria-hidden="true">*</span></label>
-          <select class="prd-form-input" id="prd-field-category">
-            <option value="">Select category</option>
-            <option value="Electronics">Electronics</option>
-            <option value="Grocery">Grocery</option>
-            <option value="Clothing">Clothing</option>
-            <option value="Accessories">Accessories</option>
-            <option value="Other">Other</option>
-          </select>
-          <span class="prd-form-error" id="prd-err-category" aria-live="polite"></span>
-        </div>
-        <div class="prd-form-group">
-          <label class="prd-form-label" for="prd-field-purchase-price">Purchase Price (₹) <span class="prd-req" aria-hidden="true">*</span></label>
-          <input class="prd-form-input" type="number" id="prd-field-purchase-price" min="0" step="0.01" placeholder="0.00" />
-          <span class="prd-form-error" id="prd-err-purchase-price" aria-live="polite"></span>
-        </div>
-        <div class="prd-form-group">
-          <label class="prd-form-label" for="prd-field-selling-price">Selling Price (₹) <span class="prd-req" aria-hidden="true">*</span></label>
-          <input class="prd-form-input" type="number" id="prd-field-selling-price" min="0" step="0.01" placeholder="0.00" />
-          <span class="prd-form-error" id="prd-err-selling-price" aria-live="polite"></span>
-        </div>
-        <div class="prd-form-group">
-          <label class="prd-form-label" for="prd-field-stock">Opening Stock</label>
-          <input class="prd-form-input" type="number" id="prd-field-stock" min="0" step="1" placeholder="0" />
-          <span class="prd-form-error" id="prd-err-stock" aria-live="polite"></span>
-        </div>
-        <div class="prd-form-group">
-          <label class="prd-form-label" for="prd-field-min-stock">Minimum Stock</label>
-          <input class="prd-form-input" type="number" id="prd-field-min-stock" min="0" step="1" placeholder="0" />
-          <span class="prd-form-error" id="prd-err-min-stock" aria-live="polite"></span>
-        </div>
-        <div class="prd-form-group">
-          <label class="prd-form-label" for="prd-field-status">Status</label>
-          <select class="prd-form-input" id="prd-field-status">
-            <option value="active">Active</option>
-            <option value="inactive">Inactive</option>
-          </select>
-        </div>
-        <div class="prd-form-group prd-span-full">
-          <label class="prd-form-label" for="prd-field-description">Description <span class="prd-optional">(Optional)</span></label>
-          <textarea class="prd-form-input prd-textarea" id="prd-field-description" placeholder="Brief product description..." rows="3"></textarea>
-        </div>
+    <input type="hidden" id="edit-cat-id" />
+    <form id="cat-edit-form" onsubmit="return false;">
+      <div class="form-group">
+        <label class="form-label" for="edit-cat-name">Category Name *</label>
+        <input type="text" id="edit-cat-name" class="form-input" required />
       </div>
-      <div class="modal-actions">
-        <button class="btn btn-ghost" type="button" id="prd-form-cancel">Cancel</button>
-        <button class="btn prd-btn-primary" type="submit" id="prd-form-submit">Add Product</button>
+      <div class="form-group">
+        <label class="form-label" for="edit-cat-desc">Description</label>
+        <input type="text" id="edit-cat-desc" class="form-input" />
+      </div>
+      <div class="modal-actions" style="margin-top:20px;">
+        <button class="btn btn-ghost" id="edit-cat-cancel" type="button">Cancel</button>
+        <button class="btn prd-btn-primary" type="submit">Update Category</button>
       </div>
     </form>
   </div>
 </div>
 
-<!-- VIEW PRODUCT MODAL -->
-<div class="modal-overlay prd-modal-overlay" id="prd-view-modal" role="dialog" aria-modal="true" aria-labelledby="prd-view-title">
-  <div class="modal prd-modal prd-view-modal-inner">
-    <div class="prd-modal-header">
-      <h2 class="modal-title" id="prd-view-title">Product Details</h2>
-      <button class="prd-modal-close" id="prd-view-close" type="button" aria-label="Close modal">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      </button>
+<!-- ============================================
+     ADD / EDIT PRODUCT MODAL
+     ============================================ -->
+<div class="modal-overlay" id="prd-form-modal" role="dialog" aria-modal="true" aria-labelledby="prd-modal-title">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <h2 class="modal-title" id="prd-modal-title">Add Product</h2>
+      <button class="modal-close" id="prd-form-close" type="button" aria-label="Close modal">&times;</button>
     </div>
-    <div id="prd-view-content" class="prd-view-content"><!-- Populated by JS --></div>
+    <form id="prd-product-form" onsubmit="return false;" novalidate autocomplete="off">
+      <input type="hidden" id="prd-field-id" />
+      <div class="prd-form-grid">
+        <div class="prd-form-group prd-span-full">
+          <label class="form-label" for="prd-field-name">Product Name <span class="prd-req">*</span></label>
+          <input class="form-input" type="text" id="prd-field-name" placeholder="e.g. Wireless Mouse" required />
+          <span class="prd-form-error" id="prd-err-name" aria-live="polite"></span>
+        </div>
+        <div class="prd-form-group">
+          <label class="form-label" for="prd-field-sku">SKU / Code</label>
+          <input class="form-input" type="text" id="prd-field-sku" placeholder="Auto-generated if blank" />
+          <span class="prd-form-error" id="prd-err-sku" aria-live="polite"></span>
+        </div>
+        <div class="prd-form-group">
+          <label class="form-label" for="prd-field-category">Category <span class="prd-req">*</span></label>
+          <select class="form-input" id="prd-field-category" required>
+            <option value="">Select category</option>
+          </select>
+          <span class="prd-form-error" id="prd-err-category" aria-live="polite"></span>
+        </div>
+        <div class="prd-form-group">
+          <label class="form-label" for="prd-field-purchase-price">Cost Price (₹) <span class="prd-req">*</span></label>
+          <input class="form-input" type="number" id="prd-field-purchase-price" min="0" step="0.01" placeholder="0.00" required />
+          <span class="prd-form-error" id="prd-err-purchase-price" aria-live="polite"></span>
+        </div>
+        <div class="prd-form-group">
+          <label class="form-label" for="prd-field-selling-price">Selling Price (₹) <span class="prd-req">*</span></label>
+          <input class="form-input" type="number" id="prd-field-selling-price" min="0" step="0.01" placeholder="0.00" required />
+          <span class="prd-form-error" id="prd-err-selling-price" aria-live="polite"></span>
+        </div>
+        <div class="prd-form-group">
+          <label class="form-label" for="prd-field-stock">Stock Quantity</label>
+          <input class="form-input" type="number" id="prd-field-stock" min="0" step="1" placeholder="0" />
+          <span class="prd-form-error" id="prd-err-stock" aria-live="polite"></span>
+        </div>
+        <div class="prd-form-group">
+          <label class="form-label" for="prd-field-min-stock">Low Stock Threshold</label>
+          <input class="form-input" type="number" id="prd-field-min-stock" min="0" step="1" placeholder="5" />
+          <span class="prd-form-error" id="prd-err-min-stock" aria-live="polite"></span>
+        </div>
+        <div class="prd-form-group prd-span-full">
+          <label class="form-label" for="prd-field-description">Description <span class="prd-optional">(Optional)</span></label>
+          <textarea class="form-input" id="prd-field-description" placeholder="Brief product description or notes..." rows="2"></textarea>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" type="button" id="prd-form-cancel">Cancel</button>
+        <button class="btn prd-btn-primary" type="submit" id="prd-form-submit">Save Product</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ============================================
+     VIEW PRODUCT DETAILS MODAL
+     ============================================ -->
+<div class="modal-overlay" id="prd-view-modal" role="dialog" aria-modal="true" aria-labelledby="prd-view-title">
+  <div class="modal modal-md">
+    <div class="modal-header">
+      <h2 class="modal-title" id="prd-view-title">Product Details</h2>
+      <button class="modal-close" id="prd-view-close" type="button" aria-label="Close modal">&times;</button>
+    </div>
+    <div id="prd-view-content" class="prd-view-content">
+      <!-- Populated by JS -->
+    </div>
     <div class="modal-actions">
       <button class="btn btn-ghost" type="button" id="prd-view-close-btn">Close</button>
-      <button class="btn prd-btn-primary" type="button" id="prd-view-edit-btn">Edit</button>
+      <button class="btn prd-btn-primary" type="button" id="prd-view-edit-btn">Edit Product</button>
     </div>
   </div>
 </div>
 
-<!-- DELETE CONFIRM MODAL -->
+<!-- ============================================
+     DELETE CONFIRM MODAL
+     ============================================ -->
 <div class="modal-overlay" id="prd-delete-modal" role="dialog" aria-modal="true" aria-labelledby="prd-delete-title">
-  <div class="modal">
+  <div class="modal modal-sm">
     <h2 class="modal-title" id="prd-delete-title">Delete Product?</h2>
-    <p class="modal-desc">This product will be removed from your product catalog.</p>
+    <p class="modal-desc" id="prd-delete-desc">This product will be permanently removed from your catalog.</p>
     <input type="hidden" id="prd-delete-item-id" />
     <div class="modal-actions">
       <button class="btn btn-ghost" id="prd-delete-cancel" type="button">Cancel</button>
@@ -317,9 +417,49 @@
   </div>
 </div>
 
+<!-- ============================================
+     USER PROFILE MODAL
+     ============================================ -->
+<div class="modal-overlay" id="profile-modal" role="dialog" aria-modal="true" aria-labelledby="profile-modal-title">
+  <div class="modal modal-sm">
+    <div class="modal-header">
+      <h2 class="modal-title" id="profile-modal-title">User Profile</h2>
+      <button class="modal-close" id="profile-modal-close" type="button" aria-label="Close modal">&times;</button>
+    </div>
+    <div style="display:flex; align-items:center; gap:14px; margin-bottom:16px;">
+      <div class="profile-avatar" id="modal-user-avatar" style="width:44px; height:44px; font-size:16px;">SA</div>
+      <div>
+        <div style="font-weight:600; font-size:14px;" id="modal-user-name">Shop Admin</div>
+        <div style="font-size:12px; color:var(--color-text-secondary);" id="modal-user-email">admin@flowbase.com</div>
+        <span class="badge badge-success" id="modal-user-role" style="margin-top:4px;">OWNER</span>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" id="profile-close-btn" type="button">Close</button>
+      <button class="btn btn-danger" id="profile-logout-btn" type="button">Sign Out</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================
+     LOGOUT CONFIRM MODAL
+     ============================================ -->
+<div class="modal-overlay" id="logout-modal" role="dialog" aria-modal="true">
+  <div class="modal modal-sm">
+    <h2 class="modal-title">Sign Out</h2>
+    <p class="modal-desc">Are you sure you want to log out of FlowBase?</p>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" id="logout-cancel" type="button">Cancel</button>
+      <button class="btn btn-danger" id="logout-confirm" type="button">Log Out</button>
+    </div>
+  </div>
+</div>
+
 <!-- TOAST CONTAINER -->
 <div class="toast-container" id="toast-container" aria-live="assertive" aria-atomic="false"></div>
 
-<script src="js/products.js"></script>
+<!-- Scripts -->
+<script src="js/api.js?v=4"></script>
+<script src="js/products.js?v=4"></script>
 </body>
 </html>

@@ -17,87 +17,76 @@ let filteredData    = [];  // after search/filter/sort
 let currentPage     = 1;
 let activeDropdownId = null;
 
-// ============================================
-// DEFAULT DEMO DATA
-// ============================================
-function getDefaultData() {
-  const now = Date.now();
-  return [
-    { id: uid(), name: 'Wireless Mouse',         sku: 'WM-001',  category: 'Electronics',  currentStock: 42,  minimumStock: 10, purchasePrice: 450,  sellingPrice: 699,  description: 'Ergonomic wireless mouse with 2.4GHz connectivity.', createdAt: now - 86400000 * 9 },
-    { id: uid(), name: 'Mechanical Keyboard',    sku: 'KB-002',  category: 'Electronics',  currentStock: 7,   minimumStock: 10, purchasePrice: 800,  sellingPrice: 1199, description: 'Mechanical keyboard with RGB backlighting.', createdAt: now - 86400000 * 8 },
-    { id: uid(), name: 'USB Type-C Cable',        sku: 'USB-003', category: 'Accessories',  currentStock: 0,   minimumStock: 5,  purchasePrice: 120,  sellingPrice: 199,  description: '1.5m braided USB-C cable.', createdAt: now - 86400000 * 7 },
-    { id: uid(), name: 'Rice 5kg Bag',            sku: 'RCE-004', category: 'Grocery',      currentStock: 156, minimumStock: 20, purchasePrice: 280,  sellingPrice: 360,  description: 'Premium basmati rice in 5kg packs.', createdAt: now - 86400000 * 6 },
-    { id: uid(), name: 'Cooking Oil 1L',          sku: 'OIL-005', category: 'Grocery',      currentStock: 8,   minimumStock: 15, purchasePrice: 90,   sellingPrice: 130,  description: 'Refined sunflower cooking oil.', createdAt: now - 86400000 * 5 },
-    { id: uid(), name: 'Cotton T-Shirt (M)',      sku: 'TSH-006', category: 'Clothing',     currentStock: 35,  minimumStock: 10, purchasePrice: 180,  sellingPrice: 349,  description: '100% cotton regular-fit T-shirt.', createdAt: now - 86400000 * 5 },
-    { id: uid(), name: 'Laptop Stand',            sku: 'LS-007',  category: 'Accessories',  currentStock: 22,  minimumStock: 5,  purchasePrice: 550,  sellingPrice: 899,  description: 'Adjustable aluminium laptop stand.', createdAt: now - 86400000 * 4 },
-    { id: uid(), name: 'Sugar 1kg',               sku: 'SUG-008', category: 'Grocery',      currentStock: 3,   minimumStock: 10, purchasePrice: 42,   sellingPrice: 58,   description: 'Refined white sugar.', createdAt: now - 86400000 * 4 },
-    { id: uid(), name: 'Bluetooth Earphones',     sku: 'BTE-009', category: 'Electronics',  currentStock: 18,  minimumStock: 8,  purchasePrice: 700,  sellingPrice: 1099, description: 'True wireless stereo earphones.', createdAt: now - 86400000 * 3 },
-    { id: uid(), name: 'Denim Jeans (32W)',       sku: 'JNS-010', category: 'Clothing',     currentStock: 14,  minimumStock: 6,  purchasePrice: 650,  sellingPrice: 1199, description: 'Slim-fit denim jeans.', createdAt: now - 86400000 * 3 },
-    { id: uid(), name: 'Tea 500g',                sku: 'TEA-011', category: 'Grocery',      currentStock: 5,   minimumStock: 8,  purchasePrice: 110,  sellingPrice: 160,  description: 'Premium Assam CTC tea.', createdAt: now - 86400000 * 2 },
-    { id: uid(), name: 'HDMI Cable 2m',           sku: 'HDM-012', category: 'Accessories',  currentStock: 0,   minimumStock: 5,  purchasePrice: 180,  sellingPrice: 299,  description: '4K HDMI 2.0 cable.', createdAt: now - 86400000 * 2 },
-    { id: uid(), name: 'Smartphone Holder',       sku: 'PHH-013', category: 'Accessories',  currentStock: 30,  minimumStock: 8,  purchasePrice: 150,  sellingPrice: 249,  description: 'Universal desk phone stand.', createdAt: now - 86400000 * 1 },
-    { id: uid(), name: 'Running Shoes (UK 8)',    sku: 'SHO-014', category: 'Clothing',     currentStock: 9,   minimumStock: 10, purchasePrice: 900,  sellingPrice: 1599, description: 'Lightweight mesh running shoes.', createdAt: now - 86400000 * 1 },
-    { id: uid(), name: 'Wireless Charger 15W',    sku: 'WLC-015', category: 'Electronics',  currentStock: 25,  minimumStock: 10, purchasePrice: 400,  sellingPrice: 699,  description: 'Qi-certified fast wireless charger pad.', createdAt: now },
-    { id: uid(), name: 'Salt 1kg',                sku: 'SLT-016', category: 'Grocery',      currentStock: 4,   minimumStock: 10, purchasePrice: 18,   sellingPrice: 28,   description: 'Iodised table salt.', createdAt: now },
-    { id: uid(), name: 'USB Hub 4-Port',          sku: 'UHB-017', category: 'Accessories',  currentStock: 11,  minimumStock: 5,  purchasePrice: 280,  sellingPrice: 499,  description: '4-port USB 3.0 hub.', createdAt: now },
-    { id: uid(), name: 'Jeans Jacket (L)',        sku: 'JKT-018', category: 'Clothing',     currentStock: 6,   minimumStock: 4,  purchasePrice: 1100, sellingPrice: 1999, description: 'Classic denim jacket.', createdAt: now },
-  ];
-}
+let categoriesData = [];
 
 // ============================================
-// UTILITIES
+// LOAD INVENTORY FROM BACKEND
 // ============================================
-function uid() {
-  return Math.random().toString(36).slice(2, 11);
-}
+async function loadData() {
+  const shopId = await ensureActiveShop();
+  if (!shopId) return;
 
-function formatINR(val) {
-  return '₹' + Number(val).toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
-}
-
-function formatDate(ts) {
-  return new Date(ts).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
-}
-
-function getStockStatus(item) {
-  if (item.currentStock === 0)                       return 'Out of Stock';
-  if (item.currentStock <= item.minimumStock)        return 'Low Stock';
-  return 'In Stock';
-}
-
-function getBadgeClass(status) {
-  if (status === 'In Stock')    return 'badge-success';
-  if (status === 'Low Stock')   return 'badge-warning';
-  return 'badge-danger';
-}
-
-function getStockNumClass(status) {
-  if (status === 'Out of Stock') return 'danger';
-  if (status === 'Low Stock')    return 'warning';
-  return '';
-}
-
-// ============================================
-// LOCAL STORAGE
-// ============================================
-function loadData() {
   try {
-    const stored = localStorage.getItem(LS_KEY);
-    if (stored) {
-      inventoryData = JSON.parse(stored);
-    } else {
-      inventoryData = getDefaultData();
-      saveData();
-    }
-  } catch (e) {
-    inventoryData = getDefaultData();
+    const [rawProducts, rawCats] = await Promise.all([
+      apiRequest(`/shops/${shopId}/products`),
+      apiRequest(`/shops/${shopId}/categories`).catch(() => [])
+    ]);
+
+    categoriesData = rawCats || [];
+    updateCategoryDropdowns();
+
+    const catMap = {};
+    categoriesData.forEach(c => { catMap[c.id] = c.name; });
+
+    inventoryData = (rawProducts || []).map(p => {
+      const stock = Number(p.stock_quantity || 0);
+      const minStock = Number(p.low_stock_threshold || 5);
+      return {
+        id: p.id,
+        name: p.name,
+        sku: p.sku || `PRD-${String(p.id).padStart(3, '0')}`,
+        category: (p.category_id && catMap[p.category_id]) ? catMap[p.category_id] : (p.category || 'General'),
+        category_id: p.category_id || null,
+        purchasePrice: Number(p.purchase_price || 0),
+        sellingPrice: Number(p.selling_price || 0),
+        currentStock: stock,
+        minimumStock: minStock,
+        description: p.description || '',
+        createdAt: p.created_at ? new Date(p.created_at).getTime() : Date.now(),
+        updatedAt: p.updated_at ? new Date(p.updated_at).getTime() : null,
+      };
+    });
+
+    try {
+      localStorage.setItem(LS_KEY, JSON.stringify(inventoryData));
+    } catch (_) {}
+
+    applyFilters();
+    renderKPIs();
+  } catch (err) {
+    console.error('Failed to load inventory from API:', err);
+    showToast(err.message || 'Failed to load inventory', 'warning');
   }
 }
 
-function saveData() {
-  try {
-    localStorage.setItem(LS_KEY, JSON.stringify(inventoryData));
-  } catch (e) { /* storage unavailable */ }
+function updateCategoryDropdowns() {
+  const filterSelect = document.getElementById('filter-category');
+  const formSelect   = document.getElementById('field-category');
+
+  if (categoriesData.length > 0) {
+    if (filterSelect) {
+      const currentVal = filterSelect.value;
+      filterSelect.innerHTML = '<option value="">All Categories</option>' +
+        categoriesData.map(c => `<option value="${escHtml(c.name)}">${escHtml(c.name)}</option>`).join('');
+      filterSelect.value = currentVal;
+    }
+    if (formSelect) {
+      const currentFormVal = formSelect.value;
+      formSelect.innerHTML = '<option value="">Select category</option>' +
+        categoriesData.map(c => `<option value="${c.id}">${escHtml(c.name)}</option>`).join('');
+      formSelect.value = currentFormVal;
+    }
+  }
 }
 
 // ============================================
@@ -389,7 +378,7 @@ function closeAllDropdowns(except) {
 // FIND ITEM
 // ============================================
 function findItem(id) {
-  return inventoryData.find(i => i.id === id);
+  return inventoryData.find(i => String(i.id) === String(id));
 }
 
 // ============================================
@@ -428,7 +417,7 @@ function openEditModal(id) {
   document.getElementById('inv-form-submit').textContent = 'Save Changes';
   document.getElementById('field-name').value           = item.name;
   document.getElementById('field-sku').value            = item.sku;
-  document.getElementById('field-category').value       = item.category;
+  document.getElementById('field-category').value       = item.category_id || '';
   document.getElementById('field-purchase-price').value = item.purchasePrice;
   document.getElementById('field-selling-price').value  = item.sellingPrice;
   document.getElementById('field-stock').value          = item.currentStock;
@@ -445,7 +434,7 @@ function openEditModal(id) {
 // FORM SUBMIT (Add / Edit)
 // ============================================
 function initFormSubmit() {
-  document.getElementById('inv-form')?.addEventListener('submit', e => {
+  document.getElementById('inv-form')?.addEventListener('submit', async e => {
     e.preventDefault();
     clearFormErrors();
 
@@ -455,29 +444,14 @@ function initFormSubmit() {
     const category      = document.getElementById('field-category').value;
     const purchasePrice = parseFloat(document.getElementById('field-purchase-price').value);
     const sellingPrice  = parseFloat(document.getElementById('field-selling-price').value);
-    const currentStock  = parseInt(document.getElementById('field-stock').value, 10);
-    const minimumStock  = parseInt(document.getElementById('field-min-stock').value, 10);
+    const currentStock  = parseFloat(document.getElementById('field-stock').value);
+    const minimumStock  = parseFloat(document.getElementById('field-min-stock').value);
     const description   = document.getElementById('field-description').value.trim();
 
     let valid = true;
 
     if (!name) {
       setFieldError('err-name', 'field-name', 'Product name is required.');
-      valid = false;
-    }
-    if (!sku) {
-      setFieldError('err-sku', 'field-sku', 'SKU is required.');
-      valid = false;
-    } else {
-      // Uniqueness check (skip current item when editing)
-      const duplicate = inventoryData.find(i => i.sku === sku && i.id !== id);
-      if (duplicate) {
-        setFieldError('err-sku', 'field-sku', 'This SKU already exists.');
-        valid = false;
-      }
-    }
-    if (!category) {
-      setFieldError('err-category', 'field-category', 'Please select a category.');
       valid = false;
     }
     if (isNaN(purchasePrice) || purchasePrice < 0) {
@@ -499,35 +473,55 @@ function initFormSubmit() {
 
     if (!valid) return;
 
-    if (id) {
-      // Edit
-      const item = findItem(id);
-      if (item) {
-        item.name          = name;
-        item.sku           = sku;
-        item.category      = category;
-        item.purchasePrice = purchasePrice;
-        item.sellingPrice  = sellingPrice;
-        item.currentStock  = currentStock;
-        item.minimumStock  = minimumStock;
-        item.description   = description;
-        item.updatedAt     = Date.now();
+    const shopId = await ensureActiveShop();
+    if (!shopId) return;
+
+    let catId = null;
+    if (category) {
+      if (!isNaN(parseInt(category, 10))) {
+        catId = parseInt(category, 10);
+      } else {
+        const found = categoriesData.find(c => c.name === category);
+        if (found) catId = found.id;
       }
-      showToast('Inventory updated successfully.', 'success');
-    } else {
-      // Add
-      inventoryData.unshift({
-        id: uid(), name, sku, category,
-        purchasePrice, sellingPrice, currentStock, minimumStock, description,
-        createdAt: Date.now(),
-      });
-      showToast('Inventory added successfully.', 'success');
     }
 
-    saveData();
-    closeModal('inv-form-modal');
-    applyFilters();
-    renderKPIs();
+    const payload = {
+      name,
+      category_id: catId,
+      purchase_price: purchasePrice,
+      selling_price: sellingPrice,
+      stock_quantity: currentStock,
+      low_stock_threshold: minimumStock,
+      description: description || null,
+    };
+
+    const submitBtn = document.getElementById('inv-form-submit');
+    if (submitBtn) submitBtn.disabled = true;
+
+    try {
+      if (id) {
+        await apiRequest(`/shops/${shopId}/products/${id}`, {
+          method: 'PATCH',
+          body: payload
+        });
+        showToast('Inventory updated successfully.', 'success');
+      } else {
+        await apiRequest(`/shops/${shopId}/products`, {
+          method: 'POST',
+          body: payload
+        });
+        showToast('Inventory added successfully.', 'success');
+      }
+
+      closeModal('inv-form-modal');
+      await loadData();
+    } catch (err) {
+      console.error('Save inventory failed:', err);
+      showToast(err.message || 'Failed to save inventory', 'danger');
+    } finally {
+      if (submitBtn) submitBtn.disabled = false;
+    }
   });
 
   // Cancel / close
@@ -651,12 +645,12 @@ function openAdjustModal(id) {
 }
 
 function initAdjustModal() {
-  document.getElementById('inv-adjust-form')?.addEventListener('submit', e => {
+  document.getElementById('inv-adjust-form')?.addEventListener('submit', async e => {
     e.preventDefault();
 
     const id       = document.getElementById('adjust-item-id').value;
     const type     = document.querySelector('input[name="adjust-type"]:checked')?.value;
-    const qty      = parseInt(document.getElementById('adjust-quantity').value, 10);
+    const qty      = parseFloat(document.getElementById('adjust-quantity').value);
     const reason   = document.getElementById('adjust-reason').value;
 
     let valid = true;
@@ -675,24 +669,39 @@ function initAdjustModal() {
     const item = findItem(id);
     if (!item) return;
 
+    const shopId = await ensureActiveShop();
+    if (!shopId) return;
+
+    let newStock = item.currentStock;
     if (type === 'remove') {
-      const newStock = item.currentStock - qty;
+      newStock = item.currentStock - qty;
       if (newStock < 0) {
         document.getElementById('err-adjust-qty').textContent =
           `Cannot remove more than current stock (${item.currentStock}).`;
         return;
       }
-      item.currentStock = newStock;
     } else {
-      item.currentStock = item.currentStock + qty;
+      newStock = item.currentStock + qty;
     }
 
-    item.updatedAt = Date.now();
-    saveData();
-    closeModal('inv-adjust-modal');
-    applyFilters();
-    renderKPIs();
-    showToast('Stock updated successfully.', 'success');
+    const submitBtn = document.getElementById('inv-adjust-submit');
+    if (submitBtn) submitBtn.disabled = true;
+
+    try {
+      await apiRequest(`/shops/${shopId}/products/${id}`, {
+        method: 'PATCH',
+        body: { stock_quantity: newStock }
+      });
+
+      closeModal('inv-adjust-modal');
+      showToast('Stock updated successfully.', 'success');
+      await loadData();
+    } catch (err) {
+      console.error('Adjust stock failed:', err);
+      showToast(err.message || 'Failed to adjust stock', 'danger');
+    } finally {
+      if (submitBtn) submitBtn.disabled = false;
+    }
   });
 
   document.getElementById('inv-adjust-cancel')?.addEventListener('click', () => closeModal('inv-adjust-modal'));
@@ -708,14 +717,27 @@ function openDeleteModal(id) {
 }
 
 function initDeleteModal() {
-  document.getElementById('inv-delete-confirm')?.addEventListener('click', () => {
+  document.getElementById('inv-delete-confirm')?.addEventListener('click', async () => {
     const id = document.getElementById('delete-item-id').value;
-    inventoryData = inventoryData.filter(i => i.id !== id);
-    saveData();
-    closeModal('inv-delete-modal');
-    applyFilters();
-    renderKPIs();
-    showToast('Inventory item deleted.', 'danger');
+    const shopId = await ensureActiveShop();
+    if (!shopId || !id) return;
+
+    const confirmBtn = document.getElementById('inv-delete-confirm');
+    if (confirmBtn) confirmBtn.disabled = true;
+
+    try {
+      await apiRequest(`/shops/${shopId}/products/${id}`, {
+        method: 'DELETE'
+      });
+      closeModal('inv-delete-modal');
+      showToast('Inventory item deleted.', 'danger');
+      await loadData();
+    } catch (err) {
+      console.error('Delete item failed:', err);
+      showToast(err.message || 'Failed to delete item', 'danger');
+    } finally {
+      if (confirmBtn) confirmBtn.disabled = false;
+    }
   });
   document.getElementById('inv-delete-cancel')?.addEventListener('click', () => closeModal('inv-delete-modal'));
 }
@@ -730,7 +752,6 @@ function openModal(id) {
 
 function closeModal(id) {
   document.getElementById(id)?.classList.remove('open');
-  // Only restore scroll if no other modal open
   if (!document.querySelector('.modal-overlay.open')) {
     document.body.style.overflow = '';
   }
@@ -844,15 +865,10 @@ function initLogout() {
   const logoutBtn  = document.getElementById('logout-btn');
   const modal      = document.getElementById('logout-modal');
   const cancelBtn  = document.getElementById('logout-cancel');
-  const confirmBtn = document.getElementById('logout-confirm');
   if (!logoutBtn || !modal) return;
 
   logoutBtn.addEventListener('click',  () => openModal('logout-modal'));
   cancelBtn?.addEventListener('click', () => closeModal('logout-modal'));
-  confirmBtn?.addEventListener('click', () => {
-    closeModal('logout-modal');
-    showToast('Logged out successfully.', 'success');
-  });
 }
 
 // ============================================
@@ -884,10 +900,10 @@ function showToast(message, type = 'default') {
 // ============================================
 // INIT
 // ============================================
-document.addEventListener('DOMContentLoaded', () => {
-  loadData();
-  applyFilters();
-  renderKPIs();
+document.addEventListener('DOMContentLoaded', async () => {
+  if (typeof initAuthGuard === 'function') {
+    if (!initAuthGuard({ requireAuth: true })) return;
+  }
 
   initSidebar();
   initLogout();
@@ -902,4 +918,6 @@ document.addEventListener('DOMContentLoaded', () => {
   initExport();
   initModalOverlayClose();
   initEscClose();
+
+  await loadData();
 });

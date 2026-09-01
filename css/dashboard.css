@@ -973,7 +973,8 @@ body {
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background-color: rgba(0, 0, 0, 0.35);
+  background-color: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(2px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -981,6 +982,9 @@ body {
   opacity: 0;
   pointer-events: none;
   transition: opacity var(--transition);
+  padding: 20px;
+  overflow-y: auto;
+  box-sizing: border-box;
 }
 
 .modal-overlay.open {
@@ -990,12 +994,17 @@ body {
 
 .modal {
   background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   padding: 24px;
-  width: 340px;
-  box-shadow: var(--shadow-md);
+  width: 100%;
+  max-width: 440px;
+  box-shadow: var(--shadow-lg, 0 10px 25px -5px rgba(0, 0, 0, 0.1));
   transform: translateY(8px);
   transition: transform var(--transition);
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
+  box-sizing: border-box;
 }
 
 .modal-overlay.open .modal {
@@ -1003,8 +1012,9 @@ body {
 }
 
 .modal-title {
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 600;
+  color: var(--color-text);
   margin-bottom: 8px;
 }
 
@@ -1021,6 +1031,10 @@ body {
 }
 
 .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
   padding: 8px 16px;
   border-radius: var(--radius-md);
   font-size: 13px;
@@ -1029,6 +1043,13 @@ body {
   border: 1px solid transparent;
   font-family: var(--font-family);
   transition: all var(--transition);
+  white-space: nowrap;
+}
+
+.btn svg {
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
 }
 
 .btn-ghost {
@@ -1292,3 +1313,170 @@ body {
     right: -30px;
   }
 }
+
+/* ============================================
+   DARK THEME VARIABLES & OVERRIDES
+   ============================================ */
+[data-theme="dark"],
+.dark-theme {
+  --color-bg:             #0f1115;
+  --color-surface:        #181b20;
+  --color-border:         #282c34;
+  --color-border-light:   #21252d;
+
+  --color-text:           #f3f4f6;
+  --color-text-secondary: #9ca3af;
+  --color-text-muted:     #6b7280;
+
+  --color-primary-light:  rgba(26, 122, 74, 0.22);
+  --color-primary-muted:  rgba(26, 122, 74, 0.35);
+
+  --color-success-bg:     rgba(26, 122, 74, 0.22);
+  --color-warning-bg:     rgba(180, 83, 9, 0.22);
+  --color-danger-bg:      rgba(185, 28, 28, 0.22);
+
+  --shadow-sm:            0 1px 3px rgba(0,0,0,0.3);
+  --shadow-md:            0 4px 12px rgba(0,0,0,0.4);
+}
+
+[data-theme="dark"] .kpi-card,
+[data-theme="dark"] .card,
+[data-theme="dark"] .modal,
+[data-theme="dark"] .table-card,
+[data-theme="dark"] .prd-dropdown,
+[data-theme="dark"] .search-results,
+[data-theme="dark"] .bil-product-item,
+[data-theme="dark"] .bil-cart-panel {
+  background-color: #181b20;
+  border-color: #282c34;
+}
+
+[data-theme="dark"] .data-table thead th,
+[data-theme="dark"] .prd-table thead th {
+  background-color: #131519;
+  border-color: #282c34;
+}
+
+[data-theme="dark"] .data-table tbody tr:hover,
+[data-theme="dark"] .prd-table tbody tr:hover {
+  background-color: rgba(255, 255, 255, 0.03);
+}
+
+[data-theme="dark"] .form-input,
+[data-theme="dark"] .form-select,
+[data-theme="dark"] .prd-form-input,
+[data-theme="dark"] .prd-form-select,
+[data-theme="dark"] .prd-search-input,
+[data-theme="dark"] .search-input,
+[data-theme="dark"] .bil-search-input {
+  background-color: #121418;
+  border-color: #2e333d;
+  color: #f3f4f6;
+}
+
+/* Tab Switcher Styles */
+.nav-tabs {
+  display: flex;
+  gap: 8px;
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: 12px;
+  margin-bottom: 20px;
+}
+
+.tab-btn {
+  background: none;
+  border: 1px solid transparent;
+  padding: 8px 16px;
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all var(--transition);
+}
+
+.tab-btn:hover {
+  color: var(--color-text);
+  background-color: var(--color-border-light);
+}
+
+.tab-btn.active {
+  background-color: var(--color-primary-light);
+  color: var(--color-primary);
+  border-color: var(--color-primary-muted);
+  font-weight: 600;
+}
+
+[data-theme="dark"] .tab-btn.active {
+  background-color: rgba(26, 122, 74, 0.25);
+  color: #4ade80;
+  border-color: rgba(26, 122, 74, 0.4);
+}
+
+/* Category Management Item Rows */
+.category-item-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  margin-bottom: 8px;
+  background-color: var(--color-surface);
+}
+
+.category-item-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.category-item-name {
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.category-item-desc {
+  font-size: 11px;
+  color: var(--color-text-secondary);
+}
+
+/* Dynamic Item Row in Purchases */
+.purchase-item-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr auto;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+/* Role badge specific colors */
+.badge-owner {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+.badge-admin {
+  background-color: #e0f2fe;
+  color: #0369a1;
+}
+.badge-staff {
+  background-color: #f3f4f6;
+  color: #4b5563;
+}
+
+[data-theme="dark"] .badge-owner {
+  background-color: rgba(180, 83, 9, 0.25);
+  color: #fcd34d;
+}
+[data-theme="dark"] .badge-admin {
+  background-color: rgba(3, 105, 161, 0.25);
+  color: #7dd3fc;
+}
+[data-theme="dark"] .badge-staff {
+  background-color: rgba(75, 85, 99, 0.25);
+  color: #d1d5db;
+}
+

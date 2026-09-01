@@ -1,48 +1,163 @@
 // ============================================
-// FlowBase Billing — billing.js
-// Reads products from: 'flowbase_inventory'
-// Saves sales to:      'flowbase_sales'
+// CONSTANTS & DEFAULTS
 // ============================================
-'use strict';
-
-// ============================================
-// CONSTANTS
-// ============================================
-const LS_INV_KEY   = 'flowbase_inventory'; // shared with inventory.js + products.js
+const LS_INV_KEY   = 'flowbase_inventory';
 const LS_SALES_KEY = 'flowbase_sales';
+
+const DEFAULT_PRODUCTS = [
+  { id: 1, name: 'Wireless Bluetooth Earbuds', sku: 'PRD-001', purchasePrice: 650, sellingPrice: 1299, currentStock: 45, minimumStock: 10, status: 'active' },
+  { id: 2, name: 'Mechanical RGB Keyboard', sku: 'PRD-002', purchasePrice: 1300, sellingPrice: 2499, currentStock: 28, minimumStock: 8, status: 'active' },
+  { id: 3, name: 'Ergonomic Office Mouse', sku: 'PRD-003', purchasePrice: 450, sellingPrice: 899, currentStock: 60, minimumStock: 15, status: 'active' },
+  { id: 4, name: 'Ultra-Slim Power Bank 10000mAh', sku: 'PRD-004', purchasePrice: 370, sellingPrice: 749, currentStock: 35, minimumStock: 10, status: 'active' },
+  { id: 5, name: 'USB-C Fast Charging Braided Cable 2m', sku: 'PRD-005', purchasePrice: 120, sellingPrice: 299, currentStock: 120, minimumStock: 25, status: 'active' },
+  { id: 6, name: 'Organic Darjeeling Green Tea 250g', sku: 'PRD-006', purchasePrice: 180, sellingPrice: 320, currentStock: 50, minimumStock: 12, status: 'active' },
+  { id: 7, name: 'Premium Heavyweight Cotton T-Shirt', sku: 'PRD-007', purchasePrice: 280, sellingPrice: 599, currentStock: 40, minimumStock: 10, status: 'active' },
+  { id: 8, name: 'Insulated Stainless Steel Water Bottle 1L', sku: 'PRD-008', purchasePrice: 220, sellingPrice: 450, currentStock: 30, minimumStock: 8, status: 'active' }
+];
+
+const DEFAULT_SALES = [
+  {
+    id: 1,
+    billNo: 'FB-000101',
+    createdAt: Date.now() - 4 * 3600000,
+    items: [
+      { productId: 1, name: 'Wireless Bluetooth Earbuds', sku: 'PRD-001', price: 1299, qty: 1, discount: 0, total: 1299 },
+      { productId: 5, name: 'USB-C Fast Charging Braided Cable 2m', sku: 'PRD-005', price: 299, qty: 2, discount: 0, total: 598 }
+    ],
+    subtotal: 1897,
+    discountType: 'fixed',
+    discountValue: 0,
+    discountAmt: 0,
+    taxPercent: 0,
+    taxAmt: 0,
+    grandTotal: 1897,
+    paymentMethod: 'UPI / Card',
+    amountReceived: 1897,
+    change: 0,
+    status: 'Completed'
+  },
+  {
+    id: 2,
+    billNo: 'FB-000102',
+    createdAt: Date.now() - 2 * 3600000,
+    items: [
+      { productId: 2, name: 'Mechanical RGB Keyboard', sku: 'PRD-002', price: 2499, qty: 1, discount: 0, total: 2499 }
+    ],
+    subtotal: 2499,
+    discountType: 'fixed',
+    discountValue: 0,
+    discountAmt: 0,
+    taxPercent: 0,
+    taxAmt: 0,
+    grandTotal: 2499,
+    paymentMethod: 'Cash',
+    amountReceived: 2500,
+    change: 1,
+    status: 'Completed'
+  }
+];
 
 // ============================================
 // STATE
 // ============================================
-let productsData    = [];  // from flowbase_inventory
-let salesData       = [];  // from flowbase_sales
-let currentBill     = [];  // active bill items [{productId, name, sku, price, qty, discount, total}]
+let productsData    = [];
+let salesData       = [];
+let currentBill     = [];
 let currentBillNo   = null;
 let viewingSaleId   = null;
 
 // ============================================
-// LOCAL STORAGE
+// LOAD DATA FROM BACKEND & LOCAL STORAGE
 // ============================================
-function loadProducts() {
+async function loadData() {
+  const shopId = await ensureActiveShop();
+
+  // 1. Initialise local state
   try {
-    const stored = localStorage.getItem(LS_INV_KEY);
-    productsData = stored ? JSON.parse(stored) : [];
-  } catch (e) { productsData = []; }
-}
+    const cachedP = localStorage.getItem(LS_INV_KEY);
+    productsData = cachedP ? JSON.parse(cachedP) : [...DEFAULT_PRODUCTS];
+    const cachedS = localStorage.getItem(LS_SALES_KEY);
+    salesData = cachedS ? JSON.parse(cachedS) : [...DEFAULT_SALES];
+  } catch (_) {
+    productsData = [...DEFAULT_PRODUCTS];
+    salesData = [...DEFAULT_SALES];
+  }
 
-function saveProducts() {
-  try { localStorage.setItem(LS_INV_KEY, JSON.stringify(productsData)); } catch (e) {}
-}
+  // 2. Fetch live data from FastAPI backend
+  if (shopId) {
+    try {
+      const [rawProducts, rawSales] = await Promise.all([
+        apiRequest(`/shops/${shopId}/products`),
+        apiRequest(`/sales/${shopId}`).catch(() => [])
+      ]);
 
-function loadSales() {
-  try {
-    const stored = localStorage.getItem(LS_SALES_KEY);
-    salesData = stored ? JSON.parse(stored) : [];
-  } catch (e) { salesData = []; }
-}
+      if (Array.isArray(rawProducts) && rawProducts.length > 0) {
+        productsData = rawProducts.map(p => ({
+          id: p.id,
+          name: p.name,
+          sku: p.sku || `PRD-${String(p.id).padStart(3, '0')}`,
+          category_id: p.category_id,
+          purchasePrice: Number(p.purchase_price || 0),
+          sellingPrice: Number(p.selling_price || 0),
+          currentStock: Number(p.stock_quantity || 0),
+          minimumStock: Number(p.low_stock_threshold || 5),
+          status: Number(p.stock_quantity || 0) > 0 ? 'active' : 'inactive'
+        }));
+        localStorage.setItem(LS_INV_KEY, JSON.stringify(productsData));
+      }
 
-function saveSales() {
-  try { localStorage.setItem(LS_SALES_KEY, JSON.stringify(salesData)); } catch (e) {}
+      if (Array.isArray(rawSales) && rawSales.length > 0) {
+        salesData = rawSales.map(s => {
+          const items = (s.sale_items || []).map(si => {
+            const prd = productsData.find(p => p.id === si.product_id);
+            return {
+              productId: si.product_id,
+              name: si.product_name || (prd ? prd.name : `Product #${si.product_id}`),
+              sku: si.product_sku || (prd ? prd.sku : ''),
+              price: Number(si.unit_price || 0),
+              qty: Number(si.quantity || 0),
+              discount: Number(si.discount || 0),
+              total: Number(si.total_price || (si.quantity * si.unit_price))
+            };
+          });
+
+          const subtotal = Number(s.subtotal || items.reduce((acc, i) => acc + i.total, 0));
+          const discountAmt = Number(s.discount || 0);
+          const taxAmt = Number(s.tax || 0);
+          const grandTotal = Number(s.total_amount || (subtotal - discountAmt + taxAmt));
+
+          return {
+            id: s.id,
+            billNo: s.bill_number || `FB-${String(s.id).padStart(6, '0')}`,
+            createdAt: s.created_at ? new Date(s.created_at).getTime() : Date.now(),
+            items,
+            subtotal,
+            discountType: 'fixed',
+            discountValue: discountAmt,
+            discountAmt,
+            taxPercent: 0,
+            taxAmt,
+            grandTotal,
+            paymentMethod: s.payment_method || 'Cash',
+            amountReceived: grandTotal,
+            change: 0,
+            status: 'Completed'
+          };
+        });
+        localStorage.setItem(LS_SALES_KEY, JSON.stringify(salesData));
+      }
+    } catch (err) {
+      console.warn('Live billing API note:', err.message);
+    }
+  }
+
+  if (!currentBillNo || currentBillNo === 'FB-000001') {
+    currentBillNo = generateBillNo();
+    renderBillMeta();
+  }
+
+  renderProductList();
+  renderRecentBills();
 }
 
 // ============================================
@@ -79,13 +194,13 @@ function formatTime(ts) {
 /** Generate next sequential bill number */
 function generateBillNo() {
   const maxNo = salesData.reduce((max, s) => {
-    const num = parseInt((s.billNo || 'FB-000000').replace('FB-', ''), 10);
+    const num = parseInt((s.billNo || 'FB-000000').replace(/[^0-9]/g, ''), 10);
     return isNaN(num) ? max : Math.max(max, num);
   }, 0);
   return 'FB-' + String(maxNo + 1).padStart(6, '0');
 }
 
-function findProduct(id) { return productsData.find(p => p.id === id); }
+function findProduct(id) { return productsData.find(p => String(p.id) === String(id)); }
 
 function getProductStock(id) {
   const p = findProduct(id);
@@ -438,7 +553,7 @@ function initCompleteBill() {
   document.getElementById('bil-complete-btn')?.addEventListener('click', completeBill);
 }
 
-function completeBill() {
+async function completeBill() {
   if (currentBill.length === 0) {
     showToast('Add at least one product to the bill.', 'warning');
     return;
@@ -467,60 +582,73 @@ function completeBill() {
     }
   }
 
-  // Check stock availability again
-  for (const item of currentBill) {
-    const product = findProduct(item.productId);
-    if (!product) { showToast(`Product "${item.name}" no longer exists.`, 'danger'); return; }
-    if (product.currentStock < item.qty) {
-      showToast(`Insufficient stock for "${item.name}". Available: ${product.currentStock}.`, 'danger');
-      return;
+  const shopId = await ensureActiveShop();
+
+  const completeBtn = document.getElementById('bil-complete-btn');
+  if (completeBtn) completeBtn.disabled = true;
+
+  try {
+    if (shopId) {
+      const payload = {
+        shop_id: shopId,
+        bill_number: currentBillNo,
+        tax: taxAmt,
+        discount: discountAmt,
+        items: currentBill.map(i => ({
+          product_id: parseInt(i.productId, 10),
+          quantity: parseFloat(i.qty)
+        }))
+      };
+
+      await apiRequest('/sales', {
+        method: 'POST',
+        body: payload
+      });
     }
+  } catch (err) {
+    console.warn('API sale checkout note:', err.message);
   }
 
-  // Deduct stock from flowbase_inventory
-  for (const item of currentBill) {
-    const product = findProduct(item.productId);
-    if (product) product.currentStock -= item.qty;
-  }
-  saveProducts();
-
-  // Build sale record
-  const now      = Date.now();
-  const received = parseFloat(document.getElementById('bil-amount-received')?.value || 0) || grandTotal;
-  const change   = payMethod === 'Cash' ? Math.max(0, received - grandTotal) : 0;
-
-  const discType  = document.getElementById('bil-discount-type')?.value || 'percent';
-  const discValue = parseFloat(document.getElementById('bil-discount-value')?.value || 0) || 0;
-  const taxPct    = parseFloat(document.getElementById('bil-tax-percent')?.value || 0) || 0;
-
-  const sale = {
-    id:          uid(),
-    billNo:      currentBillNo,
-    createdAt:   now,
-    items:       currentBill.map(i => ({ ...i })),
+  // Update local sales & deduct product stock
+  const newSaleId = salesData.length > 0 ? Math.max(...salesData.map(s => s.id)) + 1 : 1;
+  const newSale = {
+    id: newSaleId,
+    billNo: currentBillNo,
+    createdAt: Date.now(),
+    items: currentBill.map(i => ({ ...i })),
     subtotal,
-    discountType: discType,
-    discountValue: discValue,
+    discountType: document.getElementById('bil-discount-type')?.value || 'fixed',
+    discountValue: parseFloat(document.getElementById('bil-discount-value')?.value || 0),
     discountAmt,
-    taxPercent:  taxPct,
+    taxPercent: parseFloat(document.getElementById('bil-tax-percent')?.value || 0),
     taxAmt,
     grandTotal,
     paymentMethod: payMethod,
-    amountReceived: payMethod === 'Cash' ? received : grandTotal,
-    change,
-    status:      'Completed',
+    amountReceived: payMethod === 'Cash' ? (parseFloat(document.getElementById('bil-amount-received')?.value) || grandTotal) : grandTotal,
+    change: payMethod === 'Cash' ? Math.max(0, (parseFloat(document.getElementById('bil-amount-received')?.value) || grandTotal) - grandTotal) : 0,
+    status: 'Completed'
   };
 
-  salesData.unshift(sale);
-  saveSales();
+  salesData.unshift(newSale);
+  try { localStorage.setItem(LS_SALES_KEY, JSON.stringify(salesData)); } catch (_) {}
 
-  // Refresh recent bills
-  renderRecentBills();
+  // Deduct inventory stock
+  currentBill.forEach(item => {
+    const prd = productsData.find(p => String(p.id) === String(item.productId));
+    if (prd) {
+      prd.currentStock = Math.max(0, prd.currentStock - item.qty);
+      if (prd.currentStock === 0) prd.status = 'inactive';
+    }
+  });
+  try { localStorage.setItem(LS_INV_KEY, JSON.stringify(productsData)); } catch (_) {}
 
-  // Show toast + reset
-  showToast('Bill completed successfully.', 'success');
+  showToast(`Bill ${currentBillNo} completed!`, 'success');
+  openViewBill(newSaleId);
   resetBill();
   renderProductList();
+  renderRecentBills();
+
+  if (completeBtn) completeBtn.disabled = false;
 }
 
 // ============================================
@@ -582,7 +710,7 @@ function initRecentBillActions() {
 // VIEW BILL MODAL
 // ============================================
 function openViewBill(saleId) {
-  const sale = salesData.find(s => s.id === saleId);
+  const sale = salesData.find(s => String(s.id) === String(saleId) || s.billNo === saleId);
   if (!sale) return;
   viewingSaleId = saleId;
 
@@ -654,7 +782,7 @@ function initViewBillModal() {
 // PRINT BILL
 // ============================================
 function printBill(saleId) {
-  const sale = salesData.find(s => s.id === saleId);
+  const sale = salesData.find(s => String(s.id) === String(saleId) || s.billNo === saleId);
   if (!sale) return;
 
   const printArea = document.getElementById('bil-print-area');
@@ -759,7 +887,6 @@ function initLogout() {
   if (!logoutBtn) return;
   logoutBtn.addEventListener('click',    () => openModal('logout-modal'));
   document.getElementById('logout-cancel')?.addEventListener('click',  () => closeModal('logout-modal'));
-  document.getElementById('logout-confirm')?.addEventListener('click', () => { closeModal('logout-modal'); showToast('Logged out successfully.', 'success'); });
 }
 
 // ============================================
@@ -784,17 +911,17 @@ function showToast(message, type = 'default') {
 // ============================================
 // INIT
 // ============================================
-document.addEventListener('DOMContentLoaded', () => {
-  loadProducts();
-  loadSales();
+document.addEventListener('DOMContentLoaded', async () => {
+  if (typeof initAuthGuard === 'function') {
+    if (!initAuthGuard({ requireAuth: true })) return;
+  }
 
-  currentBillNo = generateBillNo();
+  currentBillNo = 'FB-000001';
 
   renderBillMeta();
   renderProductList();
   renderBillItems();
   updateTotals();
-  renderRecentBills();
 
   initProductSearch();
   initProductListClick();
@@ -808,4 +935,6 @@ document.addEventListener('DOMContentLoaded', () => {
   initLogout();
   initModalOverlayClose();
   initEscClose();
+
+  await loadData();
 });

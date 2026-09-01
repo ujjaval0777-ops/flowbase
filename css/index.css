@@ -84,6 +84,7 @@ body {
 .gradient-text {
   background: linear-gradient(135deg, var(--color-primary) 0%, #155e39 100%);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
@@ -780,7 +781,8 @@ body {
    ============================================ */
 .trust-strip {
   background-color: var(--color-surface);
-  border-y: 1px solid var(--color-border);
+  border-top: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
   padding: 24px 0;
 }
 
@@ -944,7 +946,8 @@ body {
    ============================================ */
 .workflow-section {
   background-color: var(--color-surface);
-  border-y: 1px solid var(--color-border);
+  border-top: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
 }
 
 .workflow-grid {
@@ -1235,7 +1238,7 @@ body {
 /* ============================================
    WHY FLOWBASE
    ============================================ */
-.why-section { background-color: var(--color-surface); border-t: 1px solid var(--color-border); }
+.why-section { background-color: var(--color-surface); border-top: 1px solid var(--color-border); }
 
 .why-grid {
   display: grid;

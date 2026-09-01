@@ -1,220 +1,419 @@
 // ============================================
 // FlowBase Products — products.js
-// Shares localStorage key with Inventory:
-//   'flowbase_inventory'
+// Connects to FastAPI Backend & Supabase DB
 // ============================================
+
 'use strict';
 
 // ============================================
-// CONSTANTS
+// CONSTANTS & STORAGE KEYS
 // ============================================
-const LS_INV_KEY  = 'flowbase_inventory'; // shared with inventory.js
-const PAGE_SIZE   = 10;
+const LS_INV_KEY = 'flowbase_inventory';
+const LS_CAT_KEY = 'flowbase_categories';
+
+const DEFAULT_CATEGORIES = [
+  { id: 1, name: 'Electronics', description: 'Gadgets, audio, keyboards, and accessories' },
+  { id: 2, name: 'Accessories', description: 'Cables, chargers, adapters, and cases' },
+  { id: 3, name: 'Grocery', description: 'Organic teas, snacks, and beverage goods' },
+  { id: 4, name: 'Clothing', description: 'Apparel, cotton tees, and wearable merchandise' },
+  { id: 5, name: 'Home & Living', description: 'Office desk items, bottles, and storage' }
+];
+
+const DEFAULT_PRODUCTS = [
+  { id: 1, name: 'Wireless Bluetooth Earbuds', sku: 'PRD-001', category: 'Electronics', category_id: 1, purchasePrice: 650, sellingPrice: 1299, currentStock: 45, minimumStock: 10, status: 'active', description: 'Noise isolating in-ear earphones with charging case', createdAt: Date.now() - 30 * 86400000 },
+  { id: 2, name: 'Mechanical RGB Keyboard', sku: 'PRD-002', category: 'Electronics', category_id: 1, purchasePrice: 1300, sellingPrice: 2499, currentStock: 28, minimumStock: 8, status: 'active', description: 'Blue-switch tactile mechanical backlit keyboard', createdAt: Date.now() - 25 * 86400000 },
+  { id: 3, name: 'Ergonomic Office Mouse', sku: 'PRD-003', category: 'Electronics', category_id: 1, purchasePrice: 450, sellingPrice: 899, currentStock: 6, minimumStock: 10, status: 'active', description: 'Silent click 2.4GHz wireless optical mouse', createdAt: Date.now() - 20 * 86400000 },
+  { id: 4, name: 'Ultra-Slim Power Bank 10000mAh', sku: 'PRD-004', category: 'Accessories', category_id: 2, purchasePrice: 370, sellingPrice: 749, currentStock: 0, minimumStock: 10, status: 'active', description: 'Dual USB output fast power bank with LED gauge', createdAt: Date.now() - 15 * 86400000 },
+  { id: 5, name: 'USB-C Fast Charging Cable 2m', sku: 'PRD-005', category: 'Accessories', category_id: 2, purchasePrice: 120, sellingPrice: 299, currentStock: 120, minimumStock: 25, status: 'active', description: 'Durable nylon braided 60W power delivery cable', createdAt: Date.now() - 10 * 86400000 },
+  { id: 6, name: 'Organic Green Tea 250g', sku: 'PRD-006', category: 'Grocery', category_id: 3, purchasePrice: 180, sellingPrice: 320, currentStock: 50, minimumStock: 12, status: 'active', description: 'Single estate whole leaf green tea', createdAt: Date.now() - 8 * 86400000 },
+  { id: 7, name: 'Heavyweight Cotton T-Shirt', sku: 'PRD-007', category: 'Clothing', category_id: 4, purchasePrice: 280, sellingPrice: 599, currentStock: 40, minimumStock: 10, status: 'active', description: '100% bio-washed breathable crew neck tee', createdAt: Date.now() - 5 * 86400000 },
+  { id: 8, name: 'Stainless Steel Water Bottle 1L', sku: 'PRD-008', category: 'Home & Living', category_id: 5, purchasePrice: 220, sellingPrice: 450, currentStock: 30, minimumStock: 8, status: 'active', description: '24hr cold / 12hr hot vacuum insulated flask', createdAt: Date.now() - 2 * 86400000 }
+];
 
 // ============================================
 // STATE
 // ============================================
-let productsData    = [];  // master data (same array as inventory)
-let filteredData    = [];  // after search/filter/sort
-let currentPage     = 1;
+let productsData   = [];
+let filteredData   = [];
+let categoriesData = [];
+let currentPage    = 1;
+let pageSize       = 10;
+let currentSort    = { key: 'name', order: 'asc' };
 let activeDropdownId = null;
 
 // ============================================
-// LOCAL STORAGE — reads/writes flowbase_inventory
+// INITIALIZATION
 // ============================================
-function loadData() {
+document.addEventListener('DOMContentLoaded', async () => {
+  if (typeof initAuthGuard === 'function') {
+    initAuthGuard();
+  }
+
+  initAppShell();
+  initSearchAndFilters();
+  initProductForm();
+  initCategoryManager();
+  initDeleteModal();
+  initTableActions();
+  initPagination();
+  initExport();
+
+  await loadData();
+});
+
+// ============================================
+// LOAD PRODUCTS & CATEGORIES
+// ============================================
+async function loadData() {
+  const shopId = (typeof ensureActiveShop === 'function') ? await ensureActiveShop() : 1;
+
+  // 1. Load from local cache first for instant rendering
   try {
-    const stored = localStorage.getItem(LS_INV_KEY);
-    if (stored) {
-      productsData = JSON.parse(stored);
-    } else {
-      productsData = getDefaultData();
-      saveData();
+    const cachedC = localStorage.getItem(LS_CAT_KEY);
+    categoriesData = cachedC ? JSON.parse(cachedC) : [...DEFAULT_CATEGORIES];
+    const cachedP = localStorage.getItem(LS_INV_KEY);
+    productsData = cachedP ? JSON.parse(cachedP) : [...DEFAULT_PRODUCTS];
+  } catch (_) {
+    categoriesData = [...DEFAULT_CATEGORIES];
+    productsData = [...DEFAULT_PRODUCTS];
+  }
+
+  updateCategoryDropdowns();
+  applyFilters();
+  renderKPIs();
+
+  // 2. Fetch live data from FastAPI Backend if connected
+  if (shopId) {
+    try {
+      const [rawProducts, rawCats] = await Promise.all([
+        apiRequest(`/shops/${shopId}/products`).catch(() => null),
+        apiRequest(`/shops/${shopId}/categories`).catch(() => null),
+      ]);
+
+      if (Array.isArray(rawCats) && rawCats.length > 0) {
+        categoriesData = rawCats;
+        localStorage.setItem(LS_CAT_KEY, JSON.stringify(categoriesData));
+      }
+
+      const catMap = {};
+      categoriesData.forEach(c => { catMap[c.id] = c.name; });
+
+      if (Array.isArray(rawProducts) && rawProducts.length > 0) {
+        productsData = rawProducts.map(p => {
+          const stock = Number(p.stock_quantity || 0);
+          const minStock = Number(p.low_stock_threshold || 5);
+          return {
+            id: p.id,
+            name: p.name,
+            sku: p.sku || `PRD-${String(p.id).padStart(3, '0')}`,
+            category: (p.category_id && catMap[p.category_id]) ? catMap[p.category_id] : (p.category || 'General'),
+            category_id: p.category_id || null,
+            purchasePrice: Number(p.purchase_price || 0),
+            sellingPrice: Number(p.selling_price || 0),
+            currentStock: stock,
+            minimumStock: minStock,
+            status: stock > 0 ? 'active' : 'inactive',
+            description: p.description || '',
+            createdAt: p.created_at ? new Date(p.created_at).getTime() : Date.now(),
+          };
+        });
+        localStorage.setItem(LS_INV_KEY, JSON.stringify(productsData));
+      }
+
+      updateCategoryDropdowns();
+      applyFilters();
+      renderKPIs();
+    } catch (err) {
+      console.warn('Backend products fetch notice:', err.message);
     }
-  } catch (e) {
-    productsData = getDefaultData();
   }
 }
 
-function saveData() {
-  try {
-    localStorage.setItem(LS_INV_KEY, JSON.stringify(productsData));
-  } catch (e) { /* storage unavailable */ }
+// ============================================
+// CATEGORY DROPDOWNS & LIST
+// ============================================
+function updateCategoryDropdowns() {
+  const filterSelect = document.getElementById('prd-filter-category');
+  const formSelect   = document.getElementById('prd-field-category');
+
+  if (filterSelect) {
+    const currentVal = filterSelect.value;
+    filterSelect.innerHTML = '<option value="">All Categories</option>' +
+      categoriesData.map(c => `<option value="${escHtml(c.name)}">${escHtml(c.name)}</option>`).join('');
+    filterSelect.value = currentVal;
+  }
+
+  if (formSelect) {
+    const currentFormVal = formSelect.value;
+    formSelect.innerHTML = '<option value="">Select category</option>' +
+      categoriesData.map(c => `<option value="${c.id}">${escHtml(c.name)}</option>`).join('');
+    formSelect.value = currentFormVal;
+  }
+
+  renderCategoryList();
+}
+
+function renderCategoryList() {
+  const listEl = document.getElementById('category-items-list');
+  if (!listEl) return;
+
+  if (categoriesData.length === 0) {
+    listEl.innerHTML = '<div style="padding:12px; color:var(--color-text-secondary); text-align:center; font-size:12px;">No categories created yet.</div>';
+    return;
+  }
+
+  listEl.innerHTML = categoriesData.map(c => `
+    <div class="category-item-row">
+      <div class="category-item-info">
+        <div class="category-item-name">${escHtml(c.name)}</div>
+        <div class="category-item-desc">${escHtml(c.description || 'No description')}</div>
+      </div>
+      <div style="display:flex; gap:6px;">
+        <button class="prd-action-btn" type="button" data-edit-cat="${c.id}" style="font-size:11px; padding:3px 7px;">Edit</button>
+        <button class="prd-action-btn" type="button" data-delete-cat="${c.id}" style="font-size:11px; padding:3px 7px; color:var(--color-danger); border-color:var(--color-danger);">Delete</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function initCategoryManager() {
+  document.getElementById('manage-categories-btn')?.addEventListener('click', () => {
+    renderCategoryList();
+    openModal('category-manage-modal');
+  });
+
+  document.getElementById('cat-manage-close')?.addEventListener('click', () => closeModal('category-manage-modal'));
+  document.getElementById('cat-manage-close-btn')?.addEventListener('click', () => closeModal('category-manage-modal'));
+
+  // Add Category form
+  const addForm = document.getElementById('cat-add-form');
+  addForm?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const nameInput = document.getElementById('new-cat-name');
+    const descInput = document.getElementById('new-cat-desc');
+    const name = nameInput ? nameInput.value.trim() : '';
+    const desc = descInput ? descInput.value.trim() : '';
+
+    if (!name) return;
+
+    const shopId = (typeof ensureActiveShop === 'function') ? await ensureActiveShop() : 1;
+
+    try {
+      if (shopId) {
+        const created = await apiRequest(`/shops/${shopId}/categories`, {
+          method: 'POST',
+          body: { name, description: desc }
+        });
+        if (created) categoriesData.push(created);
+      } else {
+        categoriesData.push({ id: Date.now(), name, description: desc });
+      }
+
+      localStorage.setItem(LS_CAT_KEY, JSON.stringify(categoriesData));
+      updateCategoryDropdowns();
+      if (nameInput) nameInput.value = '';
+      if (descInput) descInput.value = '';
+      showToast('Category created successfully!', 'success');
+      renderKPIs();
+    } catch (err) {
+      console.error('Failed to create category:', err);
+      showToast(err.message || 'Failed to create category', 'danger');
+    }
+  });
+
+  // Edit / Delete in category list
+  document.getElementById('category-items-list')?.addEventListener('click', async (e) => {
+    const editBtn = e.target.closest('[data-edit-cat]');
+    if (editBtn) {
+      const catId = parseInt(editBtn.dataset.editCat, 10);
+      const cat = categoriesData.find(c => c.id === catId);
+      if (cat) {
+        document.getElementById('edit-cat-id').value = cat.id;
+        document.getElementById('edit-cat-name').value = cat.name;
+        document.getElementById('edit-cat-desc').value = cat.description || '';
+        openModal('category-edit-modal');
+      }
+      return;
+    }
+
+    const delBtn = e.target.closest('[data-delete-cat]');
+    if (delBtn) {
+      const catId = parseInt(delBtn.dataset.deleteCat, 10);
+      const shopId = (typeof ensureActiveShop === 'function') ? await ensureActiveShop() : 1;
+
+      if (!confirm('Are you sure you want to delete this category?')) return;
+
+      try {
+        if (shopId) {
+          await apiRequest(`/shops/${shopId}/categories/${catId}`, { method: 'DELETE' });
+        }
+        categoriesData = categoriesData.filter(c => c.id !== catId);
+        localStorage.setItem(LS_CAT_KEY, JSON.stringify(categoriesData));
+        updateCategoryDropdowns();
+        showToast('Category deleted', 'success');
+        renderKPIs();
+      } catch (err) {
+        console.error('Failed to delete category:', err);
+        showToast(err.message || 'Failed to delete category', 'danger');
+      }
+    }
+  });
+
+  // Edit category form submit
+  document.getElementById('cat-edit-close')?.addEventListener('click', () => closeModal('category-edit-modal'));
+  document.getElementById('edit-cat-cancel')?.addEventListener('click', () => closeModal('category-edit-modal'));
+  document.getElementById('cat-edit-form')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const shopId = (typeof ensureActiveShop === 'function') ? await ensureActiveShop() : 1;
+    const catId = parseInt(document.getElementById('edit-cat-id').value, 10);
+    const name = document.getElementById('edit-cat-name').value.trim();
+    const desc = document.getElementById('edit-cat-desc').value.trim();
+
+    if (!name || !catId) return;
+
+    try {
+      if (shopId) {
+        await apiRequest(`/shops/${shopId}/categories/${catId}`, {
+          method: 'PATCH',
+          body: { name, description: desc }
+        });
+      }
+
+      const idx = categoriesData.findIndex(c => c.id === catId);
+      if (idx !== -1) {
+        categoriesData[idx].name = name;
+        categoriesData[idx].description = desc;
+        localStorage.setItem(LS_CAT_KEY, JSON.stringify(categoriesData));
+      }
+
+      updateCategoryDropdowns();
+      closeModal('category-edit-modal');
+      showToast('Category updated', 'success');
+    } catch (err) {
+      console.error('Failed to update category:', err);
+      showToast(err.message || 'Failed to update category', 'danger');
+    }
+  });
 }
 
 // ============================================
-// DEFAULT DEMO PRODUCTS (same as inventory)
-// ============================================
-function getDefaultData() {
-  const now = Date.now();
-  return [
-    { id: uid(), name: 'Wireless Mouse',       sku: 'WM-001',  category: 'Electronics',  currentStock: 42,  minimumStock: 10, purchasePrice: 450,  sellingPrice: 699,  description: 'Ergonomic wireless mouse with 2.4GHz connectivity.', createdAt: now - 86400000 * 9, status: 'active' },
-    { id: uid(), name: 'Mechanical Keyboard',  sku: 'KB-002',  category: 'Electronics',  currentStock: 7,   minimumStock: 10, purchasePrice: 800,  sellingPrice: 1199, description: 'Mechanical keyboard with RGB backlighting.',          createdAt: now - 86400000 * 8, status: 'active' },
-    { id: uid(), name: 'USB Type-C Cable',     sku: 'USB-003', category: 'Accessories',  currentStock: 0,   minimumStock: 5,  purchasePrice: 120,  sellingPrice: 199,  description: '1.5m braided USB-C cable.',                          createdAt: now - 86400000 * 7, status: 'active' },
-    { id: uid(), name: 'Rice 5kg Bag',         sku: 'RCE-004', category: 'Grocery',      currentStock: 156, minimumStock: 20, purchasePrice: 280,  sellingPrice: 360,  description: 'Premium basmati rice in 5kg packs.',                 createdAt: now - 86400000 * 6, status: 'active' },
-    { id: uid(), name: 'Cooking Oil 1L',       sku: 'OIL-005', category: 'Grocery',      currentStock: 8,   minimumStock: 15, purchasePrice: 90,   sellingPrice: 130,  description: 'Refined sunflower cooking oil.',                     createdAt: now - 86400000 * 5, status: 'active' },
-    { id: uid(), name: 'Cotton T-Shirt (M)',   sku: 'TSH-006', category: 'Clothing',     currentStock: 35,  minimumStock: 10, purchasePrice: 180,  sellingPrice: 349,  description: '100% cotton regular-fit T-shirt.',                   createdAt: now - 86400000 * 5, status: 'active' },
-    { id: uid(), name: 'Laptop Stand',         sku: 'LS-007',  category: 'Accessories',  currentStock: 22,  minimumStock: 5,  purchasePrice: 550,  sellingPrice: 899,  description: 'Adjustable aluminium laptop stand.',                  createdAt: now - 86400000 * 4, status: 'active' },
-    { id: uid(), name: 'Sugar 1kg',            sku: 'SUG-008', category: 'Grocery',      currentStock: 3,   minimumStock: 10, purchasePrice: 42,   sellingPrice: 58,   description: 'Refined white sugar.',                               createdAt: now - 86400000 * 4, status: 'active' },
-    { id: uid(), name: 'Bluetooth Earphones',  sku: 'BTE-009', category: 'Electronics',  currentStock: 18,  minimumStock: 8,  purchasePrice: 700,  sellingPrice: 1099, description: 'True wireless stereo earphones.',                    createdAt: now - 86400000 * 3, status: 'active' },
-    { id: uid(), name: 'Denim Jeans (32W)',    sku: 'JNS-010', category: 'Clothing',     currentStock: 14,  minimumStock: 6,  purchasePrice: 650,  sellingPrice: 1199, description: 'Slim-fit denim jeans.',                              createdAt: now - 86400000 * 3, status: 'active' },
-    { id: uid(), name: 'Tea 500g',             sku: 'TEA-011', category: 'Grocery',      currentStock: 5,   minimumStock: 8,  purchasePrice: 110,  sellingPrice: 160,  description: 'Premium Assam CTC tea.',                             createdAt: now - 86400000 * 2, status: 'active' },
-    { id: uid(), name: 'HDMI Cable 2m',        sku: 'HDM-012', category: 'Accessories',  currentStock: 0,   minimumStock: 5,  purchasePrice: 180,  sellingPrice: 299,  description: '4K HDMI 2.0 cable.',                                 createdAt: now - 86400000 * 2, status: 'active' },
-    { id: uid(), name: 'Smartphone Holder',    sku: 'PHH-013', category: 'Accessories',  currentStock: 30,  minimumStock: 8,  purchasePrice: 150,  sellingPrice: 249,  description: 'Universal desk phone stand.',                        createdAt: now - 86400000 * 1, status: 'active' },
-    { id: uid(), name: 'Running Shoes (UK 8)', sku: 'SHO-014', category: 'Clothing',     currentStock: 9,   minimumStock: 10, purchasePrice: 900,  sellingPrice: 1599, description: 'Lightweight mesh running shoes.',                    createdAt: now - 86400000 * 1, status: 'active' },
-    { id: uid(), name: 'Wireless Charger 15W', sku: 'WLC-015', category: 'Electronics',  currentStock: 25,  minimumStock: 10, purchasePrice: 400,  sellingPrice: 699,  description: 'Qi-certified fast wireless charger pad.',            createdAt: now,               status: 'active' },
-    { id: uid(), name: 'Salt 1kg',             sku: 'SLT-016', category: 'Grocery',      currentStock: 4,   minimumStock: 10, purchasePrice: 18,   sellingPrice: 28,   description: 'Iodised table salt.',                                createdAt: now,               status: 'active' },
-    { id: uid(), name: 'USB Hub 4-Port',       sku: 'UHB-017', category: 'Accessories',  currentStock: 11,  minimumStock: 5,  purchasePrice: 280,  sellingPrice: 499,  description: '4-port USB 3.0 hub.',                                createdAt: now,               status: 'active' },
-    { id: uid(), name: 'Jeans Jacket (L)',     sku: 'JKT-018', category: 'Clothing',     currentStock: 6,   minimumStock: 4,  purchasePrice: 1100, sellingPrice: 1999, description: 'Classic denim jacket.',                              createdAt: now,               status: 'active' },
-  ];
-}
-
-// ============================================
-// UTILITIES
-// ============================================
-function uid() {
-  return Math.random().toString(36).slice(2, 11);
-}
-
-function formatINR(val) {
-  return '₹' + Number(val).toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
-}
-
-function formatDate(ts) {
-  if (!ts) return '—';
-  return new Date(ts).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
-}
-
-function escHtml(str) {
-  return String(str)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
-}
-
-/** Derive stock status from item */
-function getStockStatus(item) {
-  if (item.currentStock === 0)                    return 'Out of Stock';
-  if (item.currentStock <= (item.minimumStock || 0)) return 'Low Stock';
-  return 'In Stock';
-}
-
-/** Derive badge class from stock status */
-function getStockBadgeClass(stockStatus) {
-  if (stockStatus === 'In Stock')    return 'badge-success';
-  if (stockStatus === 'Low Stock')   return 'badge-warning';
-  return 'badge-danger';
-}
-
-/** Product-level status (active / inactive) */
-function getProductStatus(item) {
-  if (item.status === 'inactive') return 'Inactive';
-  const stock = getStockStatus(item);
-  if (stock === 'Out of Stock') return 'Out of Stock';
-  if (stock === 'Low Stock')    return 'Low Stock';
-  return 'Active';
-}
-
-function getProductStatusBadgeClass(pStatus) {
-  if (pStatus === 'Active')      return 'badge-success';
-  if (pStatus === 'Low Stock')   return 'badge-warning';
-  if (pStatus === 'Out of Stock') return 'badge-danger';
-  return 'badge-inactive';
-}
-
-function getStockNumClass(item) {
-  const s = getStockStatus(item);
-  if (s === 'Out of Stock') return 'danger';
-  if (s === 'Low Stock')    return 'warning';
-  return '';
-}
-
-// ============================================
-// KPI CARDS
+// KPI CARDS RENDER
 // ============================================
 function renderKPIs() {
-  const total      = productsData.length;
-  const active     = productsData.filter(p => (p.status || 'active') === 'active').length;
-  const cats       = new Set(productsData.map(p => p.category)).size;
-  const lowStock   = productsData.filter(p => {
+  const total     = productsData.length;
+  const catsCount = categoriesData.length || new Set(productsData.map(p => p.category)).size;
+  const lowStock  = productsData.filter(p => {
     const s = getStockStatus(p);
-    return s === 'Low Stock' || s === 'Out of Stock';
+    return s === 'Low Stock';
+  }).length;
+  const outStock  = productsData.filter(p => {
+    const s = getStockStatus(p);
+    return s === 'Out of Stock';
   }).length;
 
-  const configs = [
-    {
-      id: 'prd-kpi-total', label: 'Total Products', value: total,
-      footer: 'Items in catalog',
-      icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>`,
-      iconClass: '',
-    },
-    {
-      id: 'prd-kpi-active', label: 'Active Products', value: active,
-      footer: 'Currently available',
-      icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`,
-      iconClass: '',
-    },
-    {
-      id: 'prd-kpi-categories', label: 'Categories', value: cats,
-      footer: 'Product categories',
-      icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>`,
-      iconClass: '',
-    },
-    {
-      id: 'prd-kpi-lowstock', label: 'Low Stock', value: lowStock,
-      footer: 'Need attention',
-      icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`,
-      iconClass: 'warning',
-    },
-  ];
+  const totalEl    = document.getElementById('kpi-val-total');
+  const catEl      = document.getElementById('kpi-val-categories');
+  const lowEl      = document.getElementById('kpi-val-lowstock');
+  const outEl      = document.getElementById('kpi-val-outstock');
 
-  configs.forEach(cfg => {
-    const el = document.getElementById(cfg.id);
-    if (!el) return;
-    el.innerHTML = `
-      <div class="kpi-card-header">
-        <span class="kpi-label">${cfg.label}</span>
-        <span class="kpi-icon ${cfg.iconClass}" aria-hidden="true">${cfg.icon}</span>
-      </div>
-      <div class="kpi-value">${cfg.value}</div>
-      <div class="kpi-footer">
-        <span class="kpi-compare">${cfg.footer}</span>
-      </div>
-    `;
-  });
+  if (totalEl) totalEl.textContent = total.toLocaleString('en-IN');
+  if (catEl)   catEl.textContent   = catsCount.toLocaleString('en-IN');
+  if (lowEl)   lowEl.textContent   = lowStock.toLocaleString('en-IN');
+  if (outEl)   outEl.textContent   = outStock.toLocaleString('en-IN');
 }
 
 // ============================================
-// FILTER / SORT / SEARCH
+// FILTERS & SEARCH
 // ============================================
+function initSearchAndFilters() {
+  const searchInput  = document.getElementById('prd-search-input');
+  const catFilter    = document.getElementById('prd-filter-category');
+  const stockFilter  = document.getElementById('prd-filter-stock');
+  const sortFilter   = document.getElementById('prd-filter-sort');
+  const clearBtn     = document.getElementById('prd-clear-filters-btn');
+
+  searchInput?.addEventListener('input', () => { currentPage = 1; applyFilters(); });
+  catFilter?.addEventListener('change', () => { currentPage = 1; applyFilters(); });
+  stockFilter?.addEventListener('change', () => { currentPage = 1; applyFilters(); });
+  sortFilter?.addEventListener('change', () => {
+    const val = sortFilter.value;
+    if (val === 'name-asc') currentSort = { key: 'name', order: 'asc' };
+    else if (val === 'name-desc') currentSort = { key: 'name', order: 'desc' };
+    else if (val === 'price-asc') currentSort = { key: 'sellingPrice', order: 'asc' };
+    else if (val === 'price-desc') currentSort = { key: 'sellingPrice', order: 'desc' };
+    else if (val === 'stock-asc') currentSort = { key: 'currentStock', order: 'asc' };
+    else if (val === 'stock-desc') currentSort = { key: 'currentStock', order: 'desc' };
+    applyFilters();
+  });
+
+  clearBtn?.addEventListener('click', () => {
+    if (searchInput) searchInput.value = '';
+    if (catFilter) catFilter.value = '';
+    if (stockFilter) stockFilter.value = '';
+    if (sortFilter) sortFilter.value = 'name-asc';
+    currentSort = { key: 'name', order: 'asc' };
+    currentPage = 1;
+    applyFilters();
+  });
+
+  // Table header click-to-sort
+  document.querySelectorAll('.prd-th-sortable').forEach(th => {
+    th.addEventListener('click', () => {
+      const sortKey = th.dataset.sort;
+      if (!sortKey) return;
+      if (currentSort.key === sortKey) {
+        currentSort.order = currentSort.order === 'asc' ? 'desc' : 'asc';
+      } else {
+        currentSort.key = sortKey;
+        currentSort.order = 'asc';
+      }
+      applyFilters();
+    });
+  });
+}
+
 function applyFilters() {
-  const q      = document.getElementById('prd-search-input')?.value.trim().toLowerCase() || '';
-  const cat    = document.getElementById('prd-filter-category')?.value || '';
-  const status = document.getElementById('prd-filter-status')?.value || '';
-  const stock  = document.getElementById('prd-filter-stock')?.value || '';
-  const sort   = document.getElementById('prd-filter-sort')?.value || 'name-asc';
+  const query = document.getElementById('prd-search-input')?.value.trim().toLowerCase() || '';
+  const cat   = document.getElementById('prd-filter-category')?.value || '';
+  const stock = document.getElementById('prd-filter-stock')?.value || '';
 
-  filteredData = productsData.filter(item => {
-    const matchQ   = !q || item.name.toLowerCase().includes(q) || item.sku.toLowerCase().includes(q) || item.category.toLowerCase().includes(q);
-    const matchCat = !cat || item.category === cat;
-    const pStatus  = getProductStatus(item);
-    const sStatus  = getStockStatus(item);
-    const matchStatus = !status || pStatus.toLowerCase() === status.toLowerCase();
-    const matchStock  = !stock  || sStatus === stock;
-    return matchQ && matchCat && matchStatus && matchStock;
+  filteredData = productsData.filter(p => {
+    // Search
+    if (query) {
+      const name = (p.name || '').toLowerCase();
+      const sku  = (p.sku || '').toLowerCase();
+      const c    = (p.category || '').toLowerCase();
+      const desc = (p.description || '').toLowerCase();
+      if (!name.includes(query) && !sku.includes(query) && !c.includes(query) && !desc.includes(query)) {
+        return false;
+      }
+    }
+    // Category filter
+    if (cat && p.category !== cat) {
+      return false;
+    }
+    // Stock status filter
+    if (stock) {
+      const status = getStockStatus(p);
+      if (status !== stock) return false;
+    }
+    return true;
   });
 
+  // Sort
   filteredData.sort((a, b) => {
-    if (sort === 'name-asc')    return a.name.localeCompare(b.name);
-    if (sort === 'name-desc')   return b.name.localeCompare(a.name);
-    if (sort === 'price-asc')   return a.sellingPrice - b.sellingPrice;
-    if (sort === 'price-desc')  return b.sellingPrice - a.sellingPrice;
-    if (sort === 'date-desc')   return (b.createdAt || 0) - (a.createdAt || 0);
-    return 0;
+    let valA = a[currentSort.key];
+    let valB = b[currentSort.key];
+
+    if (typeof valA === 'string') {
+      const cmp = valA.localeCompare(valB);
+      return currentSort.order === 'asc' ? cmp : -cmp;
+    }
+    valA = Number(valA || 0);
+    valB = Number(valB || 0);
+    return currentSort.order === 'asc' ? valA - valB : valB - valA;
   });
 
-  currentPage = 1;
   renderTable();
   renderPagination();
 }
@@ -228,13 +427,7 @@ function renderTable() {
 
   if (filteredData.length === 0) {
     const q = document.getElementById('prd-search-input')?.value.trim() || '';
-    const hasFilter = q ||
-      document.getElementById('prd-filter-category')?.value ||
-      document.getElementById('prd-filter-status')?.value ||
-      document.getElementById('prd-filter-stock')?.value;
-
-    const title = hasFilter ? 'No products found' : 'No products yet';
-    const desc  = hasFilter ? 'Try changing your search or filters.' : 'Add your first product to start managing your catalog.';
+    const hasFilter = q || document.getElementById('prd-filter-category')?.value || document.getElementById('prd-filter-stock')?.value;
 
     tbody.innerHTML = `
       <tr>
@@ -243,12 +436,14 @@ function renderTable() {
             <div class="prd-empty-icon">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
             </div>
-            <div class="prd-empty-title">${title}</div>
-            <div class="prd-empty-desc">${desc}</div>
-            ${!hasFilter ? `<button class="btn prd-btn-primary" type="button" style="margin-top:8px" onclick="openAddModal()">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-              Add Product
-            </button>` : ''}
+            <div class="prd-empty-title">${hasFilter ? 'No matching products' : 'No products in catalog'}</div>
+            <div class="prd-empty-desc">${hasFilter ? 'Try clearing your search or adjusting filters.' : 'Add your first product to start managing inventory and sales.'}</div>
+            ${!hasFilter ? `
+              <button class="btn prd-btn-primary" type="button" onclick="openAddProductModal()" style="margin-top:8px;">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Add Product
+              </button>
+            ` : ''}
           </div>
         </td>
       </tr>
@@ -256,25 +451,26 @@ function renderTable() {
     return;
   }
 
-  const start = (currentPage - 1) * PAGE_SIZE;
-  const page  = filteredData.slice(start, start + PAGE_SIZE);
+  const start = (currentPage - 1) * pageSize;
+  const page  = filteredData.slice(start, start + pageSize);
 
   tbody.innerHTML = page.map(item => {
-    const stockStatus  = getStockStatus(item);
-    const pStatus      = getProductStatus(item);
-    const pBadgeClass  = getProductStatusBadgeClass(pStatus);
-    const numClass     = getStockNumClass(item);
+    const status     = getStockStatus(item);
+    const badgeClass = getStockBadgeClass(status);
+    const numClass   = status === 'Out of Stock' ? 'danger' : (status === 'Low Stock' ? 'warning' : '');
 
     return `
       <tr>
-        <td><span class="product-name">${escHtml(item.name)}</span></td>
+        <td>
+          <div class="product-name" style="cursor:pointer;" onclick="openViewModal('${item.id}')">${escHtml(item.name)}</div>
+        </td>
         <td><span class="prd-sku">${escHtml(item.sku)}</span></td>
         <td><span class="prd-category">${escHtml(item.category)}</span></td>
-        <td class="text-mono">${formatINR(item.purchasePrice)}</td>
-        <td class="text-mono">${formatINR(item.sellingPrice)}</td>
-        <td><span class="prd-stock-num ${numClass}">${item.currentStock}</span></td>
-        <td><span class="badge ${pBadgeClass}">${pStatus}</span></td>
-        <td>
+        <td class="text-right text-mono text-muted">${formatINR(item.purchasePrice)}</td>
+        <td class="text-right text-mono font-medium">${formatINR(item.sellingPrice)}</td>
+        <td class="text-right text-mono"><span class="prd-stock-num ${numClass}">${item.currentStock}</span></td>
+        <td><span class="badge ${badgeClass}">${status}</span></td>
+        <td class="text-right" style="padding-right:20px;">
           <div class="prd-actions-wrap" data-item-id="${item.id}">
             <button class="prd-action-btn" type="button" data-toggle-dropdown="${item.id}" aria-haspopup="true" aria-expanded="false">
               Actions
@@ -303,60 +499,14 @@ function renderTable() {
 }
 
 // ============================================
-// PAGINATION
-// ============================================
-function renderPagination() {
-  const totalPages = Math.max(1, Math.ceil(filteredData.length / PAGE_SIZE));
-  const start = filteredData.length === 0 ? 0 : (currentPage - 1) * PAGE_SIZE + 1;
-  const end   = Math.min(currentPage * PAGE_SIZE, filteredData.length);
-
-  const infoEl  = document.getElementById('prd-pagination-info');
-  const numsEl  = document.getElementById('prd-page-numbers');
-  const prevBtn = document.getElementById('prd-prev-page-btn');
-  const nextBtn = document.getElementById('prd-next-page-btn');
-
-  if (infoEl) infoEl.textContent = filteredData.length > 0
-    ? `Showing ${start}–${end} of ${filteredData.length} products`
-    : 'No products';
-
-  if (numsEl) {
-    numsEl.innerHTML = '';
-    for (let p = 1; p <= totalPages; p++) {
-      const btn = document.createElement('button');
-      btn.className   = 'prd-page-num' + (p === currentPage ? ' active' : '');
-      btn.textContent = p;
-      btn.type        = 'button';
-      btn.setAttribute('role', 'listitem');
-      btn.setAttribute('aria-label', `Page ${p}`);
-      btn.setAttribute('aria-current', p === currentPage ? 'page' : 'false');
-      btn.addEventListener('click', () => { currentPage = p; renderTable(); renderPagination(); });
-      numsEl.appendChild(btn);
-    }
-  }
-
-  if (prevBtn) prevBtn.disabled = currentPage <= 1;
-  if (nextBtn) nextBtn.disabled = currentPage >= totalPages;
-}
-
-function initPagination() {
-  document.getElementById('prd-prev-page-btn')?.addEventListener('click', () => {
-    if (currentPage > 1) { currentPage--; renderTable(); renderPagination(); }
-  });
-  document.getElementById('prd-next-page-btn')?.addEventListener('click', () => {
-    const totalPages = Math.ceil(filteredData.length / PAGE_SIZE);
-    if (currentPage < totalPages) { currentPage++; renderTable(); renderPagination(); }
-  });
-}
-
-// ============================================
-// DROPDOWN ACTIONS
+// TABLE ACTIONS & DROPDOWNS
 // ============================================
 function initTableActions() {
-  document.getElementById('products-tbody')?.addEventListener('click', e => {
+  document.getElementById('products-tbody')?.addEventListener('click', (e) => {
     const toggleBtn = e.target.closest('[data-toggle-dropdown]');
     if (toggleBtn) {
       const id = toggleBtn.dataset.toggleDropdown;
-      const dd = document.getElementById('prd-dropdown-' + id);
+      const dd = document.getElementById(`prd-dropdown-${id}`);
       if (dd) {
         const isOpen = dd.classList.contains('open');
         closeAllDropdowns();
@@ -380,426 +530,584 @@ function initTableActions() {
     }
   });
 
-  document.addEventListener('click', e => {
-    if (!e.target.closest('.prd-actions-wrap')) closeAllDropdowns();
-  });
-}
-
-function closeAllDropdowns(except) {
-  document.querySelectorAll('.prd-dropdown.open').forEach(dd => {
-    if (!except || dd.id !== 'prd-dropdown-' + except) {
-      dd.classList.remove('open');
-      const wrap = dd.closest('.prd-actions-wrap');
-      wrap?.querySelector('[data-toggle-dropdown]')?.setAttribute('aria-expanded', 'false');
-    }
-  });
-  if (!except) activeDropdownId = null;
-}
-
-function findItem(id) {
-  return productsData.find(p => p.id === id);
-}
-
-// ============================================
-// SEARCH & FILTER INIT
-// ============================================
-function initSearchAndFilters() {
-  document.getElementById('prd-search-input')?.addEventListener('input', applyFilters);
-  document.getElementById('prd-filter-category')?.addEventListener('change', applyFilters);
-  document.getElementById('prd-filter-status')?.addEventListener('change', applyFilters);
-  document.getElementById('prd-filter-stock')?.addEventListener('change', applyFilters);
-  document.getElementById('prd-filter-sort')?.addEventListener('change', applyFilters);
-  document.getElementById('prd-clear-filters-btn')?.addEventListener('click', () => {
-    document.getElementById('prd-search-input').value    = '';
-    document.getElementById('prd-filter-category').value = '';
-    document.getElementById('prd-filter-status').value   = '';
-    document.getElementById('prd-filter-stock').value    = '';
-    document.getElementById('prd-filter-sort').value     = 'name-asc';
-    applyFilters();
-  });
-}
-
-// ============================================
-// ADD MODAL
-// ============================================
-function openAddModal() {
-  clearFormErrors();
-  document.getElementById('prd-form-id').value         = '';
-  document.getElementById('prd-form-title').textContent = 'Add Product';
-  document.getElementById('prd-form-submit').textContent = 'Add Product';
-  document.getElementById('prd-field-name').value         = '';
-  document.getElementById('prd-field-sku').value          = '';
-  document.getElementById('prd-field-category').value     = '';
-  document.getElementById('prd-field-purchase-price').value = '';
-  document.getElementById('prd-field-selling-price').value  = '';
-  document.getElementById('prd-field-stock').value          = '';
-  document.getElementById('prd-field-min-stock').value      = '';
-  document.getElementById('prd-field-status').value         = 'active';
-  document.getElementById('prd-field-description').value    = '';
-  openModal('prd-form-modal');
-  setTimeout(() => document.getElementById('prd-field-name')?.focus(), 80);
-}
-
-function initAddProductBtn() {
-  document.getElementById('add-product-btn')?.addEventListener('click', openAddModal);
-}
-
-// ============================================
-// EDIT MODAL
-// ============================================
-function openEditModal(id) {
-  const item = findItem(id);
-  if (!item) return;
-  clearFormErrors();
-  document.getElementById('prd-form-id').value           = item.id;
-  document.getElementById('prd-form-title').textContent  = 'Edit Product';
-  document.getElementById('prd-form-submit').textContent = 'Save Changes';
-  document.getElementById('prd-field-name').value          = item.name;
-  document.getElementById('prd-field-sku').value           = item.sku;
-  document.getElementById('prd-field-category').value      = item.category;
-  document.getElementById('prd-field-purchase-price').value = item.purchasePrice;
-  document.getElementById('prd-field-selling-price').value  = item.sellingPrice;
-  document.getElementById('prd-field-stock').value          = item.currentStock;
-  document.getElementById('prd-field-min-stock').value      = item.minimumStock || 0;
-  document.getElementById('prd-field-status').value         = item.status || 'active';
-  document.getElementById('prd-field-description').value    = item.description || '';
-  closeModal('prd-view-modal');
-  openModal('prd-form-modal');
-  setTimeout(() => document.getElementById('prd-field-name')?.focus(), 80);
-}
-
-// ============================================
-// FORM SUBMIT (Add / Edit)
-// ============================================
-function initFormSubmit() {
-  document.getElementById('prd-form')?.addEventListener('submit', e => {
-    e.preventDefault();
-    clearFormErrors();
-
-    const id            = document.getElementById('prd-form-id').value;
-    const name          = document.getElementById('prd-field-name').value.trim();
-    const sku           = document.getElementById('prd-field-sku').value.trim().toUpperCase();
-    const category      = document.getElementById('prd-field-category').value;
-    const purchasePrice = parseFloat(document.getElementById('prd-field-purchase-price').value);
-    const sellingPrice  = parseFloat(document.getElementById('prd-field-selling-price').value);
-    const stockRaw      = document.getElementById('prd-field-stock').value;
-    const minStockRaw   = document.getElementById('prd-field-min-stock').value;
-    const currentStock  = stockRaw    === '' ? 0 : parseInt(stockRaw, 10);
-    const minimumStock  = minStockRaw === '' ? 0 : parseInt(minStockRaw, 10);
-    const status        = document.getElementById('prd-field-status').value;
-    const description   = document.getElementById('prd-field-description').value.trim();
-
-    let valid = true;
-
-    if (!name) { setFieldError('prd-err-name', 'prd-field-name', 'Product name is required.'); valid = false; }
-    if (!sku)  { setFieldError('prd-err-sku',  'prd-field-sku',  'SKU is required.'); valid = false; }
-    else {
-      const dup = productsData.find(p => p.sku === sku && p.id !== id);
-      if (dup) { setFieldError('prd-err-sku', 'prd-field-sku', 'This SKU already exists.'); valid = false; }
-    }
-    if (!category) { setFieldError('prd-err-category', 'prd-field-category', 'Please select a category.'); valid = false; }
-    if (isNaN(purchasePrice) || purchasePrice < 0) { setFieldError('prd-err-purchase-price', 'prd-field-purchase-price', 'Enter a valid positive price.'); valid = false; }
-    if (isNaN(sellingPrice)  || sellingPrice < 0)  { setFieldError('prd-err-selling-price',  'prd-field-selling-price',  'Enter a valid positive price.'); valid = false; }
-    if (isNaN(currentStock)  || currentStock < 0)  { setFieldError('prd-err-stock', 'prd-field-stock', 'Stock must be 0 or more.'); valid = false; }
-    if (isNaN(minimumStock)  || minimumStock < 0)  { setFieldError('prd-err-min-stock', 'prd-field-min-stock', 'Minimum stock must be 0 or more.'); valid = false; }
-
-    if (!valid) return;
-
-    if (id) {
-      // Edit existing
-      const item = findItem(id);
-      if (item) {
-        item.name          = name;
-        item.sku           = sku;
-        item.category      = category;
-        item.purchasePrice = purchasePrice;
-        item.sellingPrice  = sellingPrice;
-        item.currentStock  = currentStock;
-        item.minimumStock  = minimumStock;
-        item.status        = status;
-        item.description   = description;
-        item.updatedAt     = Date.now();
-      }
-      showToast('Product updated successfully.', 'success');
-    } else {
-      // Add new
-      productsData.unshift({
-        id: uid(), name, sku, category,
-        purchasePrice, sellingPrice, currentStock, minimumStock,
-        status, description,
-        createdAt: Date.now(),
-      });
-      showToast('Product added successfully.', 'success');
-    }
-
-    saveData();
-    closeModal('prd-form-modal');
-    applyFilters();
-    renderKPIs();
-  });
-
-  document.getElementById('prd-form-cancel')?.addEventListener('click', () => closeModal('prd-form-modal'));
-  document.getElementById('prd-form-close')?.addEventListener('click',  () => closeModal('prd-form-modal'));
-}
-
-function setFieldError(errId, fieldId, msg) {
-  const errEl   = document.getElementById(errId);
-  const fieldEl = document.getElementById(fieldId);
-  if (errEl)   errEl.textContent = msg;
-  if (fieldEl) fieldEl.classList.add('prd-error');
-}
-
-function clearFormErrors() {
-  document.querySelectorAll('.prd-form-error').forEach(el => el.textContent = '');
-  document.querySelectorAll('.prd-form-input').forEach(el => el.classList.remove('prd-error'));
-}
-
-// ============================================
-// VIEW MODAL
-// ============================================
-function openViewModal(id) {
-  const item = findItem(id);
-  if (!item) return;
-
-  const pStatus = getProductStatus(item);
-  const content = document.getElementById('prd-view-content');
-  if (!content) return;
-
-  content.innerHTML = `
-    <div class="prd-view-grid">
-      <div class="prd-view-field prd-span-full">
-        <div class="prd-view-label">Product Name</div>
-        <div class="prd-view-value" style="font-size:15px">${escHtml(item.name)}</div>
-      </div>
-      <div class="prd-view-field">
-        <div class="prd-view-label">SKU</div>
-        <div class="prd-view-value"><span class="prd-sku">${escHtml(item.sku)}</span></div>
-      </div>
-      <div class="prd-view-field">
-        <div class="prd-view-label">Category</div>
-        <div class="prd-view-value"><span class="prd-category">${escHtml(item.category)}</span></div>
-      </div>
-      <div class="prd-view-field">
-        <div class="prd-view-label">Purchase Price</div>
-        <div class="prd-view-value">${formatINR(item.purchasePrice)}</div>
-      </div>
-      <div class="prd-view-field">
-        <div class="prd-view-label">Selling Price</div>
-        <div class="prd-view-value">${formatINR(item.sellingPrice)}</div>
-      </div>
-      <div class="prd-view-field">
-        <div class="prd-view-label">Current Stock</div>
-        <div class="prd-view-value">${item.currentStock} units</div>
-      </div>
-      <div class="prd-view-field">
-        <div class="prd-view-label">Minimum Stock</div>
-        <div class="prd-view-value">${item.minimumStock || 0} units</div>
-      </div>
-      <div class="prd-view-field">
-        <div class="prd-view-label">Status</div>
-        <div class="prd-view-value"><span class="badge ${getProductStatusBadgeClass(pStatus)}">${pStatus}</span></div>
-      </div>
-      <div class="prd-view-field">
-        <div class="prd-view-label">Created</div>
-        <div class="prd-view-value" style="font-weight:400;color:var(--color-text-secondary)">${formatDate(item.createdAt)}</div>
-      </div>
-      <div class="prd-view-field">
-        <div class="prd-view-label">Last Updated</div>
-        <div class="prd-view-value" style="font-weight:400;color:var(--color-text-secondary)">${formatDate(item.updatedAt) || '—'}</div>
-      </div>
-      ${item.description ? `<div class="prd-view-field" style="grid-column:1/-1">
-        <div class="prd-view-label">Description</div>
-        <div class="prd-view-desc">${escHtml(item.description)}</div>
-      </div>` : ''}
-    </div>
-  `;
-
-  document.getElementById('prd-view-edit-btn').dataset.id = item.id;
-  openModal('prd-view-modal');
-}
-
-function initViewModal() {
-  document.getElementById('prd-view-close')?.addEventListener('click',    () => closeModal('prd-view-modal'));
-  document.getElementById('prd-view-close-btn')?.addEventListener('click', () => closeModal('prd-view-modal'));
-  document.getElementById('prd-view-edit-btn')?.addEventListener('click', e => {
-    const id = e.currentTarget.dataset.id;
-    openEditModal(id);
-  });
-}
-
-// ============================================
-// DELETE MODAL
-// ============================================
-function openDeleteModal(id) {
-  document.getElementById('prd-delete-item-id').value = id;
-  openModal('prd-delete-modal');
-}
-
-function initDeleteModal() {
-  document.getElementById('prd-delete-cancel')?.addEventListener('click', () => closeModal('prd-delete-modal'));
-  document.getElementById('prd-delete-confirm')?.addEventListener('click', () => {
-    const id = document.getElementById('prd-delete-item-id').value;
-    productsData = productsData.filter(p => p.id !== id);
-    saveData();
-    closeModal('prd-delete-modal');
-    applyFilters();
-    renderKPIs();
-    showToast('Product deleted successfully.', 'success');
-  });
-}
-
-// ============================================
-// EXPORT CSV
-// ============================================
-function initExport() {
-  document.getElementById('prd-export-btn')?.addEventListener('click', () => {
-    if (filteredData.length === 0) { showToast('No products to export.', 'warning'); return; }
-
-    const headers = ['Name', 'SKU', 'Category', 'Purchase Price', 'Selling Price', 'Current Stock', 'Min Stock', 'Status', 'Description', 'Created'];
-    const rows    = filteredData.map(p => [
-      `"${p.name}"`,
-      `"${p.sku}"`,
-      `"${p.category}"`,
-      p.purchasePrice,
-      p.sellingPrice,
-      p.currentStock,
-      p.minimumStock || 0,
-      `"${getProductStatus(p)}"`,
-      `"${(p.description || '').replace(/"/g, '""')}"`,
-      `"${formatDate(p.createdAt)}"`,
-    ]);
-
-    const csv  = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
-    const blob = new Blob([csv], { type: 'text/csv' });
-    const url  = URL.createObjectURL(blob);
-    const a    = document.createElement('a');
-    a.href     = url;
-    a.download = 'flowbase-products.csv';
-    a.click();
-    URL.revokeObjectURL(url);
-    showToast('CSV exported successfully.', 'success');
-  });
-}
-
-// ============================================
-// MODAL HELPERS
-// ============================================
-function openModal(id) {
-  const el = document.getElementById(id);
-  if (el) {
-    el.classList.add('open');
-    document.body.style.overflow = 'hidden';
-  }
-}
-
-function closeModal(id) {
-  const el = document.getElementById(id);
-  if (el) {
-    el.classList.remove('open');
-    if (!document.querySelector('.modal-overlay.open')) {
-      document.body.style.overflow = '';
-    }
-  }
-}
-
-function initModalOverlayClose() {
-  document.querySelectorAll('.modal-overlay').forEach(overlay => {
-    overlay.addEventListener('click', e => {
-      if (e.target === overlay) closeModal(overlay.id);
-    });
-  });
-}
-
-function initEscClose() {
-  document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') {
-      const open = document.querySelector('.modal-overlay.open');
-      if (open) closeModal(open.id);
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.prd-actions-wrap')) {
       closeAllDropdowns();
     }
   });
 }
 
-// ============================================
-// SIDEBAR
-// ============================================
-function initSidebar() {
-  const sidebar   = document.getElementById('sidebar');
-  const hamburger = document.getElementById('hamburger-btn');
-  const overlay   = document.getElementById('sidebar-overlay');
-  if (!sidebar) return;
+function closeAllDropdowns() {
+  document.querySelectorAll('.prd-dropdown.open').forEach(dd => dd.classList.remove('open'));
+  document.querySelectorAll('[data-toggle-dropdown]').forEach(b => b.setAttribute('aria-expanded', 'false'));
+  activeDropdownId = null;
+}
 
-  function openSidebar()  {
-    sidebar.classList.add('open');
-    overlay && overlay.classList.add('open');
-    document.body.style.overflow = 'hidden';
-  }
-  function closeSidebar() {
-    sidebar.classList.remove('open');
-    overlay && overlay.classList.remove('open');
-    if (!document.querySelector('.modal-overlay.open')) document.body.style.overflow = '';
-  }
-
-  hamburger && hamburger.addEventListener('click', () => {
-    sidebar.classList.contains('open') ? closeSidebar() : openSidebar();
+// ============================================
+// PAGINATION
+// ============================================
+function initPagination() {
+  document.getElementById('prd-prev-page-btn')?.addEventListener('click', () => {
+    if (currentPage > 1) {
+      currentPage--;
+      renderTable();
+      renderPagination();
+    }
   });
-  overlay && overlay.addEventListener('click', closeSidebar);
-  sidebar.querySelectorAll('.nav-item').forEach(item => {
-    item.addEventListener('click', () => { if (window.innerWidth <= 768) closeSidebar(); });
+
+  document.getElementById('prd-next-page-btn')?.addEventListener('click', () => {
+    const totalPages = Math.ceil(filteredData.length / pageSize);
+    if (currentPage < totalPages) {
+      currentPage++;
+      renderTable();
+      renderPagination();
+    }
+  });
+
+  document.getElementById('prd-page-size')?.addEventListener('change', (e) => {
+    pageSize = parseInt(e.target.value, 10) || 10;
+    currentPage = 1;
+    renderTable();
+    renderPagination();
+  });
+}
+
+function renderPagination() {
+  const totalPages = Math.max(1, Math.ceil(filteredData.length / pageSize));
+  const start = filteredData.length === 0 ? 0 : (currentPage - 1) * pageSize + 1;
+  const end   = Math.min(currentPage * pageSize, filteredData.length);
+
+  const infoEl  = document.getElementById('prd-pagination-info');
+  const numsEl  = document.getElementById('prd-page-numbers');
+  const prevBtn = document.getElementById('prd-prev-page-btn');
+  const nextBtn = document.getElementById('prd-next-page-btn');
+
+  if (infoEl) {
+    infoEl.textContent = filteredData.length > 0
+      ? `Showing ${start}–${end} of ${filteredData.length} products`
+      : 'No products to display';
+  }
+
+  if (numsEl) {
+    numsEl.innerHTML = '';
+    for (let p = 1; p <= totalPages; p++) {
+      const btn = document.createElement('button');
+      btn.className = 'prd-page-num' + (p === currentPage ? ' active' : '');
+      btn.textContent = p;
+      btn.type = 'button';
+      btn.setAttribute('aria-label', `Page ${p}`);
+      btn.addEventListener('click', () => {
+        currentPage = p;
+        renderTable();
+        renderPagination();
+      });
+      numsEl.appendChild(btn);
+    }
+  }
+
+  if (prevBtn) prevBtn.disabled = currentPage <= 1;
+  if (nextBtn) nextBtn.disabled = currentPage >= totalPages;
+}
+
+// ============================================
+// ADD / EDIT PRODUCT MODAL
+// ============================================
+function initProductForm() {
+  const addBtn = document.getElementById('add-product-btn');
+  addBtn?.addEventListener('click', openAddProductModal);
+
+  const closeBtn = document.getElementById('prd-form-close');
+  closeBtn?.addEventListener('click', () => closeModal('prd-form-modal'));
+
+  const cancelBtn = document.getElementById('prd-form-cancel');
+  cancelBtn?.addEventListener('click', () => closeModal('prd-form-modal'));
+
+  const form = document.getElementById('prd-product-form');
+  form?.addEventListener('submit', handleProductFormSubmit);
+}
+
+function openAddProductModal() {
+  const modalTitle = document.getElementById('prd-modal-title');
+  const submitBtn  = document.getElementById('prd-form-submit');
+  if (modalTitle) modalTitle.textContent = 'Add Product';
+  if (submitBtn)  submitBtn.textContent  = 'Add Product';
+
+  document.getElementById('prd-field-id').value = '';
+  document.getElementById('prd-field-name').value = '';
+  document.getElementById('prd-field-sku').value = '';
+  document.getElementById('prd-field-category').value = categoriesData[0]?.id || '';
+  document.getElementById('prd-field-purchase-price').value = '';
+  document.getElementById('prd-field-selling-price').value = '';
+  document.getElementById('prd-field-stock').value = '0';
+  document.getElementById('prd-field-min-stock').value = '5';
+  document.getElementById('prd-field-description').value = '';
+
+  clearFormErrors();
+  openModal('prd-form-modal');
+  document.getElementById('prd-field-name')?.focus();
+}
+
+function openEditModal(productId) {
+  const item = productsData.find(p => String(p.id) === String(productId));
+  if (!item) return;
+
+  const modalTitle = document.getElementById('prd-modal-title');
+  const submitBtn  = document.getElementById('prd-form-submit');
+  if (modalTitle) modalTitle.textContent = 'Edit Product';
+  if (submitBtn)  submitBtn.textContent  = 'Save Changes';
+
+  document.getElementById('prd-field-id').value = item.id;
+  document.getElementById('prd-field-name').value = item.name;
+  document.getElementById('prd-field-sku').value = item.sku;
+  document.getElementById('prd-field-category').value = item.category_id || (categoriesData.find(c => c.name === item.category)?.id || '');
+  document.getElementById('prd-field-purchase-price').value = item.purchasePrice;
+  document.getElementById('prd-field-selling-price').value = item.sellingPrice;
+  document.getElementById('prd-field-stock').value = item.currentStock;
+  document.getElementById('prd-field-min-stock').value = item.minimumStock;
+  document.getElementById('prd-field-description').value = item.description || '';
+
+  clearFormErrors();
+  openModal('prd-form-modal');
+  document.getElementById('prd-field-name')?.focus();
+}
+
+async function handleProductFormSubmit(e) {
+  e.preventDefault();
+  clearFormErrors();
+
+  const idVal         = document.getElementById('prd-field-id').value;
+  const name          = document.getElementById('prd-field-name').value.trim();
+  const sku           = document.getElementById('prd-field-sku').value.trim();
+  const categoryIdVal = document.getElementById('prd-field-category').value;
+  const purchasePrice = parseFloat(document.getElementById('prd-field-purchase-price').value);
+  const sellingPrice  = parseFloat(document.getElementById('prd-field-selling-price').value);
+  const stock         = parseInt(document.getElementById('prd-field-stock').value, 10) || 0;
+  const minStock      = parseInt(document.getElementById('prd-field-min-stock').value, 10) || 5;
+  const description   = document.getElementById('prd-field-description').value.trim();
+
+  let hasError = false;
+  if (!name) {
+    showFormError('name', 'Product name is required');
+    hasError = true;
+  }
+  if (!categoryIdVal) {
+    showFormError('category', 'Please select a category');
+    hasError = true;
+  }
+  if (isNaN(purchasePrice) || purchasePrice < 0) {
+    showFormError('purchase-price', 'Enter a valid cost price');
+    hasError = true;
+  }
+  if (isNaN(sellingPrice) || sellingPrice < 0) {
+    showFormError('selling-price', 'Enter a valid selling price');
+    hasError = true;
+  }
+
+  if (hasError) return;
+
+  const categoryId = parseInt(categoryIdVal, 10);
+  const catObj     = categoriesData.find(c => c.id === categoryId);
+  const catName    = catObj ? catObj.name : 'General';
+  const shopId     = (typeof ensureActiveShop === 'function') ? await ensureActiveShop() : 1;
+
+  const payload = {
+    name,
+    category_id: categoryId,
+    purchase_price: purchasePrice,
+    selling_price: sellingPrice,
+    stock_quantity: stock,
+    low_stock_threshold: minStock,
+    description: description || null,
+  };
+
+  try {
+    if (idVal) {
+      // EDIT
+      const productId = parseInt(idVal, 10);
+      if (shopId) {
+        await apiRequest(`/shops/${shopId}/products/${productId}`, {
+          method: 'PATCH',
+          body: payload
+        });
+      }
+
+      const idx = productsData.findIndex(p => String(p.id) === String(productId));
+      if (idx !== -1) {
+        productsData[idx] = {
+          ...productsData[idx],
+          name,
+          sku: sku || productsData[idx].sku,
+          category: catName,
+          category_id: categoryId,
+          purchasePrice,
+          sellingPrice,
+          currentStock: stock,
+          minimumStock: minStock,
+          description,
+        };
+      }
+      showToast('Product updated successfully!', 'success');
+    } else {
+      // ADD
+      let newId = Date.now();
+      if (shopId) {
+        const created = await apiRequest(`/shops/${shopId}/products`, {
+          method: 'POST',
+          body: payload
+        });
+        if (created && created.id) newId = created.id;
+      }
+
+      const newProduct = {
+        id: newId,
+        name,
+        sku: sku || `PRD-${String(newId).slice(-3)}`,
+        category: catName,
+        category_id: categoryId,
+        purchasePrice,
+        sellingPrice,
+        currentStock: stock,
+        minimumStock: minStock,
+        status: stock > 0 ? 'active' : 'inactive',
+        description,
+        createdAt: Date.now(),
+      };
+
+      productsData.unshift(newProduct);
+      showToast('Product added successfully!', 'success');
+    }
+
+    localStorage.setItem(LS_INV_KEY, JSON.stringify(productsData));
+    closeModal('prd-form-modal');
+    applyFilters();
+    renderKPIs();
+  } catch (err) {
+    console.error('Save product error:', err);
+    showToast(err.message || 'Failed to save product', 'danger');
+  }
+}
+
+function clearFormErrors() {
+  ['name', 'sku', 'category', 'purchase-price', 'selling-price', 'stock', 'min-stock'].forEach(k => {
+    const el = document.getElementById(`prd-err-${k}`);
+    if (el) el.textContent = '';
+  });
+}
+
+function showFormError(fieldKey, message) {
+  const el = document.getElementById(`prd-err-${fieldKey}`);
+  if (el) el.textContent = message;
+}
+
+// ============================================
+// VIEW PRODUCT MODAL
+// ============================================
+function openViewModal(productId) {
+  const item = productsData.find(p => String(p.id) === String(productId));
+  if (!item) return;
+
+  const contentEl = document.getElementById('prd-view-content');
+  if (!contentEl) return;
+
+  const margin = item.sellingPrice > 0
+    ? (((item.sellingPrice - item.purchasePrice) / item.sellingPrice) * 100).toFixed(1)
+    : 0;
+  const status = getStockStatus(item);
+  const badgeClass = getStockBadgeClass(status);
+
+  contentEl.innerHTML = `
+    <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+      <div>
+        <h3 style="font-size:16px; font-weight:700; color:var(--color-text); margin-bottom:4px;">${escHtml(item.name)}</h3>
+        <span class="prd-sku" style="font-size:12px;">SKU: ${escHtml(item.sku)}</span>
+      </div>
+      <span class="badge ${badgeClass}">${status}</span>
+    </div>
+
+    <div class="prd-view-grid">
+      <div class="prd-view-field">
+        <span class="prd-view-label">Category</span>
+        <span class="prd-view-value">${escHtml(item.category)}</span>
+      </div>
+      <div class="prd-view-field">
+        <span class="prd-view-label">Profit Margin</span>
+        <span class="prd-view-value" style="color:var(--color-success); font-weight:600;">${margin}% (₹${(item.sellingPrice - item.purchasePrice).toFixed(2)})</span>
+      </div>
+      <div class="prd-view-field">
+        <span class="prd-view-label">Cost Price</span>
+        <span class="prd-view-value text-mono">${formatINR(item.purchasePrice)}</span>
+      </div>
+      <div class="prd-view-field">
+        <span class="prd-view-label">Selling Price</span>
+        <span class="prd-view-value text-mono font-medium">${formatINR(item.sellingPrice)}</span>
+      </div>
+      <div class="prd-view-field">
+        <span class="prd-view-label">Stock Quantity</span>
+        <span class="prd-view-value text-mono font-medium">${item.currentStock} units</span>
+      </div>
+      <div class="prd-view-field">
+        <span class="prd-view-label">Low Stock Threshold</span>
+        <span class="prd-view-value text-mono">${item.minimumStock} units</span>
+      </div>
+    </div>
+
+    ${item.description ? `
+      <div class="prd-view-desc">
+        <div style="font-weight:600; font-size:11px; text-transform:uppercase; color:var(--color-text-muted); margin-bottom:4px;">Notes / Description</div>
+        <div>${escHtml(item.description)}</div>
+      </div>
+    ` : ''}
+  `;
+
+  const editBtn = document.getElementById('prd-view-edit-btn');
+  if (editBtn) {
+    editBtn.onclick = () => {
+      closeModal('prd-view-modal');
+      openEditModal(item.id);
+    };
+  }
+
+  const closeBtn = document.getElementById('prd-view-close');
+  if (closeBtn) closeBtn.onclick = () => closeModal('prd-view-modal');
+
+  const closeBtn2 = document.getElementById('prd-view-close-btn');
+  if (closeBtn2) closeBtn2.onclick = () => closeModal('prd-view-modal');
+
+  openModal('prd-view-modal');
+}
+
+// ============================================
+// DELETE PRODUCT MODAL
+// ============================================
+function initDeleteModal() {
+  document.getElementById('prd-delete-cancel')?.addEventListener('click', () => closeModal('prd-delete-modal'));
+  document.getElementById('prd-delete-confirm')?.addEventListener('click', async () => {
+    const idVal = document.getElementById('prd-delete-item-id').value;
+    if (!idVal) return;
+
+    const productId = parseInt(idVal, 10);
+    const shopId = (typeof ensureActiveShop === 'function') ? await ensureActiveShop() : 1;
+
+    try {
+      if (shopId) {
+        await apiRequest(`/shops/${shopId}/products/${productId}`, { method: 'DELETE' });
+      }
+
+      productsData = productsData.filter(p => String(p.id) !== String(productId));
+      localStorage.setItem(LS_INV_KEY, JSON.stringify(productsData));
+
+      closeModal('prd-delete-modal');
+      showToast('Product deleted from catalog', 'success');
+      applyFilters();
+      renderKPIs();
+    } catch (err) {
+      console.error('Delete product error:', err);
+      showToast(err.message || 'Failed to delete product', 'danger');
+    }
+  });
+}
+
+function openDeleteModal(productId) {
+  const item = productsData.find(p => String(p.id) === String(productId));
+  if (!item) return;
+
+  document.getElementById('prd-delete-item-id').value = item.id;
+  const descEl = document.getElementById('prd-delete-desc');
+  if (descEl) {
+    descEl.textContent = `Are you sure you want to delete "${item.name}"? This action cannot be undone.`;
+  }
+  openModal('prd-delete-modal');
+}
+
+// ============================================
+// CSV EXPORT
+// ============================================
+function initExport() {
+  document.getElementById('prd-export-btn')?.addEventListener('click', () => {
+    if (filteredData.length === 0) {
+      showToast('No products to export', 'warning');
+      return;
+    }
+
+    const headers = ['ID', 'Product Name', 'SKU', 'Category', 'Cost Price (INR)', 'Selling Price (INR)', 'Current Stock', 'Min Stock Threshold', 'Stock Status'];
+    const rows = filteredData.map(p => [
+      p.id,
+      `"${(p.name || '').replace(/"/g, '""')}"`,
+      `"${p.sku || ''}"`,
+      `"${(p.category || '').replace(/"/g, '""')}"`,
+      p.purchasePrice,
+      p.sellingPrice,
+      p.currentStock,
+      p.minimumStock,
+      `"${getStockStatus(p)}"`
+    ]);
+
+    const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute('download', `flowbase_products_${new Date().toISOString().slice(0, 10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    showToast('Products catalog exported to CSV', 'success');
   });
 }
 
 // ============================================
-// LOGOUT
+// APP SHELL & UTILITIES
 // ============================================
-function initLogout() {
-  const logoutBtn  = document.getElementById('logout-btn');
-  const modal      = document.getElementById('logout-modal');
-  const cancelBtn  = document.getElementById('logout-cancel');
-  const confirmBtn = document.getElementById('logout-confirm');
-  if (!logoutBtn || !modal) return;
-  logoutBtn.addEventListener('click',   () => openModal('logout-modal'));
-  cancelBtn?.addEventListener('click',  () => closeModal('logout-modal'));
-  confirmBtn?.addEventListener('click', () => { closeModal('logout-modal'); showToast('Logged out successfully.', 'success'); });
+function initAppShell() {
+  // Mobile Hamburger Toggle
+  const hamburgerBtn = document.getElementById('hamburger-btn');
+  const sidebar      = document.getElementById('sidebar');
+  const overlay      = document.getElementById('sidebar-overlay');
+
+  hamburgerBtn?.addEventListener('click', () => {
+    sidebar?.classList.toggle('open');
+    overlay?.classList.toggle('open');
+  });
+
+  overlay?.addEventListener('click', () => {
+    sidebar?.classList.remove('open');
+    overlay?.classList.remove('open');
+  });
+
+  // Dark Theme Toggle
+  const themeToggleBtn = document.getElementById('theme-toggle-btn');
+  const savedTheme = localStorage.getItem('flowbase_theme');
+  if (savedTheme === 'dark') {
+    document.documentElement.setAttribute('data-theme', 'dark');
+  }
+
+  themeToggleBtn?.addEventListener('click', () => {
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    if (isDark) {
+      document.documentElement.removeAttribute('data-theme');
+      localStorage.setItem('flowbase_theme', 'light');
+    } else {
+      document.documentElement.setAttribute('data-theme', 'dark');
+      localStorage.setItem('flowbase_theme', 'dark');
+    }
+  });
+
+  // User Profile Modal
+  const userBtn     = document.getElementById('header-user-btn');
+  const profileModal = document.getElementById('profile-modal');
+  const profileClose = document.getElementById('profile-modal-close');
+  const profileCloseBtn = document.getElementById('profile-close-btn');
+
+  userBtn?.addEventListener('click', () => {
+    try {
+      const user = JSON.parse(localStorage.getItem('flowbase_user') || '{}');
+      const prof = JSON.parse(localStorage.getItem('flowbase_profile') || '{}');
+      const name = prof.name || user.name || 'Shop Admin';
+      const email = user.email || prof.email || 'admin@flowbase.com';
+      const role = prof.role || 'OWNER';
+
+      const avatarEl = document.getElementById('modal-user-avatar');
+      const nameEl   = document.getElementById('modal-user-name');
+      const emailEl  = document.getElementById('modal-user-email');
+      const roleEl   = document.getElementById('modal-user-role');
+
+      if (avatarEl) avatarEl.textContent = name.slice(0, 2).toUpperCase();
+      if (nameEl)   nameEl.textContent   = name;
+      if (emailEl)  emailEl.textContent  = email;
+      if (roleEl)   roleEl.textContent   = role;
+    } catch (_) {}
+    openModal('profile-modal');
+  });
+
+  profileClose?.addEventListener('click', () => closeModal('profile-modal'));
+  profileCloseBtn?.addEventListener('click', () => closeModal('profile-modal'));
+
+  // Logout Modal
+  const logoutBtn       = document.getElementById('logout-btn');
+  const profileLogoutBtn = document.getElementById('profile-logout-btn');
+  const logoutCancel    = document.getElementById('logout-cancel');
+  const logoutConfirm   = document.getElementById('logout-confirm');
+
+  const triggerLogout = () => {
+    closeModal('profile-modal');
+    openModal('logout-modal');
+  };
+
+  logoutBtn?.addEventListener('click', triggerLogout);
+  profileLogoutBtn?.addEventListener('click', triggerLogout);
+  logoutCancel?.addEventListener('click', () => closeModal('logout-modal'));
+
+  logoutConfirm?.addEventListener('click', () => {
+    if (typeof handleLogout === 'function') {
+      handleLogout();
+    } else {
+      localStorage.removeItem('flowbase_access_token');
+      localStorage.removeItem('flowbase_refresh_token');
+      localStorage.removeItem('flowbase_user');
+      window.location.href = 'login.html';
+    }
+  });
+
+  // Modal backdrop click close
+  document.querySelectorAll('.modal-overlay').forEach(overlayEl => {
+    overlayEl.addEventListener('click', (e) => {
+      if (e.target === overlayEl) {
+        overlayEl.classList.remove('open');
+      }
+    });
+  });
+}
+
+function openModal(modalId) {
+  const m = document.getElementById(modalId);
+  if (m) m.classList.add('open');
+}
+
+function closeModal(modalId) {
+  const m = document.getElementById(modalId);
+  if (m) m.classList.remove('open');
 }
 
 // ============================================
-// TOAST
+// HELPERS
 // ============================================
-function showToast(message, type = 'default') {
+function getStockStatus(item) {
+  const stock = Number(item.currentStock || 0);
+  const min   = Number(item.minimumStock || 5);
+  if (stock <= 0) return 'Out of Stock';
+  if (stock <= min) return 'Low Stock';
+  return 'In Stock';
+}
+
+function getStockBadgeClass(status) {
+  if (status === 'In Stock') return 'badge-success';
+  if (status === 'Low Stock') return 'badge-warning';
+  return 'badge-danger';
+}
+
+function formatINR(val) {
+  return '₹' + Number(val || 0).toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+}
+
+function escHtml(str) {
+  return String(str || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+function showToast(message, type = '') {
   const container = document.getElementById('toast-container');
   if (!container) return;
+
   const toast = document.createElement('div');
-  toast.className = `toast${type !== 'default' ? ' toast-' + type : ''}`;
-  const icons = {
-    success: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>`,
-    warning: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`,
-    danger:  `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>`,
-    default: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`,
-  };
-  toast.innerHTML = (icons[type] || icons.default) + `<span>${message}</span>`;
+  toast.className = `toast${type ? ` toast-${type}` : ''}`;
+  toast.textContent = message;
+
   container.appendChild(toast);
-  setTimeout(() => { toast.classList.add('toast-out'); setTimeout(() => toast.remove(), 200); }, 3200);
+  setTimeout(() => {
+    toast.classList.add('toast-out');
+    setTimeout(() => toast.remove(), 250);
+  }, 3000);
 }
-
-// ============================================
-// INIT
-// ============================================
-document.addEventListener('DOMContentLoaded', () => {
-  loadData();
-  applyFilters();
-  renderKPIs();
-
-  initSidebar();
-  initLogout();
-  initSearchAndFilters();
-  initAddProductBtn();
-  initFormSubmit();
-  initViewModal();
-  initDeleteModal();
-  initPagination();
-  initTableActions();
-  initExport();
-  initModalOverlayClose();
-  initEscClose();
-});

@@ -40,6 +40,10 @@ let currentAuthMode = 'login'; // 'login' | 'signup'
 // INIT
 // ============================================
 document.addEventListener('DOMContentLoaded', () => {
+  if (typeof isAuthenticated === 'function' && isAuthenticated()) {
+    window.location.href = 'dashboard.html';
+    return;
+  }
   initRememberMe();
   initPasswordToggles();
   initAuthSwitching();
@@ -197,25 +201,35 @@ async function handleLogin() {
 
   // 2. Set loading state
   setLoadingState('login', true);
+  hideFormError('login');
 
   try {
-    // 3. Attempt demo authentication
-    const result = await authenticateDemo(email, password);
+    // 3. Authenticate with FastAPI Backend
+    const result = await apiRequest('/auth/login', {
+      method: 'POST',
+      body: { email, password }
+    });
 
-    if (result.success) {
+    if (result && result.session) {
       saveRememberMe(email);
-      storeSession(email, result.user);
+      setSession(result);
+      
+      // Load user profile and shop
+      await ensureActiveShop();
+
       showToast('Welcome back!', 'success');
       setTimeout(() => {
         window.location.href = 'dashboard.html';
-      }, 900);
+      }, 500);
     } else {
       setLoadingState('login', false);
-      showFormError('login', 'Invalid email or password.');
+      showFormError('login', 'Login failed. Please check your credentials.');
     }
   } catch (err) {
+    console.error('Backend auth request error:', err);
     setLoadingState('login', false);
-    showFormError('login', 'Something went wrong. Please try again.');
+    const msg = err.message || 'Invalid email or password.';
+    showFormError('login', msg);
   }
 }
 
@@ -240,34 +254,6 @@ function validateLogin(email, password) {
   }
 
   return valid;
-}
-
-// ============================================
-// AUTHENTICATION DEMO BEHAVIOR
-// ============================================
-function authenticateDemo(email, password) {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      const emailLower = email.toLowerCase();
-
-      // Check demo admin credentials
-      if (emailLower === DEMO_CREDENTIALS.email.toLowerCase() && password === DEMO_CREDENTIALS.password) {
-        resolve({ success: true, user: { name: 'Shop Admin', email: DEMO_CREDENTIALS.email } });
-        return;
-      }
-
-      // Check registered accounts in localStorage
-      const registeredAccounts = getStoredAccounts();
-      const user = registeredAccounts.find(a => a.email.toLowerCase() === emailLower);
-
-      if (user) {
-        // In demo mode, any valid registered email is accepted
-        resolve({ success: true, user });
-      } else {
-        resolve({ success: false });
-      }
-    }, 1000);
-  });
 }
 
 // ============================================
@@ -299,46 +285,43 @@ async function createAccount() {
   const isValid = validateRegistration(fullname, email, password, confirm);
   if (!isValid) return;
 
-  // 2. Check if email already registered
-  const accounts = getStoredAccounts();
-  const existing = accounts.find(a => a.email.toLowerCase() === email.toLowerCase());
-
-  if (existing || email.toLowerCase() === DEMO_CREDENTIALS.email.toLowerCase()) {
-    showFormError('signup', 'An account with this email already exists.');
-    return;
-  }
-
-  // 3. Set loading state
+  // 2. Set loading state
   setLoadingState('signup', true);
+  hideFormError('signup');
 
-  // 4. Save account (frontend demo persistence — NO plain-text passwords stored)
-  setTimeout(() => {
-    accounts.push({
-      name: fullname,
-      email: email,
-      createdAt: new Date().toISOString(),
+  try {
+    // 3. Create account with FastAPI Backend
+    const result = await apiRequest('/auth/signup', {
+      method: 'POST',
+      body: {
+        name: fullname,
+        email: email,
+        password: password
+      }
     });
 
-    try {
-      localStorage.setItem(STORAGE_KEY_ACCOUNTS, JSON.stringify(accounts));
-    } catch (e) { /* ignore */ }
-
     setLoadingState('signup', false);
-    showToast('Account created successfully.', 'success');
 
-    // Clear signup form
-    nameInput && (nameInput.value = '');
-    emailInput && (emailInput.value = '');
-    passInput && (passInput.value = '');
-    confirmInput && (confirmInput.value = '');
-
-    // Switch to login view & pre-fill email
-    switchAuthMode('login');
-    const loginEmailInput = document.getElementById('login-email');
-    if (loginEmailInput) {
-      loginEmailInput.value = email;
+    if (result && result.session) {
+      // Auto-logged in
+      setSession(result);
+      await ensureActiveShop();
+      showToast('Account created successfully!', 'success');
+      setTimeout(() => {
+        window.location.href = 'dashboard.html';
+      }, 500);
+    } else {
+      const msg = result?.message || 'Account created! Please sign in.';
+      showToast(msg, 'success');
+      switchAuthMode('login');
+      const loginEmail = document.getElementById('login-email');
+      if (loginEmail) loginEmail.value = email;
     }
-  }, 900);
+  } catch (err) {
+    console.error('Backend signup error:', err);
+    setLoadingState('signup', false);
+    showFormError('signup', err.message || 'Failed to create account.');
+  }
 }
 
 function validateRegistration(fullname, email, password, confirm) {

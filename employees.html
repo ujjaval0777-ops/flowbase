@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Employees — FlowBase</title>
+  <meta name="description" content="FlowBase Employees — manage staff accounts, roles, salaries, and shop payroll." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/dashboard.css" />
+  <link rel="stylesheet" href="css/products.css" />
+</head>
+<body>
+
+<div class="app-shell">
+
+  <!-- SIDEBAR OVERLAY (mobile) -->
+  <div class="sidebar-overlay" id="sidebar-overlay" aria-hidden="true"></div>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar" role="navigation" aria-label="Main navigation">
+    <a class="sidebar-logo" href="dashboard.html" aria-label="FlowBase home">
+      <span class="sidebar-logo-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h7v7H4V4zm0 9h7v7H4v-7zm9-9h7v7h-7V4zm0 9h3v3h-3v-3zm4 4h3v3h-3v-3zm-4 0h3v3h-3v-3z"/></svg>
+      </span>
+      <span class="sidebar-logo-text">FLOWBASE</span>
+    </a>
+    <nav class="sidebar-nav" aria-label="Primary">
+      <div class="sidebar-nav-section">
+        <a class="nav-item" href="dashboard.html" id="nav-dashboard">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          <span>Dashboard</span>
+        </a>
+        <a class="nav-item" href="products.html" id="nav-products">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          <span>Products</span>
+        </a>
+        <a class="nav-item" href="billing.html" id="nav-billing">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+          <span>POS Billing</span>
+        </a>
+        <a class="nav-item" href="purchases_expenses.html" id="nav-purchases">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          <span>Purchases &amp; Expenses</span>
+        </a>
+        <a class="nav-item active" href="employees.html" id="nav-employees" aria-current="page">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          <span>Employees</span>
+        </a>
+      </div>
+      <div class="nav-divider" role="separator"></div>
+    </nav>
+    <footer class="sidebar-footer">
+      <button class="nav-item" id="theme-toggle-btn" type="button" aria-label="Toggle Dark Mode" style="width:100%; border:none; background:none; text-align:left; cursor:pointer;">
+        <span class="theme-toggle-icon" aria-hidden="true" style="display:flex; align-items:center; justify-content:center;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </span>
+        <span class="theme-toggle-label">Dark Mode</span>
+      </button>
+      <button class="nav-item logout-nav-item" id="logout-btn" type="button" aria-label="Log out" style="width:100%; border:none; background:none; text-align:left; cursor:pointer;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        <span>Logout</span>
+      </button>
+    </footer>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <div class="main-content">
+
+    <!-- TOP HEADER -->
+    <header class="top-header" role="banner">
+      <div class="header-left">
+        <button class="hamburger-btn" id="hamburger-btn" type="button" aria-label="Toggle sidebar" aria-expanded="false" aria-controls="sidebar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <span class="header-breadcrumb">Employees</span>
+      </div>
+      <div class="header-right">
+        <button class="header-profile" id="header-user-btn" type="button" aria-label="Shop Admin profile" style="background:none; border:none; cursor:pointer;">
+          <div class="profile-avatar" aria-hidden="true">SA</div>
+          <div class="profile-info">
+            <div class="profile-name">Shop Admin</div>
+            <div class="profile-role">Administrator</div>
+          </div>
+        </button>
+      </div>
+    </header>
+
+    <!-- PAGE BODY -->
+    <main class="page-body" id="main-content">
+
+      <!-- PAGE HEADER -->
+      <section class="prd-page-header" aria-label="Page header">
+        <div class="prd-page-header-text">
+          <h1 class="prd-page-title">Employees &amp; Payroll</h1>
+          <p class="prd-page-subtitle">Manage employee access, role permissions, salaries, and monthly payroll history.</p>
+        </div>
+        <div class="prd-page-actions" style="display:flex; gap:10px; flex-wrap:wrap;">
+          <button class="btn btn-ghost" id="view-salaries-btn" type="button" style="border:1px solid var(--color-border);">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            Payroll History
+          </button>
+          <button class="btn btn-ghost" id="emp-export-btn" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Export
+          </button>
+          <button class="btn prd-btn-primary" id="add-employee-btn" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Add Member
+          </button>
+        </div>
+      </section>
+
+      <!-- KPI CARDS -->
+      <section aria-label="Employee key performance indicators">
+        <div class="kpi-grid">
+          <div class="kpi-card" id="kpi-total-members">
+            <div class="kpi-card-header"><span class="kpi-label">Total Team Members</span></div>
+            <div class="kpi-value">0</div>
+            <div class="kpi-footer"><span class="kpi-compare">Active store accounts</span></div>
+          </div>
+          <div class="kpi-card" id="kpi-active-staff">
+            <div class="kpi-card-header"><span class="kpi-label">Staff &amp; Cashiers</span></div>
+            <div class="kpi-value">0</div>
+            <div class="kpi-footer"><span class="kpi-compare">Operational floor staff</span></div>
+          </div>
+          <div class="kpi-card" id="kpi-payroll">
+            <div class="kpi-card-header"><span class="kpi-label">Monthly Payroll</span></div>
+            <div class="kpi-value">₹0</div>
+            <div class="kpi-footer"><span class="kpi-compare">Committed salaries</span></div>
+          </div>
+          <div class="kpi-card" id="kpi-admins">
+            <div class="kpi-card-header"><span class="kpi-label">Admins &amp; Managers</span></div>
+            <div class="kpi-value">0</div>
+            <div class="kpi-footer"><span class="kpi-compare">Management roles</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SEARCH & FILTERS -->
+      <section aria-label="Search and filter employees">
+        <div class="prd-toolbar">
+          <div class="prd-search-wrap">
+            <svg class="prd-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="search" id="emp-search-input" class="prd-search-input" placeholder="Search members by name, email, or role..." aria-label="Search employees" autocomplete="off" />
+          </div>
+          <div class="prd-filters">
+            <select id="emp-filter-role" class="prd-select" aria-label="Filter by role">
+              <option value="">All Roles</option>
+              <option value="OWNER">Owner</option>
+              <option value="ADMIN">Admin</option>
+              <option value="STAFF">Staff / Cashier</option>
+            </select>
+            <button class="btn btn-ghost prd-btn-sm" id="emp-clear-filters-btn" type="button">Clear Filters</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- EMPLOYEES TABLE CARD -->
+      <section class="prd-table-card" aria-label="Employees list">
+        <div class="prd-table-responsive" tabindex="0" role="region" aria-label="Employees table scroll area">
+          <table class="prd-table" id="employees-table" aria-label="Employees">
+            <thead>
+              <tr>
+                <th scope="col">Member</th>
+                <th scope="col">Email &amp; Phone</th>
+                <th scope="col">Role</th>
+                <th scope="col" class="prd-th-num">Base Salary</th>
+                <th scope="col">Joined Date</th>
+                <th scope="col" class="prd-th-actions" style="text-align:right;">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="employees-tbody">
+              <!-- Populated by JS -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+    </main>
+  </div>
+</div>
+
+<!-- ============================================
+     ADD EMPLOYEE MODAL (2 Tabs: Create New vs Add Existing)
+     ============================================ -->
+<div class="modal-overlay" id="emp-add-modal" role="dialog" aria-modal="true" aria-labelledby="emp-add-title">
+  <div class="modal" style="max-width: 520px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+      <h2 class="modal-title" id="emp-add-title" style="margin-bottom:0;">Add Shop Member</h2>
+      <button class="prd-modal-close" id="emp-add-close" type="button" aria-label="Close modal" style="background:none; border:none; cursor:pointer;">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+
+    <!-- Tab Switcher -->
+    <div class="nav-tabs" style="margin-bottom: 16px;">
+      <button class="tab-btn active" id="tab-create-user" type="button">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+        Create New User
+      </button>
+      <button class="tab-btn" id="tab-add-existing" type="button">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/></svg>
+        Add Existing User
+      </button>
+    </div>
+
+    <!-- Form 1: Create New User Account -->
+    <form id="emp-create-form">
+      <div class="prd-form-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+        <div class="prd-form-group" style="grid-column:1/-1;">
+          <label class="prd-form-label" for="new-emp-name">Full Name *</label>
+          <input type="text" id="new-emp-name" class="prd-form-input" placeholder="e.g. Rahul Sharma" required />
+        </div>
+        <div class="prd-form-group" style="grid-column:1/-1;">
+          <label class="prd-form-label" for="new-emp-email">Email Address *</label>
+          <input type="email" id="new-emp-email" class="prd-form-input" placeholder="rahul@example.com" required />
+        </div>
+        <div class="prd-form-group">
+          <label class="prd-form-label" for="new-emp-password">Initial Password *</label>
+          <input type="password" id="new-emp-password" class="prd-form-input" placeholder="Min 6 characters" minlength="6" required />
+        </div>
+        <div class="prd-form-group">
+          <label class="prd-form-label" for="new-emp-phone">Phone Number</label>
+          <input type="tel" id="new-emp-phone" class="prd-form-input" placeholder="e.g. +91 9876543210" />
+        </div>
+        <div class="prd-form-group">
+          <label class="prd-form-label" for="new-emp-role">Role *</label>
+          <select id="new-emp-role" class="prd-form-select" required>
+            <option value="STAFF">Staff / Cashier</option>
+            <option value="ADMIN">Admin / Manager</option>
+          </select>
+        </div>
+        <div class="prd-form-group">
+          <label class="prd-form-label" for="new-emp-salary">Base Salary (INR)</label>
+          <input type="number" id="new-emp-salary" class="prd-form-input" placeholder="e.g. 25000" min="0" step="100" />
+        </div>
+      </div>
+      <div class="modal-actions" style="margin-top:20px;">
+        <button class="btn btn-ghost" id="emp-create-cancel" type="button">Cancel</button>
+        <button class="btn prd-btn-primary" id="emp-create-submit" type="submit">Create Employee</button>
+      </div>
+    </form>
+
+    <!-- Form 2: Add Existing User by UUID -->
+    <form id="emp-existing-form" style="display:none;">
+      <div class="prd-form-grid" style="display:flex; flex-direction:column; gap:12px;">
+        <div class="prd-form-group">
+          <label class="prd-form-label" for="exist-user-id">User ID (Supabase Auth UUID) *</label>
+          <input type="text" id="exist-user-id" class="prd-form-input" placeholder="e.g. 3fa85f64-5717-4562-b3fc-2c963f66afa6" required />
+          <span style="font-size:11px; color:var(--color-text-secondary); margin-top:3px; display:block;">Enter the registered user's UUID to link them to this store.</span>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+          <div class="prd-form-group">
+            <label class="prd-form-label" for="exist-emp-role">Role *</label>
+            <select id="exist-emp-role" class="prd-form-select" required>
+              <option value="STAFF">Staff / Cashier</option>
+              <option value="ADMIN">Admin / Manager</option>
+            </select>
+          </div>
+          <div class="prd-form-group">
+            <label class="prd-form-label" for="exist-emp-salary">Base Salary (INR)</label>
+            <input type="number" id="exist-emp-salary" class="prd-form-input" placeholder="e.g. 30000" min="0" step="100" />
+          </div>
+        </div>
+      </div>
+      <div class="modal-actions" style="margin-top:20px;">
+        <button class="btn btn-ghost" id="emp-existing-cancel" type="button">Cancel</button>
+        <button class="btn prd-btn-primary" id="emp-existing-submit" type="submit">Add Existing Member</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ============================================
+     EDIT MEMBER MODAL
+     ============================================ -->
+<div class="modal-overlay" id="emp-edit-modal" role="dialog" aria-modal="true">
+  <div class="modal" style="max-width: 440px;">
+    <h2 class="modal-title">Update Member Info</h2>
+    <input type="hidden" id="edit-member-id" />
+    <form id="emp-edit-form">
+      <div style="margin-bottom:14px;">
+        <label class="prd-form-label" for="edit-emp-name">Member Name</label>
+        <input type="text" id="edit-emp-name" class="prd-form-input" disabled style="background-color:var(--color-bg); opacity:0.8;" />
+      </div>
+      <div style="margin-bottom:14px;">
+        <label class="prd-form-label" for="edit-emp-role">Role *</label>
+        <select id="edit-emp-role" class="prd-form-select" required>
+          <option value="STAFF">Staff / Cashier</option>
+          <option value="ADMIN">Admin / Manager</option>
+          <option value="OWNER">Owner</option>
+        </select>
+      </div>
+      <div style="margin-bottom:18px;">
+        <label class="prd-form-label" for="edit-emp-salary">Monthly Base Salary (INR)</label>
+        <input type="number" id="edit-emp-salary" class="prd-form-input" placeholder="e.g. 35000" min="0" step="100" />
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" id="emp-edit-cancel" type="button">Cancel</button>
+        <button class="btn prd-btn-primary" type="submit">Save Changes</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ============================================
+     PAY SALARY MODAL
+     ============================================ -->
+<div class="modal-overlay" id="salary-pay-modal" role="dialog" aria-modal="true">
+  <div class="modal" style="max-width: 440px;">
+    <h2 class="modal-title">Record Salary Payment</h2>
+    <p class="modal-desc" id="salary-pay-desc">Pay salary for employee.</p>
+    <input type="hidden" id="salary-member-id" />
+    <form id="salary-pay-form">
+      <div style="margin-bottom:14px;">
+        <label class="prd-form-label" for="salary-amount">Amount (INR) *</label>
+        <input type="number" id="salary-amount" class="prd-form-input" placeholder="e.g. 25000" min="1" step="1" required />
+      </div>
+      <div style="margin-bottom:18px;">
+        <label class="prd-form-label" for="salary-month">Salary Month *</label>
+        <input type="date" id="salary-month" class="prd-form-input" required />
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" id="salary-pay-cancel" type="button">Cancel</button>
+        <button class="btn prd-btn-primary" type="submit">Record Payment</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ============================================
+     SALARY HISTORY MODAL
+     ============================================ -->
+<div class="modal-overlay" id="salary-history-modal" role="dialog" aria-modal="true">
+  <div class="modal" style="max-width: 600px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+      <h2 class="modal-title" style="margin-bottom:0;">Payroll &amp; Salary Ledger</h2>
+      <button class="prd-modal-close" id="salary-history-close" type="button" aria-label="Close modal" style="background:none; border:none; cursor:pointer;">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="prd-table-responsive" style="max-height:360px; overflow-y:auto;">
+      <table class="prd-table">
+        <thead>
+          <tr>
+            <th>Employee</th>
+            <th>Month</th>
+            <th class="prd-th-num">Amount</th>
+            <th>Paid Date</th>
+          </tr>
+        </thead>
+        <tbody id="salary-history-tbody">
+          <!-- Populated by JS -->
+        </tbody>
+      </table>
+    </div>
+    <div class="modal-actions" style="margin-top:16px;">
+      <button class="btn prd-btn-primary" id="salary-history-close-btn" type="button">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================
+     DELETE MEMBER CONFIRMATION MODAL
+     ============================================ -->
+<div class="modal-overlay" id="emp-delete-modal" role="dialog" aria-modal="true">
+  <div class="modal" style="max-width: 400px;">
+    <h2 class="modal-title">Remove Member?</h2>
+    <p class="modal-desc">Are you sure you want to remove this employee from your shop? They will lose access immediately.</p>
+    <input type="hidden" id="delete-member-id" />
+    <div class="modal-actions">
+      <button class="btn btn-ghost" id="emp-delete-cancel" type="button">Cancel</button>
+      <button class="btn btn-danger" id="emp-delete-confirm" type="button">Remove</button>
+    </div>
+  </div>
+</div>
+
+<!-- LOGOUT CONFIRM MODAL -->
+<div class="modal-overlay" id="logout-modal" role="dialog" aria-modal="true">
+  <div class="modal" style="max-width: 380px;">
+    <h2 class="modal-title">Sign Out</h2>
+    <p class="modal-desc">Are you sure you want to log out of FlowBase?</p>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" id="logout-cancel" type="button">Cancel</button>
+      <button class="btn btn-danger" id="logout-confirm" type="button">Log Out</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST CONTAINER -->
+<div class="toast-container" id="toast-container" aria-live="assertive" aria-atomic="false"></div>
+
+<!-- JS Scripts -->
+<script src="js/api.js"></script>
+<script src="js/employees.js"></script>
+</body>
+</html>

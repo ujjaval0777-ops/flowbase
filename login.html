@@ -133,7 +133,7 @@
         </div>
 
         <!-- Login Form -->
-        <form class="login-form" id="login-form" novalidate autocomplete="on">
+        <form class="login-form" id="login-form" action="#" onsubmit="return false;" novalidate autocomplete="on">
 
           <!-- General error banner -->
           <div class="login-form-error" id="login-form-error" role="alert" aria-live="assertive">
@@ -278,7 +278,7 @@
         </div>
 
         <!-- Signup Form -->
-        <form class="login-form" id="signup-form" novalidate autocomplete="on">
+        <form class="login-form" id="signup-form" action="#" onsubmit="return false;" novalidate autocomplete="on">
 
           <!-- General error banner -->
           <div class="login-form-error" id="signup-form-error" role="alert" aria-live="assertive">
@@ -502,8 +502,10 @@
      ============================================ -->
 <div class="toast-container" id="toast-container" aria-live="assertive" aria-atomic="false"></div>
 
+<!-- API & Auth Integration -->
+<script src="js/api.js?v=3"></script>
 <!-- Login JS -->
-<script src="js/login.js"></script>
+<script src="js/login.js?v=3"></script>
 
 </body>
 </html>
