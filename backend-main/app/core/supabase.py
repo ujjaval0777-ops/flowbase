@@ -4,7 +4,7 @@ from supabase import Client, ClientOptions, create_client
 from .config import get_settings
 
 
-@lru_cache
+@lru_cache  
 def get_public_client() -> Client:
     settings = get_settings()
     if not settings.public_key:

@@ -2,6 +2,9 @@ from fastapi import HTTPException
 from supabase import Client
 
 
+from .employees_store import get_employee_by_user_id
+
+
 def membership(db: Client, user_id: str, shop_id: int) -> dict:
     try:
         result = (
@@ -17,7 +20,19 @@ def membership(db: Client, user_id: str, shop_id: int) -> dict:
 
     if not result.data:
         raise HTTPException(status_code=403, detail="You are not a member of this shop")
-    return result.data
+
+    row = result.data
+
+    # If member is an EMPLOYEE, verify status is active
+    if row.get("role") == "EMPLOYEE":
+        emp = get_employee_by_user_id(user_id)
+        if emp and emp.get("status") == "Disabled":
+            raise HTTPException(
+                status_code=403,
+                detail="Employee account is disabled. Please contact your shop owner.",
+            )
+
+    return row
 
 
 def require_role(db: Client, user_id: str, shop_id: int, roles: list[str]) -> dict:

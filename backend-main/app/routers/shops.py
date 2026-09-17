@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException
 from supabase import Client
 
-from ..core.dependencies import current_supabase, current_user
-from ..core.errors import execute_or_400
-from ..core.rbac import require_owner, membership
-from ..schemas import ShopCreate, ShopUpdate
+from app.core.dependencies import current_supabase, current_user
+from app.core.errors import execute_or_400
+from app.core.rbac import require_admin_or_owner, require_owner, membership
+from app.schemas import ShopCreate, ShopUpdate
 
 router = APIRouter(prefix="/shops", tags=["Shops"])
 
@@ -93,7 +93,7 @@ def update_shop(
     db: Client = Depends(current_supabase),
     user=Depends(current_user),
 ):
-    require_owner(db, user["id"], shop_id)
+    require_admin_or_owner(db, user["id"], shop_id)
     payload = body.model_dump(exclude_none=True, mode="json")
     if not payload:
         return get_shop(shop_id, db, user)
@@ -103,3 +103,55 @@ def update_shop(
         .eq("id", shop_id)
         .execute()
     ).data[0]
+
+
+@router.post("/{shop_id}/join")
+def join_shop(
+    shop_id: int,
+    db: Client = Depends(current_supabase),
+    user=Depends(current_user),
+):
+    """Allows a user to join an existing store with strictly STAFF (employee) permissions."""
+    from app.core.supabase import get_admin_client
+    admin = get_admin_client()
+
+    # 1. Verify shop exists
+    shop_res = execute_or_400(
+        lambda: admin.table("shops").select("*").eq("id", shop_id).maybe_single().execute()
+    )
+    if not shop_res or not shop_res.data:
+        raise HTTPException(status_code=404, detail=f"Shop ID #{shop_id} not found. Please verify the ID with your shop owner.")
+
+    shop_data = shop_res.data
+
+    # 2. Check if already a member
+    existing = execute_or_400(
+        lambda: admin.table("shop_members").select("*").eq("shop_id", shop_id).eq("user_id", user["id"]).maybe_single().execute()
+    )
+    if existing and existing.data:
+        return {
+            "message": "You are already a member of this shop",
+            "shop": shop_data,
+            "membership": existing.data,
+            "role": existing.data.get("role", "EMPLOYEE"),
+            "user_id": user["id"],
+        }
+
+    # 3. Add user with strictly EMPLOYEE role (never OWNER or ADMIN)
+    new_member = execute_or_400(
+        lambda: admin.table("shop_members").insert({
+            "shop_id": shop_id,
+            "user_id": user["id"],
+            "role": "EMPLOYEE",
+            "salary": None,
+        }).execute()
+    )
+
+    return {
+        "message": "Successfully joined shop",
+        "shop": shop_data,
+        "membership": new_member.data[0] if new_member.data else {},
+        "role": "EMPLOYEE",
+        "user_id": user["id"],
+    }
+

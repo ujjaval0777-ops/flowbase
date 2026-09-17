@@ -11,7 +11,7 @@ router = APIRouter(prefix="/shops/{shop_id}/suppliers", tags=["Suppliers"])
 
 @router.get("")
 def list_suppliers(shop_id: int, db: Client = Depends(current_supabase), user=Depends(current_user)):
-    membership(db, user["id"], shop_id)
+    require_admin_or_owner(db, user["id"], shop_id)
     return db.table("suppliers").select("*").eq("shop_id", shop_id).order("name").execute().data
 
 

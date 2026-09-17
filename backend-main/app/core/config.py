@@ -7,7 +7,7 @@ class Settings(BaseSettings):
     app_env: str = "development"
     app_version: str = "1.0.0"
     api_prefix: str = "/api/v1"
-    cors_origins: str = "http://localhost:3000,http://localhost:5173"
+    cors_origins: str = "https://ujjaval0777-ops.github.io,http://localhost:3000,http://localhost:5173,http://localhost:5500,http://localhost:8000,http://127.0.0.1:8000,http://127.0.0.1:5500"
 
     supabase_url: str
     supabase_publishable_key: str = ""

@@ -16,7 +16,13 @@ class SignupRequest(BaseModel):
 
 
 class LoginRequest(BaseModel):
-    email: EmailStr
+    email: str | None = None
+    employee_id: str | None = None
+    password: str = Field(min_length=1, max_length=128)
+
+
+class EmployeeLoginRequest(BaseModel):
+    employee_id: str = Field(min_length=1, max_length=50)
     password: str = Field(min_length=1, max_length=128)
 
 
@@ -51,16 +57,26 @@ class MemberAddExisting(BaseModel):
 
 class EmployeeCreate(BaseModel):
     name: str = Field(min_length=1, max_length=100)
-    email: EmailStr
-    password: str = Field(min_length=6, max_length=128)
+    employee_id: str | None = Field(default=None, max_length=50)
+    email: str | None = None
+    password: str = Field(min_length=4, max_length=128)
     phone: str | None = Field(default=None, max_length=20)
     role: Literal["ADMIN", "EMPLOYEE"] = "EMPLOYEE"
     salary: Decimal | None = Field(default=None, ge=0)
+    status: Literal["Active", "Disabled"] = "Active"
+
+
+class EmployeeStatusUpdate(BaseModel):
+    status: Literal["Active", "Disabled"]
 
 
 class MemberUpdate(BaseModel):
-    role: Literal["ADMIN", "EMPLOYEE"]
+    name: str | None = None
+    phone: str | None = None
+    role: Literal["ADMIN", "EMPLOYEE"] | None = None
     salary: Decimal | None = Field(default=None, ge=0)
+    status: Literal["Active", "Disabled"] | None = None
+    password: str | None = None
 
 
 class CategoryCreate(BaseModel):

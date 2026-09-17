@@ -65,6 +65,7 @@ let salesData       = [];
 let currentBill     = [];
 let currentBillNo   = null;
 let viewingSaleId   = null;
+let isFullPayment   = true;
 
 // ============================================
 // LOAD DATA FROM BACKEND & LOCAL STORAGE
@@ -345,6 +346,16 @@ function updateTotals() {
   setTxt('bil-tax-amount',     '+' + formatINR(taxAmt));
   setTxt('bil-grand-total',    formatINR(grandTotal));
 
+  const receivedInput = document.getElementById('bil-amount-received');
+  const fullBtn       = document.getElementById('bil-full-pay-btn');
+
+  if (isFullPayment) {
+    if (receivedInput) {
+      receivedInput.value = grandTotal > 0 ? grandTotal : '';
+    }
+    if (fullBtn) fullBtn.classList.add('active');
+  }
+
   updateCashChange();
 }
 
@@ -355,9 +366,18 @@ function updateCashChange() {
   if (cashSec) cashSec.style.display = payMethod === 'Cash' ? '' : 'none';
 
   if (payMethod === 'Cash') {
-    const received = parseFloat(document.getElementById('bil-amount-received')?.value || 0) || 0;
-    const change   = Math.max(0, received - grandTotal);
-    const el       = document.getElementById('bil-change-amount');
+    const receivedInput = document.getElementById('bil-amount-received');
+    let received = parseFloat(receivedInput?.value || 0);
+
+    if (isFullPayment && (!received || received === grandTotal)) {
+      received = grandTotal;
+      if (receivedInput && grandTotal > 0 && receivedInput.value !== String(grandTotal)) {
+        receivedInput.value = grandTotal;
+      }
+    }
+
+    const change = Math.max(0, received - grandTotal);
+    const el = document.getElementById('bil-change-amount');
     if (el) el.textContent = formatINR(change);
   }
 }
@@ -507,9 +527,31 @@ function initTotalsInputs() {
   document.getElementById('bil-tax-percent')?.addEventListener('input', updateTotals);
 
   document.querySelectorAll('input[name="payment-method"]').forEach(radio => {
-    radio.addEventListener('change', updateCashChange);
+    radio.addEventListener('change', () => {
+      updateCashChange();
+    });
   });
-  document.getElementById('bil-amount-received')?.addEventListener('input', updateCashChange);
+
+  const receivedInput = document.getElementById('bil-amount-received');
+  receivedInput?.addEventListener('input', () => {
+    const { grandTotal } = calcTotals();
+    const val = parseFloat(receivedInput.value || 0);
+    isFullPayment = (val === grandTotal && grandTotal > 0);
+    const fullBtn = document.getElementById('bil-full-pay-btn');
+    if (fullBtn) fullBtn.classList.toggle('active', isFullPayment);
+    updateCashChange();
+  });
+
+  const fullPayBtn = document.getElementById('bil-full-pay-btn');
+  fullPayBtn?.addEventListener('click', () => {
+    const { grandTotal } = calcTotals();
+    isFullPayment = true;
+    if (receivedInput) {
+      receivedInput.value = grandTotal > 0 ? grandTotal : '';
+    }
+    fullPayBtn.classList.add('active');
+    updateCashChange();
+  });
 }
 
 // ============================================
@@ -533,6 +575,7 @@ function initNewBill() {
 function resetBill() {
   currentBill   = [];
   currentBillNo = generateBillNo();
+  isFullPayment = true;
 
   // Reset inputs
   const resetEl = (id, val) => { const el = document.getElementById(id); if (el) el.value = val; };
@@ -540,6 +583,8 @@ function resetBill() {
   resetEl('bil-tax-percent', '0');
   resetEl('bil-amount-received', '');
   document.getElementById('pay-cash') && (document.getElementById('pay-cash').checked = true);
+  const fullBtn = document.getElementById('bil-full-pay-btn');
+  if (fullBtn) fullBtn.classList.add('active');
 
   renderBillMeta();
   renderBillItems();
@@ -574,12 +619,24 @@ async function completeBill() {
 
   const { grandTotal, subtotal, discountAmt, taxAmt } = calcTotals();
 
+  let finalReceived = grandTotal;
+  let finalChange = 0;
+
   if (payMethod === 'Cash') {
-    const received = parseFloat(document.getElementById('bil-amount-received')?.value || 0) || 0;
+    const receivedInput = document.getElementById('bil-amount-received');
+    let received = parseFloat(receivedInput?.value || 0);
+
+    if (isFullPayment || !receivedInput?.value) {
+      received = grandTotal;
+      if (receivedInput) receivedInput.value = grandTotal > 0 ? grandTotal : '';
+    }
+
     if (received < grandTotal) {
       showToast(`Amount received (${formatINR(received)}) is less than total (${formatINR(grandTotal)}).`, 'danger');
       return;
     }
+    finalReceived = received;
+    finalChange = Math.max(0, received - grandTotal);
   }
 
   const shopId = await ensureActiveShop();
@@ -624,8 +681,8 @@ async function completeBill() {
     taxAmt,
     grandTotal,
     paymentMethod: payMethod,
-    amountReceived: payMethod === 'Cash' ? (parseFloat(document.getElementById('bil-amount-received')?.value) || grandTotal) : grandTotal,
-    change: payMethod === 'Cash' ? Math.max(0, (parseFloat(document.getElementById('bil-amount-received')?.value) || grandTotal) - grandTotal) : 0,
+    amountReceived: payMethod === 'Cash' ? finalReceived : grandTotal,
+    change: payMethod === 'Cash' ? finalChange : 0,
     status: 'Completed'
   };
 
