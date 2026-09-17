@@ -28,8 +28,40 @@ const STORAGE_ACCESS_TOKEN  = 'flowbase_access_token';
 const STORAGE_REFRESH_TOKEN = 'flowbase_refresh_token';
 const STORAGE_USER          = 'flowbase_user';
 const STORAGE_PROFILE       = 'flowbase_profile';
+const STORAGE_ROLE          = 'flowbase_role';
 const STORAGE_ACTIVE_SHOP   = 'flowbase_active_shop_id';
 const STORAGE_SHOPS         = 'flowbase_shops';
+
+// ============================================
+// ROLE & PERMISSION HELPERS
+// ============================================
+function getCurrentUserRole() {
+  const directRole = localStorage.getItem(STORAGE_ROLE);
+  if (directRole) return directRole.toUpperCase();
+
+  try {
+    const shops = JSON.parse(localStorage.getItem(STORAGE_SHOPS) || '[]');
+    const activeShopId = getActiveShopId();
+    const current = shops.find(s => s.shop_id === activeShopId);
+    if (current && current.role) return current.role.toUpperCase();
+    if (shops.length > 0 && shops[0].role) return shops[0].role.toUpperCase();
+  } catch (_) {}
+
+  const user = getCurrentUser();
+  if (user && user.role) return user.role.toUpperCase();
+
+  return 'OWNER';
+}
+
+function isStaffUser() {
+  const role = getCurrentUserRole();
+  return role === 'STAFF' || role === 'EMPLOYEE';
+}
+
+function isOwnerOrAdmin() {
+  const role = getCurrentUserRole();
+  return role === 'OWNER' || role === 'ADMIN';
+}
 
 // ============================================
 // CORE API REQUEST FUNCTION
@@ -164,6 +196,10 @@ function setSession(authData) {
   if (authData.user) {
     localStorage.setItem(STORAGE_USER, JSON.stringify(authData.user));
   }
+
+  if (authData.role) {
+    localStorage.setItem(STORAGE_ROLE, authData.role);
+  }
 }
 
 function clearSession() {
@@ -171,6 +207,7 @@ function clearSession() {
   localStorage.removeItem(STORAGE_REFRESH_TOKEN);
   localStorage.removeItem(STORAGE_USER);
   localStorage.removeItem(STORAGE_PROFILE);
+  localStorage.removeItem(STORAGE_ROLE);
   localStorage.removeItem(STORAGE_ACTIVE_SHOP);
   localStorage.removeItem(STORAGE_SHOPS);
   localStorage.removeItem('flowbase_demo_session');
@@ -199,6 +236,9 @@ async function loadUserMemberships() {
       if (meData.profile) {
         localStorage.setItem(STORAGE_PROFILE, JSON.stringify(meData.profile));
       }
+      if (meData.role) {
+        localStorage.setItem(STORAGE_ROLE, meData.role);
+      }
       if (meData.memberships) {
         localStorage.setItem(STORAGE_SHOPS, JSON.stringify(meData.memberships));
         
@@ -221,31 +261,15 @@ async function ensureActiveShop() {
   let shopId = getActiveShopId();
   if (shopId) return shopId;
 
-  const meData = await loadUserMemberships();
+  await loadUserMemberships();
   shopId = getActiveShopId();
   if (shopId) return shopId;
 
-  // If the user has no shops, create a default shop for them
-  try {
-    console.log('No shops found for user. Creating initial shop...');
-    const user = getCurrentUser();
-    const shopName = user && user.email ? `${user.email.split('@')[0]}'s Store` : 'My FlowBase Store';
-    const newShop = await apiRequest('/shops', {
-      method: 'POST',
-      body: {
-        name: shopName,
-        phone: '',
-        email: user ? user.email : null,
-        address: 'Main Store'
-      }
-    });
-    if (newShop && newShop.id) {
-      setActiveShopId(newShop.id);
-      await loadUserMemberships();
-      return newShop.id;
-    }
-  } catch (e) {
-    console.error('Failed to create default shop:', e);
+  // If the user has no shops and is on an internal page, direct to onboarding
+  const path = window.location.pathname;
+  if (!path.endsWith('onboarding.html') && !path.endsWith('login.html') && !path.endsWith('index.html')) {
+    console.log('No active shop found. Directing to onboarding...');
+    window.location.href = 'onboarding.html';
   }
 
   return null;
@@ -263,10 +287,52 @@ function initAuthGuard(options = { requireAuth: true }) {
   }
 
   if (!options.requireAuth && authed) {
-    // If user is already logged in on login page, redirect to dashboard
-    window.location.href = 'dashboard.html';
+    // If user is already logged in on login page, redirect to billing (staff) or dashboard/onboarding (owner)
+    if (isStaffUser()) {
+      window.location.href = 'billing.html';
+      return false;
+    }
+    const shop = getActiveShopId();
+    window.location.href = shop ? 'dashboard.html' : 'onboarding.html';
     return false;
   }
+
+  // Direct URL Access Guard for STAFF
+  // Permitted pages: billing.html, products.html, inventory.html, employees.html, shop.html, login.html, onboarding.html
+  if (options.requireAuth && authed && isStaffUser()) {
+    const rawPath = window.location.pathname.toLowerCase();
+    const currentPage = rawPath.split('/').pop() || '';
+    const permittedStaffPages = [
+      'billing.html',
+      'products.html',
+      'inventory.html',
+      'employees.html',
+      'shop.html',
+      'login.html',
+      'onboarding.html'
+    ];
+    if (currentPage && !permittedStaffPages.includes(currentPage)) {
+      console.warn(`[FlowBase RBAC] Direct URL access denied to '${currentPage}' for STAFF role. Redirecting to billing.html.`);
+      window.location.replace('billing.html');
+      return false;
+    }
+  }
+
+  // If user is logged in but has no shop and is on a dashboard/internal page, guide to onboarding
+  const path = window.location.pathname;
+  if (options.requireAuth && authed && !path.endsWith('onboarding.html')) {
+    const currentShop = getActiveShopId();
+    if (!currentShop) {
+      loadUserMemberships().then(() => {
+        if (!getActiveShopId() && !window.location.pathname.endsWith('onboarding.html')) {
+          window.location.href = 'onboarding.html';
+        }
+      });
+    }
+  }
+
+  // Apply staff UI restrictions immediately
+  applyStaffUIRestrictions();
 
   // Update header profile info with current authenticated user
   syncHeaderUser();
@@ -274,11 +340,90 @@ function initAuthGuard(options = { requireAuth: true }) {
   return true;
 }
 
+// ============================================
+// COMPLETE STAFF UI RESTRICTION
+// ============================================
+function applyStaffUIRestrictions() {
+  if (!isAuthenticated() || !isStaffUser()) return;
+
+  if (document.body) {
+    document.body.classList.add('role-staff');
+  }
+
+  // Inject critical CSS to ensure unauthorized items NEVER flash or render
+  if (!document.getElementById('staff-ui-restrictions-style')) {
+    const style = document.createElement('style');
+    style.id = 'staff-ui-restrictions-style';
+    style.textContent = `
+      body.role-staff #nav-dashboard,
+      body.role-staff #nav-sales,
+      body.role-staff #nav-expenses,
+      body.role-staff #nav-settings,
+      body.role-staff .admin-only,
+      body.role-staff .owner-only,
+      body.role-staff .admin-control,
+      body.role-staff .owner-control,
+      body.role-staff [data-role="admin"],
+      body.role-staff [data-role="owner"],
+      body.role-staff [data-admin-only="true"],
+      body.role-staff #view-salaries-btn,
+      body.role-staff #kpi-payroll,
+      body.role-staff #add-employee-btn,
+      body.role-staff [data-pay-salary],
+      body.role-staff [data-edit-member],
+      body.role-staff [data-delete-member],
+      body.role-staff #add-product-btn,
+      body.role-staff [data-action="edit"],
+      body.role-staff [data-action="delete"],
+      body.role-staff [data-action="adjust"],
+      body.role-staff #prd-view-edit-btn,
+      body.role-staff #cat-add-form,
+      body.role-staff [data-edit-cat],
+      body.role-staff [data-delete-cat],
+      body.role-staff #add-inventory-btn,
+      body.role-staff #inv-view-adjust-btn,
+      body.role-staff #inv-view-edit-btn,
+      body.role-staff #btn-overview-edit,
+      body.role-staff .btn-card-edit,
+      body.role-staff .shop-edit-form,
+      body.role-staff #btn-save-hours,
+      body.role-staff #logo-dropzone,
+      body.role-staff #btn-remove-logo,
+      body.role-staff #btn-manage-employees,
+      body.role-staff #act-edit-shop,
+      body.role-staff #act-update-logo,
+      body.role-staff #act-manage-employees,
+      body.role-staff #act-manage-billing,
+      body.role-staff #btn-deactivate-shop {
+        display: none !important;
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
+  // Hide unauthorized sidebar navigation items
+  const unauthorizedNavIds = ['nav-dashboard', 'nav-sales', 'nav-expenses', 'nav-settings'];
+  unauthorizedNavIds.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = 'none';
+  });
+
+  // Ensure sidebar logo routes to billing.html for staff
+  document.querySelectorAll('.sidebar-logo').forEach(link => {
+    link.setAttribute('href', 'billing.html');
+  });
+
+  // Hide add category form if on products page
+  const catAddForm = document.getElementById('cat-add-form');
+  if (catAddForm) catAddForm.style.display = 'none';
+}
+
 function syncHeaderUser() {
   const profile = getStoredProfile();
   const user = getCurrentUser();
+  const isStaff = isStaffUser();
 
-  const name = (profile && profile.name) || (user && user.name) || (user && user.email ? user.email.split('@')[0] : 'Shop Admin');
+  const name = (profile && profile.name) || (user && user.name) || (user && user.email ? user.email.split('@')[0] : (isStaff ? 'Staff' : 'Shop Admin'));
   const email = (user && user.email) || '';
   
   // Calculate initials
@@ -288,13 +433,25 @@ function syncHeaderUser() {
     .map(n => n[0])
     .slice(0, 2)
     .join('')
-    .toUpperCase() || 'SA';
+    .toUpperCase() || (isStaff ? 'ST' : 'SA');
 
   const avatarEls = document.querySelectorAll('.profile-avatar');
   avatarEls.forEach(el => { el.textContent = initials; });
 
   const nameEls = document.querySelectorAll('.profile-name');
   nameEls.forEach(el => { el.textContent = name; });
+
+  // Sync role badge/text
+  let role = isStaff ? 'Staff' : 'Administrator';
+  try {
+    const r = getCurrentUserRole();
+    if (r === 'OWNER') role = 'Owner';
+    else if (r === 'ADMIN') role = 'Administrator';
+    else if (r === 'STAFF' || r === 'EMPLOYEE') role = 'Staff';
+  } catch (_) {}
+
+  const roleEls = document.querySelectorAll('.profile-role');
+  roleEls.forEach(el => { el.textContent = role; });
 
   const greetingEl = document.getElementById('welcome-greeting');
   if (greetingEl) {
@@ -406,32 +563,64 @@ function injectProfileModal() {
           </button>
         </div>
 
-        <div style="display:flex; align-items:center; gap:16px; padding:16px; background-color:var(--color-bg); border-radius:var(--radius-lg); margin-bottom:18px;">
-          <div class="profile-avatar" id="modal-profile-avatar" style="width:52px; height:52px; border-radius:50%; background:linear-gradient(135deg, var(--color-primary), #155e39); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:18px; flex-shrink:0;">SA</div>
-          <div style="overflow:hidden;">
-            <div id="modal-profile-name" style="font-weight:700; font-size:16px; color:var(--color-text); margin-bottom:2px; white-space:nowrap; text-overflow:ellipsis; overflow:hidden;">Shop Admin</div>
-            <div id="modal-profile-email" style="font-size:12px; color:var(--color-text-secondary); white-space:nowrap; text-overflow:ellipsis; overflow:hidden;">admin@flowbase.local</div>
+        <!-- VIEW MODE -->
+        <div id="profile-modal-view-mode">
+          <div style="display:flex; align-items:center; gap:16px; padding:16px; background-color:var(--color-bg); border-radius:var(--radius-lg); margin-bottom:18px;">
+            <div class="profile-avatar" id="modal-profile-avatar" style="width:52px; height:52px; border-radius:50%; background:linear-gradient(135deg, var(--color-primary), #155e39); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:18px; flex-shrink:0;">SA</div>
+            <div style="overflow:hidden;">
+              <div id="modal-profile-name" style="font-weight:700; font-size:16px; color:var(--color-text); margin-bottom:2px; white-space:nowrap; text-overflow:ellipsis; overflow:hidden;">Shop User</div>
+              <div id="modal-profile-email" style="font-size:12px; color:var(--color-text-secondary); white-space:nowrap; text-overflow:ellipsis; overflow:hidden;">user@flowbase.local</div>
+            </div>
+          </div>
+
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:18px;">
+            <div style="padding:12px; border:1px solid var(--color-border); border-radius:var(--radius-md); background-color:var(--color-surface);">
+              <div style="font-size:11px; color:var(--color-text-secondary); margin-bottom:4px;">Current Role</div>
+              <div id="modal-profile-role" style="font-size:13px; font-weight:600;"><span class="badge badge-success">OWNER</span></div>
+            </div>
+            <div style="padding:12px; border:1px solid var(--color-border); border-radius:var(--radius-md); background-color:var(--color-surface);">
+              <div style="font-size:11px; color:var(--color-text-secondary); margin-bottom:4px;">Active Store</div>
+              <div id="modal-profile-shop" style="font-size:13px; font-weight:600; color:var(--color-text); white-space:nowrap; text-overflow:ellipsis; overflow:hidden;">Main Store</div>
+            </div>
+          </div>
+
+          <div style="padding:12px; border:1px solid var(--color-border); border-radius:var(--radius-md); background-color:var(--color-surface); margin-bottom:18px;">
+            <div style="font-size:11px; color:var(--color-text-secondary); margin-bottom:4px;">Contact Phone</div>
+            <div id="modal-profile-phone" style="font-size:13px; font-weight:500; color:var(--color-text);">—</div>
+          </div>
+
+          <div class="modal-actions" style="margin-top:20px; display:flex; justify-content:space-between; align-items:center;">
+            <button class="btn btn-ghost" id="modal-profile-logout" type="button" style="color:var(--color-danger);">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" style="margin-right:6px;"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+              Sign Out
+            </button>
+            <div style="display:flex; gap:8px;">
+              <button class="btn btn-secondary" id="modal-profile-edit-btn" type="button">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="margin-right:4px;"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                Edit Profile
+              </button>
+              <button class="btn btn-primary" id="modal-profile-close-btn" type="button">Close</button>
+            </div>
           </div>
         </div>
 
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:18px;">
-          <div style="padding:12px; border:1px solid var(--color-border); border-radius:var(--radius-md); background-color:var(--color-surface);">
-            <div style="font-size:11px; color:var(--color-text-secondary); margin-bottom:4px;">Current Role</div>
-            <div id="modal-profile-role" style="font-size:13px; font-weight:600;"><span class="badge badge-success">OWNER</span></div>
+        <!-- EDIT MODE (GET + PATCH) -->
+        <form id="profile-modal-edit-form" style="display:none;" onsubmit="return false;">
+          <div style="margin-bottom:14px;">
+            <label class="form-label" for="edit-profile-name" style="display:block; font-size:12px; font-weight:600; margin-bottom:6px;">Full Name *</label>
+            <input type="text" id="edit-profile-name" class="form-input" style="width:100%;" required />
           </div>
-          <div style="padding:12px; border:1px solid var(--color-border); border-radius:var(--radius-md); background-color:var(--color-surface);">
-            <div style="font-size:11px; color:var(--color-text-secondary); margin-bottom:4px;">Active Store</div>
-            <div id="modal-profile-shop" style="font-size:13px; font-weight:600; color:var(--color-text); white-space:nowrap; text-overflow:ellipsis; overflow:hidden;">Main Store</div>
+          <div style="margin-bottom:18px;">
+            <label class="form-label" for="edit-profile-phone" style="display:block; font-size:12px; font-weight:600; margin-bottom:6px;">Phone Number</label>
+            <input type="tel" id="edit-profile-phone" class="form-input" style="width:100%;" placeholder="+91 9876543210" />
           </div>
-        </div>
+          <div id="edit-profile-error" style="color:var(--color-danger); font-size:12px; margin-bottom:14px; display:none;"></div>
+          <div class="modal-actions" style="display:flex; justify-content:flex-end; gap:8px;">
+            <button class="btn btn-ghost" id="edit-profile-cancel-btn" type="button">Cancel</button>
+            <button class="btn btn-primary" id="edit-profile-save-btn" type="submit">Save Changes</button>
+          </div>
+        </form>
 
-        <div class="modal-actions" style="margin-top:20px; display:flex; justify-content:space-between; align-items:center;">
-          <button class="btn btn-ghost" id="modal-profile-logout" type="button" style="color:var(--color-danger);">
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" style="margin-right:6px;"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-            Sign Out
-          </button>
-          <button class="btn btn-primary" id="modal-profile-close-btn" type="button">Close</button>
-        </div>
       </div>
     </div>
   `;
@@ -443,6 +632,96 @@ function injectProfileModal() {
   document.getElementById('modal-profile-close-btn')?.addEventListener('click', closeProfileModal);
   document.getElementById('global-profile-modal')?.addEventListener('click', e => {
     if (e.target.id === 'global-profile-modal') closeProfileModal();
+  });
+
+  // Switch to Edit Mode
+  document.getElementById('modal-profile-edit-btn')?.addEventListener('click', () => {
+    const profile = getStoredProfile() || {};
+    const user = getCurrentUser() || {};
+    const currentName = profile.name || user.name || '';
+    const currentPhone = profile.phone || '';
+
+    const nameInput = document.getElementById('edit-profile-name');
+    const phoneInput = document.getElementById('edit-profile-phone');
+    if (nameInput) nameInput.value = currentName;
+    if (phoneInput) phoneInput.value = currentPhone;
+
+    document.getElementById('profile-modal-view-mode').style.display = 'none';
+    document.getElementById('profile-modal-edit-form').style.display = 'block';
+    const errEl = document.getElementById('edit-profile-error');
+    if (errEl) errEl.style.display = 'none';
+    nameInput?.focus();
+  });
+
+  // Cancel Edit Mode
+  document.getElementById('edit-profile-cancel-btn')?.addEventListener('click', () => {
+    document.getElementById('profile-modal-edit-form').style.display = 'none';
+    document.getElementById('profile-modal-view-mode').style.display = 'block';
+  });
+
+  // Save Profile (PATCH /profile)
+  document.getElementById('profile-modal-edit-form')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const nameInput = document.getElementById('edit-profile-name');
+    const phoneInput = document.getElementById('edit-profile-phone');
+    const saveBtn = document.getElementById('edit-profile-save-btn');
+    const errEl = document.getElementById('edit-profile-error');
+
+    const name = nameInput ? nameInput.value.trim() : '';
+    const phone = phoneInput ? phoneInput.value.trim() : '';
+
+    if (!name) {
+      if (errEl) {
+        errEl.textContent = 'Name is required.';
+        errEl.style.display = 'block';
+      }
+      return;
+    }
+
+    if (saveBtn) {
+      saveBtn.disabled = true;
+      saveBtn.textContent = 'Saving...';
+    }
+
+    try {
+      // Call PATCH /profile
+      const updated = await apiRequest('/profile', {
+        method: 'PATCH',
+        body: { name, phone }
+      });
+
+      // Update local storage profile and user
+      const currentProfile = getStoredProfile() || {};
+      const newProfile = { ...currentProfile, ...(updated || { name, phone }) };
+      localStorage.setItem(STORAGE_PROFILE, JSON.stringify(newProfile));
+
+      const currentUser = getCurrentUser();
+      if (currentUser) {
+        currentUser.name = name;
+        localStorage.setItem(STORAGE_USER, JSON.stringify(currentUser));
+      }
+
+      // Update UI displays
+      syncHeaderUser();
+      openProfileModal(); // Refresh modal view
+      document.getElementById('profile-modal-edit-form').style.display = 'none';
+      document.getElementById('profile-modal-view-mode').style.display = 'block';
+
+      if (typeof showToast === 'function') {
+        showToast('Profile updated successfully!', 'success');
+      }
+    } catch (err) {
+      console.error('Failed to update profile:', err);
+      if (errEl) {
+        errEl.textContent = err.message || 'Failed to update profile. Please try again.';
+        errEl.style.display = 'block';
+      }
+    } finally {
+      if (saveBtn) {
+        saveBtn.disabled = false;
+        saveBtn.textContent = 'Save Changes';
+      }
+    }
   });
 
   // Wire up sign out from profile
@@ -463,12 +742,20 @@ function openProfileModal() {
   const modal = document.getElementById('global-profile-modal');
   if (!modal) return;
 
+  // Reset to view mode
+  const editForm = document.getElementById('profile-modal-edit-form');
+  const viewMode = document.getElementById('profile-modal-view-mode');
+  if (editForm) editForm.style.display = 'none';
+  if (viewMode) viewMode.style.display = 'block';
+
   const profile = getStoredProfile();
   const user = getCurrentUser();
-  const name = (profile && profile.name) || (user && user.name) || (user && user.email ? user.email.split('@')[0] : 'Shop Admin');
-  const email = (user && user.email) || 'admin@flowbase.local';
+  const isStaff = isStaffUser();
+  const name = (profile && profile.name) || (user && user.name) || (user && user.email ? user.email.split('@')[0] : (isStaff ? 'Staff' : 'Shop Admin'));
+  const email = (user && user.email) || 'staff@flowbase.local';
+  const phone = (profile && profile.phone) || '—';
   
-  const initials = name.split(' ').filter(Boolean).map(n => n[0]).slice(0, 2).join('').toUpperCase() || 'SA';
+  const initials = name.split(' ').filter(Boolean).map(n => n[0]).slice(0, 2).join('').toUpperCase() || (isStaff ? 'ST' : 'SA');
 
   const avatarEl = document.getElementById('modal-profile-avatar');
   if (avatarEl) avatarEl.textContent = initials;
@@ -479,15 +766,20 @@ function openProfileModal() {
   const emailEl = document.getElementById('modal-profile-email');
   if (emailEl) emailEl.textContent = email;
 
+  const phoneEl = document.getElementById('modal-profile-phone');
+  if (phoneEl) phoneEl.textContent = phone;
+
   // Resolve shop and role
-  let role = 'OWNER';
+  let role = isStaff ? 'STAFF' : 'OWNER';
   let shopName = 'Main Store';
   try {
+    const roleCode = getCurrentUserRole();
+    if (roleCode) role = roleCode;
+
     const shops = JSON.parse(localStorage.getItem(STORAGE_SHOPS) || '[]');
     const activeShopId = getActiveShopId();
     const current = shops.find(s => s.shop_id === activeShopId);
     if (current) {
-      role = current.role || 'OWNER';
       shopName = (current.shops && current.shops.name) || `Store #${activeShopId}`;
     }
   } catch (_) {}
@@ -523,6 +815,26 @@ function initProfileModal() {
   });
 }
 
+// Immediate check for staff route protection
+(function enforceImmediateRouteGuard() {
+  if (typeof isAuthenticated === 'function' && isAuthenticated() && typeof isStaffUser === 'function' && isStaffUser()) {
+    const rawPath = window.location.pathname.toLowerCase();
+    const currentPage = rawPath.split('/').pop() || '';
+    const permittedStaffPages = [
+      'billing.html',
+      'products.html',
+      'inventory.html',
+      'employees.html',
+      'shop.html',
+      'login.html',
+      'onboarding.html'
+    ];
+    if (currentPage && !permittedStaffPages.includes(currentPage)) {
+      window.location.replace('billing.html');
+    }
+  }
+})();
+
 // Apply theme immediately on script execution
 applyTheme();
 
@@ -531,6 +843,7 @@ document.addEventListener('DOMContentLoaded', () => {
   applyTheme();
   initThemeToggle();
   if (isAuthenticated()) {
+    applyStaffUIRestrictions();
     syncHeaderUser();
     initProfileModal();
   }

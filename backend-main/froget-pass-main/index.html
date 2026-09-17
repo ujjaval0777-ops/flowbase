@@ -1,0 +1,217 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Reset Password</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="page">
+
+    <div class="card">
+
+        <!-- Logo -->
+        <div class="logo">
+            <span>🔐</span>
+        </div>
+
+
+        <!-- Loading -->
+        <section id="loadingScreen" class="screen active">
+
+            <div class="spinner"></div>
+
+            <h1>Securing your session</h1>
+
+            <p>
+                Please wait while we verify your password
+                reset request.
+            </p>
+
+        </section>
+
+
+        <!-- Reset Password -->
+        <section id="resetScreen" class="screen">
+
+            <div class="icon success-soft">
+                ✓
+            </div>
+
+            <h1>Create new password</h1>
+
+            <p class="subtitle">
+                Choose a strong password for your account.
+            </p>
+
+
+            <form id="resetForm">
+
+                <div class="field">
+
+                    <label for="password">
+                        New password
+                    </label>
+
+                    <div class="password-wrapper">
+
+                        <input
+                            id="password"
+                            type="password"
+                            placeholder="Enter new password"
+                            autocomplete="new-password"
+                            required
+                        >
+
+                        <button
+                            type="button"
+                            class="show-password"
+                            id="togglePassword"
+                        >
+                            Show
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <div class="field">
+
+                    <label for="confirmPassword">
+                        Confirm password
+                    </label>
+
+                    <input
+                        id="confirmPassword"
+                        type="password"
+                        placeholder="Confirm your password"
+                        autocomplete="new-password"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- Password strength -->
+
+                <div class="password-strength">
+
+                    <div class="strength-bar">
+                        <span id="strengthBar"></span>
+                    </div>
+
+                    <span id="strengthText">
+                        Use at least 8 characters
+                    </span>
+
+                </div>
+
+
+                <div
+                    id="errorMessage"
+                    class="message error"
+                ></div>
+
+
+                <button
+                    type="submit"
+                    class="primary-button"
+                    id="updateButton"
+                >
+                    Update Password
+                </button>
+
+            </form>
+
+
+            <div class="security">
+
+                <span>🛡️</span>
+
+                <p>
+                    Your password is securely handled by
+                    Supabase Authentication.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- Success -->
+        <section id="successScreen" class="screen">
+
+            <div class="success-icon">
+                ✓
+            </div>
+
+            <h1>Password updated!</h1>
+
+            <p class="subtitle">
+                Your password has been successfully changed.
+                You can now sign in with your new password.
+            </p>
+
+
+            <button
+                class="primary-button"
+                id="continueButton"
+            >
+                Continue
+            </button>
+
+        </section>
+
+
+        <!-- Invalid / Expired -->
+        <section id="errorScreen" class="screen">
+
+            <div class="error-icon">
+                !
+            </div>
+
+            <h1>Link expired</h1>
+
+            <p class="subtitle">
+                This password reset link is invalid or has
+                already expired.
+            </p>
+
+
+            <button
+                class="primary-button"
+                id="retryButton"
+            >
+                Request new link
+            </button>
+
+        </section>
+
+    </div>
+
+
+    <p class="footer">
+        Secure authentication powered by Supabase
+    </p>
+
+</div>
+
+
+<!-- Supabase JS -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="script.js"></script>
+
+</body>
+</html>
+```

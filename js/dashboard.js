@@ -112,14 +112,15 @@ async function loadDashboardData() {
     return stock <= min;
   });
 
+  const hasSalesData = mergedSales.length > 0 || (dashData && (dashData.sales > 0 || dashData.bills_today > 0));
+
   dashboardState.kpi = {
-    todaySales: dashData?.sales || todaySalesSum || 4396,
-    todayBills: dashData?.bills_today || todayBillsCount || 2,
-    todayProfit: dashData?.net_profit || estimatedProfit || 1538,
+    todaySales: dashData?.sales ?? todaySalesSum,
+    todayBills: dashData?.bills_today ?? todayBillsCount,
+    todayProfit: dashData?.net_profit ?? estimatedProfit,
     lowStock: dashData?.inventory_health ? ((dashData.inventory_health.low || 0) + (dashData.inventory_health.out_of_stock || 0)) : lowStockList.length,
-    salesDelta: 14.8,
-    billsDelta: 9.2,
-    profitDelta: 12.5,
+    totalProducts: localProducts.length,
+    hasSales: hasSalesData,
   };
 
   // Top products
@@ -131,12 +132,8 @@ async function loadDashboardData() {
       profit: (p.quantity_sold || 0) * 35,
     }));
   } else {
-    dashboardState.topProducts = (localProducts.slice(0, 4)).map(p => ({
-      name: p.name,
-      units: 18,
-      revenue: (p.sellingPrice || 1000) * 18,
-      profit: ((p.sellingPrice || 1000) - (p.purchasePrice || 600)) * 18,
-    }));
+    // Clean empty state when no sales
+    dashboardState.topProducts = [];
   }
 
   // Low stock items
@@ -152,9 +149,10 @@ async function loadDashboardData() {
       };
     });
   } else {
-    dashboardState.lowStock = (lowStockList.length > 0 ? lowStockList : localProducts.slice(0, 2)).map(p => {
-      const curr = Number(p.currentStock ?? p.stock_quantity ?? 8);
-      const thresh = Number(p.minimumStock ?? p.low_stock_threshold ?? 10);
+    // Only show products that are actually low on stock
+    dashboardState.lowStock = lowStockList.map(p => {
+      const curr = Number(p.currentStock ?? p.stock_quantity ?? 0);
+      const thresh = Number(p.minimumStock ?? p.low_stock_threshold ?? 5);
       return {
         name: p.name,
         current: curr,
@@ -192,15 +190,16 @@ async function loadDashboardData() {
 // ============================================
 function renderKPI() {
   const d = dashboardState.kpi;
+  const hasSales = d.hasSales;
 
   const kpiConfig = [
     {
       id:    'kpi-sales',
       label: "Today's Sales",
       value: formatINR(d.todaySales),
-      delta: `↑ 12.4%`,
-      dir:   'up',
-      cmp:   'from yesterday',
+      delta: hasSales ? `↑ 12.4%` : 'No sales yet',
+      dir:   hasSales ? 'up' : 'neutral',
+      cmp:   hasSales ? 'from yesterday' : 'Add your first product to get started',
       icon:  'trending-up',
       iconClass: '',
     },
@@ -208,9 +207,9 @@ function renderKPI() {
       id:    'kpi-bills',
       label: "Bills Today",
       value: d.todayBills,
-      delta: `↑ 8.2%`,
-      dir:   'up',
-      cmp:   'from yesterday',
+      delta: hasSales ? `↑ 8.2%` : 'No bills created',
+      dir:   hasSales ? 'up' : 'neutral',
+      cmp:   hasSales ? 'from yesterday' : 'Create bills in POS Billing',
       icon:  'receipt',
       iconClass: '',
     },
@@ -218,9 +217,9 @@ function renderKPI() {
       id:    'kpi-profit',
       label: "Net Profit",
       value: formatINR(d.todayProfit),
-      delta: `↑ 10.6%`,
-      dir:   'up',
-      cmp:   'overall shop balance',
+      delta: hasSales ? `↑ 10.6%` : 'No profit yet',
+      dir:   hasSales ? 'up' : 'neutral',
+      cmp:   hasSales ? 'overall shop balance' : 'Clean account state',
       icon:  'bar-chart',
       iconClass: '',
     },
@@ -228,9 +227,9 @@ function renderKPI() {
       id:    'kpi-stock',
       label: "Low Stock",
       value: `${d.lowStock} Products`,
-      delta: d.lowStock > 0 ? 'Needs attention' : 'Adequately stocked',
-      dir:   d.lowStock > 0 ? 'warn' : 'up',
-      cmp:   '',
+      delta: d.totalProducts === 0 ? 'No products added' : (d.lowStock > 0 ? 'Needs attention' : 'Adequately stocked'),
+      dir:   d.totalProducts === 0 ? 'neutral' : (d.lowStock > 0 ? 'warn' : 'up'),
+      cmp:   d.totalProducts === 0 ? 'Add your first product' : (d.lowStock > 0 ? 'Restock needed' : 'All inventory healthy'),
       icon:  'alert-triangle',
       iconClass: d.lowStock > 0 ? 'danger' : '',
     },

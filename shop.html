@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Shop Management — FlowBase</title>
+  <meta name="description" content="Manage your shop information, business details, billing settings, branding, and preferences." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/dashboard.css" />
+  <link rel="stylesheet" href="css/shop.css" />
+</head>
+<body>
+
+<div class="app-shell">
+
+  <!-- SIDEBAR OVERLAY (mobile) -->
+  <div class="sidebar-overlay" id="sidebar-overlay" aria-hidden="true"></div>
+
+  <!-- ==========================================
+       SIDEBAR
+       ========================================== -->
+  <aside class="sidebar" id="sidebar" role="navigation" aria-label="Main navigation">
+
+    <!-- Logo -->
+    <a class="sidebar-logo" href="dashboard.html" aria-label="FlowBase home">
+      <span class="sidebar-logo-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M4 4h7v7H4V4zm0 9h7v7H4v-7zm9-9h7v7h-7V4zm0 9h3v3h-3v-3zm4 4h3v3h-3v-3zm-4 0h3v3h-3v-3z"/>
+        </svg>
+      </span>
+      <span class="sidebar-logo-text">FLOWBASE</span>
+    </a>
+
+    <!-- Navigation -->
+    <nav class="sidebar-nav" aria-label="Primary">
+      <div class="sidebar-nav-section">
+        <a class="nav-item" href="dashboard.html" id="nav-dashboard">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          <span>Dashboard</span>
+        </a>
+        <a class="nav-item" href="billing.html" id="nav-billing">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 2v20l3-2 3 2 3-2 3 2 3-2V2"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg>
+          <span>Billing</span>
+        </a>
+        <a class="nav-item" href="products.html" id="nav-products">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          <span>Products</span>
+        </a>
+        <a class="nav-item" href="inventory.html" id="nav-inventory">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+          <span>Inventory</span>
+        </a>
+        <a class="nav-item" href="sales.html" id="nav-sales">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/></svg>
+          <span>Sales</span>
+        </a>
+        <a class="nav-item" href="expenses.html" id="nav-expenses">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          <span>Expenses</span>
+        </a>
+        <a class="nav-item" href="employees.html" id="nav-employees">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          <span>Employees</span>
+        </a>
+        <a class="nav-item active" href="shop.html" id="nav-shop" aria-current="page">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          <span>Shop</span>
+        </a>
+      </div>
+
+      <div class="nav-divider" role="separator"></div>
+
+    </nav>
+
+    <!-- Sidebar Footer -->
+    <footer class="sidebar-footer">
+      <button class="nav-item" id="theme-toggle-btn" type="button" aria-label="Toggle Dark Mode" style="width:100%; border:none; background:none; text-align:left; cursor:pointer;">
+        <span class="theme-toggle-icon" aria-hidden="true" style="display:flex; align-items:center; justify-content:center;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </span>
+        <span class="theme-toggle-label">Dark Mode</span>
+      </button>
+      <a class="nav-item" href="settings.html" id="nav-settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        <span>Settings</span>
+      </a>
+      <button class="nav-item" id="logout-btn" type="button" aria-label="Log out" style="width:100%; border:none; background:none; text-align:left; cursor:pointer;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        <span>Logout</span>
+      </button>
+    </footer>
+
+  </aside>
+
+  <!-- ==========================================
+       MAIN CONTENT
+       ========================================== -->
+  <div class="main-content">
+
+    <!-- Top Header Bar -->
+    <header class="top-header" role="banner">
+      <div class="header-left">
+        <button class="hamburger-btn" id="hamburger-btn" type="button" aria-label="Toggle sidebar" aria-expanded="false" aria-controls="sidebar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <span class="header-breadcrumb">Shop Management</span>
+      </div>
+
+      <div class="header-right">
+        <button class="header-profile" id="header-user-btn" type="button" aria-label="Shop Admin profile" style="background:none; border:none; cursor:pointer;">
+          <div class="profile-avatar" aria-hidden="true">SA</div>
+          <div class="profile-info">
+            <div class="profile-name">Shop Admin</div>
+            <div class="profile-role">Administrator</div>
+          </div>
+        </button>
+      </div>
+    </header>
+
+    <!-- Page Body -->
+    <main class="page-body" id="main-content">
+
+      <!-- NEW SHOP EMPTY STATE (if no active shop) -->
+      <section class="new-shop-container" id="shop-empty-state" style="display:none;">
+        <div class="new-shop-icon">
+          <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        </div>
+        <h2 class="new-shop-title">Welcome to FlowBase</h2>
+        <p class="new-shop-subtitle">Create your shop to start managing your business, products, sales, and billing.</p>
+        <a class="btn btn-primary" href="onboarding.html" style="display:inline-flex; align-items:center; gap:8px;">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Create Shop
+        </a>
+      </section>
+
+      <!-- MAIN SHOP CONTENT -->
+      <div id="shop-main-content">
+
+        <!-- Header Card with Shop ID & Copy Button -->
+        <section class="shop-header-card" aria-label="Shop Header">
+          <div class="shop-header-info">
+            <h1 class="shop-page-title">Shop Management</h1>
+            <p class="shop-page-subtitle">Manage your shop information, business details and preferences.</p>
+          </div>
+          <div class="shop-id-badge-wrap">
+            <span class="shop-id-label">Shop ID:</span>
+            <span class="shop-id-value" id="header-shop-id-val">FB-STORE-...</span>
+            <button class="btn-copy-id" id="btn-header-copy-id" type="button" title="Copy Shop ID">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              Copy ID
+            </button>
+          </div>
+        </section>
+
+        <!-- Employee View Notice Banner (Hidden for Owner/Admin) -->
+        <div class="employee-view-banner" id="employee-view-banner" style="display:none;">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <span>Employee Access: You are viewing store settings in read-only mode. Contact your store owner to modify details.</span>
+        </div>
+
+        <!-- 1. Shop Overview Card -->
+        <section class="shop-overview-card" aria-label="Shop Overview">
+          <div class="shop-overview-left">
+            <div class="shop-avatar-wrap" id="overview-shop-avatar">
+              <span id="overview-shop-initials">FB</span>
+              <img id="overview-shop-img" class="shop-avatar-img" src="" alt="Shop Logo" style="display:none;" />
+            </div>
+            <div class="shop-overview-details">
+              <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+                <h2 class="shop-name-title" id="overview-shop-name">My Shop</h2>
+                <span class="badge-shop-status">Active</span>
+              </div>
+              <div class="shop-meta-row">
+                <span class="shop-category-tag" id="overview-shop-category">Retail Store</span>
+                <span>•</span>
+                <span>Shop ID: <strong id="overview-shop-id-val" style="font-family:monospace;">FB-STORE-1</strong></span>
+                <span>•</span>
+                <span>Owner: <strong id="overview-owner-name">—</strong></span>
+                <span>•</span>
+                <span>Created: <span id="overview-date-created">—</span></span>
+              </div>
+            </div>
+          </div>
+          <div>
+            <button class="btn btn-primary" id="btn-overview-edit" type="button">
+              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+              Edit Shop Details
+            </button>
+          </div>
+        </section>
+
+        <!-- Grid for Information Sections -->
+        <div class="shop-grid">
+
+          <!-- 2. Basic Information -->
+          <section class="shop-card" id="card-basic">
+            <div class="shop-card-header">
+              <div class="shop-card-title-wrap">
+                <div class="shop-card-icon">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18"/><path d="M14 9h4"/><path d="M14 15h4"/></svg>
+                </div>
+                <h3 class="shop-card-title">Basic Information</h3>
+              </div>
+              <button class="btn-card-edit" data-edit-btn type="button">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                Edit
+              </button>
+            </div>
+            <div class="shop-card-body">
+              <!-- Field Displays -->
+              <div class="shop-fields-list">
+                <div class="shop-field-item">
+                  <span class="shop-field-label">Shop Name</span>
+                  <span class="shop-field-value" id="disp-basic-name">—</span>
+                </div>
+                <div class="shop-field-item">
+                  <span class="shop-field-label">Business Category</span>
+                  <span class="shop-field-value" id="disp-basic-category">—</span>
+                </div>
+                <div class="shop-field-item">
+                  <span class="shop-field-label">Owner Name</span>
+                  <span class="shop-field-value" id="disp-basic-owner">—</span>
+                </div>
+                <div class="shop-field-item">
+                  <span class="shop-field-label">Contact Number</span>
+                  <span class="shop-field-value" id="disp-basic-phone">—</span>
+                </div>
+                <div class="shop-field-item">
+                  <span class="shop-field-label">Email Address</span>
+                  <span class="shop-field-value" id="disp-basic-email">—</span>
+                </div>
+                <div class="shop-field-item full-width">
+                  <span class="shop-field-label">Shop Description</span>
+                  <span class="shop-field-value" id="disp-basic-desc">—</span>
+                </div>
+              </div>
+
+              <!-- Edit Form -->
+              <div class="shop-edit-form">
+                <div class="shop-form-grid">
+                  <div class="shop-form-group">
+                    <label class="shop-form-label" for="input-basic-name">Shop Name *</label>
+                    <input class="shop-form-input" id="input-basic-name" type="text" placeholder="e.g. Apex Supermarket" required />
+                  </div>
+                  <div class="shop-form-group">
+                    <label class="shop-form-label" for="input-basic-category">Business Category</label>
+                    <input class="shop-form-input" id="input-basic-category" type="text" placeholder="e.g. Retail, Grocery, Pharmacy" />
+                  </div>
+                  <div class="shop-form-group">
+                    <label class="shop-form-label" for="input-basic-owner">Owner Name</label>
+                    <input class="shop-form-input" id="input-basic-owner" type="text" placeholder="e.g. Rajesh Kumar" />
+                  </div>
+                  <div class="shop-form-group">
+                    <label class="shop-form-label" for="input-basic-phone">Contact Number</label>
+                    <input class="shop-form-input" id="input-basic-phone" type="tel" placeholder="e.g. +91 9876543210" />
+                  </div>
+                  <div class="shop-form-group full-width">
+                    <label class="shop-form-label" for="input-basic-email">Email Address</label>
+                    <input class="shop-form-input" id="input-basic-email" type="email" placeholder="e.g. contact@apexstore.com" />
+                  </div>
+                  <div class="shop-form-group full-width">
+                    <label class="shop-form-label" for="input-basic-desc">Shop Description</label>
+                    <textarea class="shop-form-textarea" id="input-basic-desc" placeholder="Brief description of your business, goods sold, or specialization..."></textarea>
+                  </div>
+                </div>
+                <div class="shop-form-actions">
+                  <button class="btn btn-secondary" data-cancel-btn type="button">Cancel</button>
+                  <button class="btn btn-primary" data-save-btn type="button">Save Changes</button>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- 3. Address & Location -->
+          <section class="shop-card" id="card-address">
+            <div class="shop-card-header">
+              <div class="shop-card-title-wrap">
+                <div class="shop-card-icon">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                </div>
+                <h3 class="shop-card-title">Address &amp; Location</h3>
+              </div>
+              <button class="btn-card-edit" data-edit-btn type="button">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                Edit Address
+              </button>
+            </div>
+            <div class="shop-card-body">
+              <div class="shop-fields-list">
+                <div class="shop-field-item full-width">
+                  <span class="shop-field-label">Street Address</span>
+                  <span class="shop-field-value" id="disp-addr-street">—</span>
+                </div>
+                <div class="shop-field-item">
+                  <span class="shop-field-label">Area / Locality</span>
+                  <span class="shop-field-value" id="disp-addr-area">—</span>
+                </div>
+                <div class="shop-field-item">
+                  <span class="shop-field-label">City</span>
+                  <span class="shop-field-value" id="disp-addr-city">—</span>
+                </div>
+                <div class="shop-field-item">
+                  <span class="shop-field-label">State</span>
+                  <span class="shop-field-value" id="disp-addr-state">—</span>
+                </div>
+                <div class="shop-field-item">
+                  <span class="shop-field-label">Country</span>
+                  <span class="shop-field-value" id="disp-addr-country">India</span>
+                </div>
+                <div class="shop-field-item">
+                  <span class="shop-field-label">Pincode / Postal Code</span>
+                  <span class="shop-field-value" id="disp-addr-pincode">—</span>
+                </div>
+              </div>
+
+              <div class="shop-edit-form">
+                <div class="shop-form-grid">
+                  <div class="shop-form-group full-width">
+                    <label class="shop-form-label" for="input-addr-street">Street Address</label>
+                    <input class="shop-form-input" id="input-addr-street" type="text" placeholder="e.g. Shop No. 14, Galaxy Market, M.G. Road" />
+                  </div>
+                  <div class="shop-form-group">
+                    <label class="shop-form-label" for="input-addr-area">Area / Locality</label>
+                    <input class="shop-form-input" id="input-addr-area" type="text" placeholder="e.g. Sector 18" />
+                  </div>
+                  <div class="shop-form-group">
+                    <label class="shop-form-label" for="input-addr-city">City</label>
+                    <input class="shop-form-input" id="input-addr-city" type="text" placeholder="e.g. Mumbai" />
+                  </div>
+                  <div class="shop-form-group">
+                    <label class="shop-form-label" for="input-addr-state">State</label>
+                    <input class="shop-form-input" id="input-addr-state" type="text" placeholder="e.g. Maharashtra" />
+                  </div>
+                  <div class="shop-form-group">
+                    <label class="shop-form-label" for="input-addr-country">Country</label>
+                    <input class="shop-form-input" id="input-addr-country" type="text" value="India" />
+                  </div>
+                  <div class="shop-form-group">
+                    <label class="shop-form-label" for="input-addr-pincode">Pincode</label>
+                    <input class="shop-form-input" id="input-addr-pincode" type="text" placeholder="e.g. 400001" />
+                  </div>
+                </div>
+                <div class="shop-form-actions">
+                  <button class="btn btn-secondary" data-cancel-btn type="button">Cancel</button>
+                  <button class="btn btn-primary" data-save-btn type="button">Save Changes</button>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- 4. Business & Legal Information -->
+          <section class="shop-card" id="card-business">
+            <div class="shop-card-header">
+              <div class="shop-card-title-wrap">
+                <div class="shop-card-icon">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                </div>
+                <h3 class="shop-card-title">Business Information</h3>
+              </div>
+              <button class="btn-card-edit" data-edit-btn type="button">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                Edit
+              </button>
+            </div>
+            <div class="shop-card-body">
+              <div class="shop-fields-list">
+                <div class="shop-field-item">
+                  <span class="shop-field-label">GST Number (Optional)</span>
+                  <span class="shop-field-value" id="disp-biz-gst">—</span>
+                </div>
+                <div class="shop-field-item">
+                  <span class="shop-field-label">PAN Number (Optional)</span>
+                  <span class="shop-field-value" id="disp-biz-pan">—</span>
+                </div>
+                <div class="shop-field-item">
+                  <span class="shop-field-label">Business Registration No.</span>
+                  <span class="shop-field-value" id="disp-biz-reg">—</span>
+                </div>
+                <div class="shop-field-item">
+                  <span class="shop-field-label">Business Type</span>
+                  <span class="shop-field-value" id="disp-biz-type">Sole Proprietorship</span>
+                </div>
+                <div class="shop-field-item">
+                  <span class="shop-field-label">Billing Prefix</span>
+                  <span class="shop-field-value" id="disp-biz-prefix">FB-</span>
+                </div>
+                <div class="shop-field-item">
+                  <span class="shop-field-label">Invoice Number Format</span>
+                  <span class="shop-field-value" id="disp-biz-format">FB-[000000]</span>
+                </div>
+                <div class="shop-field-item full-width">
+                  <span class="shop-field-label">Tax Information</span>
+                  <span class="shop-field-value" id="disp-biz-tax">—</span>
+                </div>
+              </div>
+
+              <div class="shop-edit-form">
+                <div class="shop-form-grid">
+                  <div class="shop-form-group">
+                    <label class="shop-form-label" for="input-biz-gst">GST Number (Optional)</label>
+                    <input class="shop-form-input" id="input-biz-gst" type="text" placeholder="e.g. 27AAAAA0000A1Z5" />
+                  </div>
+                  <div class="shop-form-group">
+                    <label class="shop-form-label" for="input-biz-pan">PAN Number (Optional)</label>
+                    <input class="shop-form-input" id="input-biz-pan" type="text" placeholder="e.g. ABCDE1234F" />
+                  </div>
+                  <div class="shop-form-group">
+                    <label class="shop-form-label" for="input-biz-reg">Registration No. (Optional)</label>
+                    <input class="shop-form-input" id="input-biz-reg" type="text" placeholder="e.g. REG-987654" />
+                  </div>
+                  <div class="shop-form-group">
+                    <label class="shop-form-label" for="input-biz-type">Business Type</label>
+                    <select class="shop-form-select" id="input-biz-type">
+                      <option value="Sole Proprietorship">Sole Proprietorship</option>
+                      <option value="Partnership">Partnership</option>
+                      <option value="LLP">Limited Liability Partnership (LLP)</option>
+                      <option value="Private Limited">Private Limited Company</option>
+                      <option value="Retail Outlet">Retail Outlet / Individual Shop</option>
+                    </select>
+                  </div>
+                  <div class="shop-form-group">
+                    <label class="shop-form-label" for="input-biz-prefix">Billing Prefix</label>
+                    <input class="shop-form-input" id="input-biz-prefix" type="text" placeholder="e.g. FB-" />
+                  </div>
+                  <div class="shop-form-group">
+                    <label class="shop-form-label" for="input-biz-format">Invoice Number Format</label>
+                    <input class="shop-form-input" id="input-biz-format" type="text" placeholder="e.g. FB-[000000]" />
+                  </div>
+                  <div class="shop-form-group full-width">
+                    <label class="shop-form-label" for="input-biz-tax">Tax Information / Notes</label>
+                    <input class="shop-form-input" id="input-biz-tax" type="text" placeholder="e.g. GST Registered, Composition scheme, etc." />
+                  </div>
+                </div>
+                <div class="shop-form-actions">
+                  <button class="btn btn-secondary" data-cancel-btn type="button">Cancel</button>
+                  <button class="btn btn-primary" data-save-btn type="button">Save Changes</button>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- 5. Billing & Invoice Settings -->
+          <section class="shop-card" id="card-billing">
+            <div class="shop-card-header">
+              <div class="shop-card-title-wrap">
+                <div class="shop-card-icon">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                </div>
+                <h3 class="shop-card-title">Billing &amp; Invoice Settings</h3>
+              </div>
+              <button class="btn-card-edit" data-edit-btn type="button">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                Edit
+              </button>
+            </div>
+            <div class="shop-card-body">
+              <div class="shop-fields-list">
+                <div class="shop-field-item">
+                  <span class="shop-field-label">Invoice Prefix</span>
+                  <span class="shop-field-value" id="disp-bil-prefix">FB-</span>
+                </div>
+                <div class="shop-field-item">
+                  <span class="shop-field-label">Starting Invoice No.</span>
+                  <span class="shop-field-value" id="disp-bil-startno">1</span>
+                </div>
+                <div class="shop-field-item">
+                  <span class="shop-field-label">Currency</span>
+                  <span class="shop-field-value" id="disp-bil-currency">INR (₹)</span>
+                </div>
+                <div class="shop-field-item">
+                  <span class="shop-field-label">Tax Status</span>
+                  <span class="shop-field-value" id="disp-bil-taxenabled">Enabled</span>
+                </div>
+                <div class="shop-field-item">
+                  <span class="shop-field-label">Default Tax Rate</span>
+                  <span class="shop-field-value" id="disp-bil-taxrate">18%</span>
+                </div>
+                <div class="shop-field-item">
+                  <span class="shop-field-label">Payment Methods</span>
+                  <span class="shop-field-value" id="disp-bil-methods">Cash, UPI, Card</span>
+                </div>
+                <div class="shop-field-item full-width">
+                  <span class="shop-field-label">Bill Footer Message</span>
+                  <span class="shop-field-value" id="disp-bil-footer">—</span>
+                </div>
+                <div class="shop-field-item full-width">
+                  <span class="shop-field-label">Terms &amp; Conditions</span>
+                  <span class="shop-field-value" id="disp-bil-terms">—</span>
+                </div>
+                <div class="shop-field-item full-width">
+                  <span class="shop-field-label">Return Policy</span>
+                  <span class="shop-field-value" id="disp-bil-return">—</span>
+                </div>
+              </div>
+
+              <div class="shop-edit-form">
+                <div class="shop-form-grid">
+                  <div class="shop-form-group">
+                    <label class="shop-form-label" for="input-bil-prefix">Invoice Prefix</label>
+                    <input class="shop-form-input" id="input-bil-prefix" type="text" placeholder="e.g. FB-" />
+                  </div>
+                  <div class="shop-form-group">
+                    <label class="shop-form-label" for="input-bil-startno">Starting Invoice No.</label>
+                    <input class="shop-form-input" id="input-bil-startno" type="number" min="1" placeholder="1" />
+                  </div>
+                  <div class="shop-form-group">
+                    <label class="shop-form-label" for="input-bil-currency">Currency</label>
+                    <select class="shop-form-select" id="input-bil-currency">
+                      <option value="INR (₹)">INR (₹) - Indian Rupee</option>
+                      <option value="USD ($)">USD ($) - US Dollar</option>
+                      <option value="EUR (€)">EUR (€) - Euro</option>
+                      <option value="GBP (£)">GBP (£) - British Pound</option>
+                    </select>
+                  </div>
+                  <div class="shop-form-group">
+                    <label class="shop-form-label" for="input-bil-taxenabled">Tax Calculation</label>
+                    <select class="shop-form-select" id="input-bil-taxenabled">
+                      <option value="true">Enabled (Apply Tax on Bills)</option>
+                      <option value="false">Disabled (No Tax on Bills)</option>
+                    </select>
+                  </div>
+                  <div class="shop-form-group">
+                    <label class="shop-form-label" for="input-bil-taxrate">Default Tax Percentage (%)</label>
+                    <input class="shop-form-input" id="input-bil-taxrate" type="number" min="0" max="100" placeholder="18" />
+                  </div>
+                  <div class="shop-form-group">
+                    <label class="shop-form-label" for="input-bil-methods">Accepted Payment Methods</label>
+                    <input class="shop-form-input" id="input-bil-methods" type="text" placeholder="Cash, UPI, Card, Net Banking" />
+                  </div>
+                  <div class="shop-form-group full-width">
+                    <label class="shop-form-label" for="input-bil-footer">Bill Footer Message</label>
+                    <input class="shop-form-input" id="input-bil-footer" type="text" placeholder="e.g. Thank you for shopping with us! Visit again." />
+                  </div>
+                  <div class="shop-form-group full-width">
+                    <label class="shop-form-label" for="input-bil-terms">Terms &amp; Conditions</label>
+                    <textarea class="shop-form-textarea" id="input-bil-terms" placeholder="Terms printed on bills/receipts..."></textarea>
+                  </div>
+                  <div class="shop-form-group full-width">
+                    <label class="shop-form-label" for="input-bil-return">Return Policy</label>
+                    <textarea class="shop-form-textarea" id="input-bil-return" placeholder="Exchange / refund timeline and conditions..."></textarea>
+                  </div>
+                </div>
+                <div class="shop-form-actions">
+                  <button class="btn btn-secondary" data-cancel-btn type="button">Cancel</button>
+                  <button class="btn btn-primary" data-save-btn type="button">Save Changes</button>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- 6. Shop Contact Information -->
+          <section class="shop-card" id="card-contact">
+            <div class="shop-card-header">
+              <div class="shop-card-title-wrap">
+                <div class="shop-card-icon">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                </div>
+                <h3 class="shop-card-title">Contact Information</h3>
+              </div>
+              <button class="btn-card-edit" data-edit-btn type="button">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                Edit
+              </button>
+            </div>
+            <div class="shop-card-body">
+              <div class="shop-fields-list">
+                <div class="shop-field-item">
+                  <span class="shop-field-label">Shop Primary Phone</span>
+                  <span class="shop-field-value" id="disp-cnt-phone">—</span>
+                </div>
+                <div class="shop-field-item">
+                  <span class="shop-field-label">Alternate Phone</span>
+                  <span class="shop-field-value" id="disp-cnt-altphone">—</span>
+                </div>
+                <div class="shop-field-item">
+                  <span class="shop-field-label">Official Shop Email</span>
+                  <span class="shop-field-value" id="disp-cnt-email">—</span>
+                </div>
+                <div class="shop-field-item">
+                  <span class="shop-field-label">WhatsApp Number</span>
+                  <span class="shop-field-value" id="disp-cnt-whatsapp">—</span>
+                </div>
+                <div class="shop-field-item full-width">
+                  <span class="shop-field-label">Website (Optional)</span>
+                  <span class="shop-field-value" id="disp-cnt-website">—</span>
+                </div>
+              </div>
+
+              <div class="shop-edit-form">
+                <div class="shop-form-grid">
+                  <div class="shop-form-group">
+                    <label class="shop-form-label" for="input-cnt-phone">Primary Phone</label>
+                    <input class="shop-form-input" id="input-cnt-phone" type="tel" placeholder="+91 9876543210" />
+                  </div>
+                  <div class="shop-form-group">
+                    <label class="shop-form-label" for="input-cnt-altphone">Alternate Phone</label>
+                    <input class="shop-form-input" id="input-cnt-altphone" type="tel" placeholder="+91 9876543211" />
+                  </div>
+                  <div class="shop-form-group">
+                    <label class="shop-form-label" for="input-cnt-email">Shop Email</label>
+                    <input class="shop-form-input" id="input-cnt-email" type="email" placeholder="support@myshop.com" />
+                  </div>
+                  <div class="shop-form-group">
+                    <label class="shop-form-label" for="input-cnt-whatsapp">WhatsApp Business Number</label>
+                    <input class="shop-form-input" id="input-cnt-whatsapp" type="tel" placeholder="+91 9876543210" />
+                  </div>
+                  <div class="shop-form-group full-width">
+                    <label class="shop-form-label" for="input-cnt-website">Website URL (Optional)</label>
+                    <input class="shop-form-input" id="input-cnt-website" type="url" placeholder="https://www.myshop.com" />
+                  </div>
+                </div>
+                <div class="shop-form-actions">
+                  <button class="btn btn-secondary" data-cancel-btn type="button">Cancel</button>
+                  <button class="btn btn-primary" data-save-btn type="button">Save Changes</button>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- 7. Shop Logo & Branding -->
+          <section class="shop-card" id="card-branding">
+            <div class="shop-card-header">
+              <div class="shop-card-title-wrap">
+                <div class="shop-card-icon">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                </div>
+                <h3 class="shop-card-title">Shop Branding</h3>
+              </div>
+            </div>
+            <div class="shop-card-body">
+              <div class="branding-preview-wrap">
+                <div class="branding-preview-box">
+                  <img id="branding-preview-img" class="branding-preview-img" src="" alt="Shop Logo" style="display:none;" />
+                  <div id="branding-preview-empty" style="color:var(--color-text-secondary); font-size:12px; text-align:center; padding:8px;">No Logo</div>
+                </div>
+                <div>
+                  <h4 style="margin:0 0 4px 0; font-size:15px; font-weight:700;">Store Emblem / Logo</h4>
+                  <p style="margin:0 0 10px 0; font-size:13px; color:var(--color-text-secondary);">Upload your business logo to show on your invoices, receipts, and headers.</p>
+                  <button class="btn btn-secondary btn-sm" id="btn-remove-logo" type="button" style="display:none; color:var(--color-danger);">
+                    Remove Logo
+                  </button>
+                </div>
+              </div>
+
+              <input type="file" id="shop-logo-file" accept="image/*" style="display:none;" />
+              <div class="branding-dropzone" id="logo-dropzone">
+                <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                <div style="font-size:14px; font-weight:600; color:var(--color-text);">Click to upload or drag &amp; drop logo</div>
+                <div style="font-size:12px; color:var(--color-text-secondary);">PNG, JPG, SVG, or WebP (Max 2MB)</div>
+              </div>
+            </div>
+          </section>
+
+          <!-- 8. Business Hours Schedule -->
+          <section class="shop-card" id="card-hours">
+            <div class="shop-card-header">
+              <div class="shop-card-title-wrap">
+                <div class="shop-card-icon">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                </div>
+                <h3 class="shop-card-title">Business Hours</h3>
+              </div>
+              <button class="btn btn-primary btn-sm" id="btn-save-hours" type="button">
+                Save Business Hours
+              </button>
+            </div>
+            <div class="shop-card-body">
+              <div class="business-hours-list" id="business-hours-list">
+                <!-- Populated dynamically by js/shop.js -->
+              </div>
+            </div>
+          </section>
+
+          <!-- 9. Shop Preferences -->
+          <section class="shop-card" id="card-preferences">
+            <div class="shop-card-header">
+              <div class="shop-card-title-wrap">
+                <div class="shop-card-icon">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                </div>
+                <h3 class="shop-card-title">Shop Preferences</h3>
+              </div>
+              <button class="btn-card-edit" data-edit-btn type="button">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                Edit
+              </button>
+            </div>
+            <div class="shop-card-body">
+              <div class="shop-fields-list">
+                <div class="shop-field-item">
+                  <span class="shop-field-label">Default Currency</span>
+                  <span class="shop-field-value" id="disp-pref-currency">INR (₹)</span>
+                </div>
+                <div class="shop-field-item">
+                  <span class="shop-field-label">Default Payment Method</span>
+                  <span class="shop-field-value" id="disp-pref-paymethod">Cash</span>
+                </div>
+                <div class="shop-field-item">
+                  <span class="shop-field-label">Tax Calculation</span>
+                  <span class="shop-field-value" id="disp-pref-tax">Active</span>
+                </div>
+                <div class="shop-field-item">
+                  <span class="shop-field-label">Low Stock Alert Threshold</span>
+                  <span class="shop-field-value" id="disp-pref-lowstock">5 units</span>
+                </div>
+                <div class="shop-field-item">
+                  <span class="shop-field-label">Date Format</span>
+                  <span class="shop-field-value" id="disp-pref-datefmt">DD/MM/YYYY</span>
+                </div>
+                <div class="shop-field-item">
+                  <span class="shop-field-label">Number Format</span>
+                  <span class="shop-field-value" id="disp-pref-numfmt">Indian (1,00,000)</span>
+                </div>
+              </div>
+
+              <div class="shop-edit-form">
+                <div class="shop-form-grid">
+                  <div class="shop-form-group">
+                    <label class="shop-form-label" for="input-pref-currency">Default Currency</label>
+                    <select class="shop-form-select" id="input-pref-currency">
+                      <option value="INR (₹)">INR (₹)</option>
+                      <option value="USD ($)">USD ($)</option>
+                      <option value="EUR (€)">EUR (€)</option>
+                      <option value="GBP (£)">GBP (£)</option>
+                    </select>
+                  </div>
+                  <div class="shop-form-group">
+                    <label class="shop-form-label" for="input-pref-paymethod">Default Payment Method</label>
+                    <select class="shop-form-select" id="input-pref-paymethod">
+                      <option value="Cash">Cash</option>
+                      <option value="UPI">UPI</option>
+                      <option value="Card">Card</option>
+                    </select>
+                  </div>
+                  <div class="shop-form-group">
+                    <label class="shop-form-label" for="input-pref-tax">Tax Status</label>
+                    <select class="shop-form-select" id="input-pref-tax">
+                      <option value="true">Enabled</option>
+                      <option value="false">Disabled</option>
+                    </select>
+                  </div>
+                  <div class="shop-form-group">
+                    <label class="shop-form-label" for="input-pref-lowstock">Low Stock Threshold</label>
+                    <input class="shop-form-input" id="input-pref-lowstock" type="number" min="1" max="100" placeholder="5" />
+                  </div>
+                  <div class="shop-form-group">
+                    <label class="shop-form-label" for="input-pref-datefmt">Date Format</label>
+                    <select class="shop-form-select" id="input-pref-datefmt">
+                      <option value="DD/MM/YYYY">DD/MM/YYYY</option>
+                      <option value="MM/DD/YYYY">MM/DD/YYYY</option>
+                      <option value="YYYY-MM-DD">YYYY-MM-DD</option>
+                    </select>
+                  </div>
+                  <div class="shop-form-group">
+                    <label class="shop-form-label" for="input-pref-numfmt">Number Format</label>
+                    <select class="shop-form-select" id="input-pref-numfmt">
+                      <option value="Indian (1,00,000)">Indian (1,00,000)</option>
+                      <option value="International (100,000)">International (100,000)</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="shop-form-actions">
+                  <button class="btn btn-secondary" data-cancel-btn type="button">Cancel</button>
+                  <button class="btn btn-primary" data-save-btn type="button">Save Changes</button>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- 10. Shop Access Summary Card -->
+          <section class="shop-card" id="card-access">
+            <div class="shop-card-header">
+              <div class="shop-card-title-wrap">
+                <div class="shop-card-icon">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                </div>
+                <h3 class="shop-card-title">Shop Access</h3>
+              </div>
+              <button class="btn btn-secondary btn-sm" id="btn-manage-employees" type="button">
+                Manage Employees
+              </button>
+            </div>
+            <div class="shop-card-body">
+              <div class="access-stats-grid">
+                <div class="access-stat-box">
+                  <span class="access-stat-label">Total Staff</span>
+                  <span class="access-stat-value" id="stat-total-employees">1</span>
+                </div>
+                <div class="access-stat-box">
+                  <span class="access-stat-label">Active Staff</span>
+                  <span class="access-stat-value" id="stat-active-employees">1</span>
+                </div>
+                <div class="access-stat-box">
+                  <span class="access-stat-label">Shop Owner</span>
+                  <span class="access-stat-value" id="stat-owner-name" style="font-size:14px; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;">—</span>
+                </div>
+                <div class="access-stat-box">
+                  <span class="access-stat-label">Store Code</span>
+                  <span class="access-stat-value" id="stat-shop-id" style="font-size:13px; font-family:monospace; color:var(--color-primary);">FB-STORE-...</span>
+                </div>
+              </div>
+              <p style="font-size:13px; color:var(--color-text-secondary); margin:0;">
+                Share your Shop ID with your staff members so they can join your shop with role-based employee permissions.
+              </p>
+            </div>
+          </section>
+
+          <!-- 11. Important Shop Actions -->
+          <section class="shop-card shop-grid-full" id="card-actions">
+            <div class="shop-card-header">
+              <div class="shop-card-title-wrap">
+                <div class="shop-card-icon">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                </div>
+                <h3 class="shop-card-title">Shop Actions</h3>
+              </div>
+            </div>
+            <div class="shop-card-body">
+              <div class="actions-buttons-wrap">
+                <button class="btn-shop-action" id="act-edit-shop" type="button">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                  Edit Shop
+                </button>
+                <button class="btn-shop-action" id="act-copy-id" type="button">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                  Copy Shop ID
+                </button>
+                <button class="btn-shop-action owner-only-action" id="act-update-logo" type="button">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                  Update Shop Logo
+                </button>
+                <button class="btn-shop-action" id="act-manage-employees" type="button">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+                  Manage Employees
+                </button>
+                <button class="btn-shop-action owner-only-action" id="act-manage-billing" type="button">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                  Manage Billing Settings
+                </button>
+                <button class="btn-shop-action owner-only-action" id="btn-deactivate-shop" type="button" style="color:var(--color-danger); border-color:#fecaca;">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+                  Deactivate Shop
+                </button>
+              </div>
+            </div>
+          </section>
+
+        </div>
+
+      </div>
+
+    </main>
+
+  </div>
+
+</div>
+
+<!-- Confirmation Modal for Deactivate Shop -->
+<div class="modal-overlay" id="deactivate-modal" role="dialog" aria-modal="true" aria-labelledby="deact-modal-title">
+  <div class="modal" style="max-width: 440px;">
+    <div style="margin-bottom:16px;">
+      <h3 class="modal-title" id="deact-modal-title" style="color:var(--color-danger); margin-bottom:8px;">Deactivate Shop</h3>
+      <p style="font-size:14px; color:var(--color-text-secondary); line-height:1.5; margin:0;">
+        Are you sure you want to deactivate this shop? Active staff members will lose access until the shop is reactivated.
+      </p>
+    </div>
+    <div class="modal-actions" style="display:flex; justify-content:flex-end; gap:12px;">
+      <button class="btn btn-secondary" id="modal-deactivate-cancel" type="button">Cancel</button>
+      <button class="btn btn-danger" id="modal-deactivate-confirm" type="button" style="background:var(--color-danger); color:#ffffff;">Confirm Deactivation</button>
+    </div>
+  </div>
+</div>
+
+<script src="js/api.js"></script>
+<script src="js/shop.js"></script>
+</body>
+</html>

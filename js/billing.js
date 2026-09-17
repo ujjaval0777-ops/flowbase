@@ -73,15 +73,17 @@ let isFullPayment   = true;
 async function loadData() {
   const shopId = await ensureActiveShop();
 
+  const isDemo = localStorage.getItem('flowbase_demo_session') === 'true';
+
   // 1. Initialise local state
   try {
     const cachedP = localStorage.getItem(LS_INV_KEY);
-    productsData = cachedP ? JSON.parse(cachedP) : [...DEFAULT_PRODUCTS];
+    productsData = cachedP ? JSON.parse(cachedP) : (isDemo ? [...DEFAULT_PRODUCTS] : []);
     const cachedS = localStorage.getItem(LS_SALES_KEY);
-    salesData = cachedS ? JSON.parse(cachedS) : [...DEFAULT_SALES];
+    salesData = cachedS ? JSON.parse(cachedS) : (isDemo ? [...DEFAULT_SALES] : []);
   } catch (_) {
-    productsData = [...DEFAULT_PRODUCTS];
-    salesData = [...DEFAULT_SALES];
+    productsData = isDemo ? [...DEFAULT_PRODUCTS] : [];
+    salesData = isDemo ? [...DEFAULT_SALES] : [];
   }
 
   // 2. Fetch live data from FastAPI backend
@@ -92,7 +94,7 @@ async function loadData() {
         apiRequest(`/sales/${shopId}`).catch(() => [])
       ]);
 
-      if (Array.isArray(rawProducts) && rawProducts.length > 0) {
+      if (Array.isArray(rawProducts)) {
         productsData = rawProducts.map(p => ({
           id: p.id,
           name: p.name,
@@ -107,7 +109,7 @@ async function loadData() {
         localStorage.setItem(LS_INV_KEY, JSON.stringify(productsData));
       }
 
-      if (Array.isArray(rawSales) && rawSales.length > 0) {
+      if (Array.isArray(rawSales)) {
         salesData = rawSales.map(s => {
           const items = (s.sale_items || []).map(si => {
             const prd = productsData.find(p => p.id === si.product_id);
@@ -142,7 +144,7 @@ async function loadData() {
             paymentMethod: s.payment_method || 'Cash',
             amountReceived: grandTotal,
             change: 0,
-            status: 'Completed'
+            status: s.status === 'cancelled' ? 'Cancelled' : 'Completed'
           };
         });
         localStorage.setItem(LS_SALES_KEY, JSON.stringify(salesData));
@@ -341,45 +343,19 @@ function updateTotals() {
   const { subtotal, discountAmt, taxAmt, grandTotal } = calcTotals();
 
   const setTxt = (id, txt) => { const el = document.getElementById(id); if (el) el.textContent = txt; };
-  setTxt('bil-subtotal',       formatINR(subtotal));
+  setTxt('bil-subtotal',        formatINR(subtotal));
   setTxt('bil-discount-amount', '−' + formatINR(discountAmt));
-  setTxt('bil-tax-amount',     '+' + formatINR(taxAmt));
-  setTxt('bil-grand-total',    formatINR(grandTotal));
-
-  const receivedInput = document.getElementById('bil-amount-received');
-  const fullBtn       = document.getElementById('bil-full-pay-btn');
-
-  if (isFullPayment) {
-    if (receivedInput) {
-      receivedInput.value = grandTotal > 0 ? grandTotal : '';
-    }
-    if (fullBtn) fullBtn.classList.add('active');
-  }
+  setTxt('bil-tax-amount',      '+' + formatINR(taxAmt));
+  setTxt('bil-grand-total',     formatINR(grandTotal));
+  setTxt('bil-received-display', formatINR(grandTotal));
 
   updateCashChange();
 }
 
 function updateCashChange() {
   const { grandTotal } = calcTotals();
-  const payMethod = document.querySelector('input[name="payment-method"]:checked')?.value || 'Cash';
-  const cashSec   = document.getElementById('bil-cash-section');
-  if (cashSec) cashSec.style.display = payMethod === 'Cash' ? '' : 'none';
-
-  if (payMethod === 'Cash') {
-    const receivedInput = document.getElementById('bil-amount-received');
-    let received = parseFloat(receivedInput?.value || 0);
-
-    if (isFullPayment && (!received || received === grandTotal)) {
-      received = grandTotal;
-      if (receivedInput && grandTotal > 0 && receivedInput.value !== String(grandTotal)) {
-        receivedInput.value = grandTotal;
-      }
-    }
-
-    const change = Math.max(0, received - grandTotal);
-    const el = document.getElementById('bil-change-amount');
-    if (el) el.textContent = formatINR(change);
-  }
+  const setTxt = (id, txt) => { const el = document.getElementById(id); if (el) el.textContent = txt; };
+  setTxt('bil-received-display', formatINR(grandTotal));
 }
 
 // ============================================
@@ -521,6 +497,9 @@ function initProductListClick() {
 // ============================================
 // TOTALS INPUTS
 // ============================================
+// ============================================
+// TOTALS & INPUTS
+// ============================================
 function initTotalsInputs() {
   document.getElementById('bil-discount-value')?.addEventListener('input', updateTotals);
   document.getElementById('bil-discount-type')?.addEventListener('change', updateTotals);
@@ -530,27 +509,6 @@ function initTotalsInputs() {
     radio.addEventListener('change', () => {
       updateCashChange();
     });
-  });
-
-  const receivedInput = document.getElementById('bil-amount-received');
-  receivedInput?.addEventListener('input', () => {
-    const { grandTotal } = calcTotals();
-    const val = parseFloat(receivedInput.value || 0);
-    isFullPayment = (val === grandTotal && grandTotal > 0);
-    const fullBtn = document.getElementById('bil-full-pay-btn');
-    if (fullBtn) fullBtn.classList.toggle('active', isFullPayment);
-    updateCashChange();
-  });
-
-  const fullPayBtn = document.getElementById('bil-full-pay-btn');
-  fullPayBtn?.addEventListener('click', () => {
-    const { grandTotal } = calcTotals();
-    isFullPayment = true;
-    if (receivedInput) {
-      receivedInput.value = grandTotal > 0 ? grandTotal : '';
-    }
-    fullPayBtn.classList.add('active');
-    updateCashChange();
   });
 }
 
@@ -581,10 +539,7 @@ function resetBill() {
   const resetEl = (id, val) => { const el = document.getElementById(id); if (el) el.value = val; };
   resetEl('bil-discount-value', '0');
   resetEl('bil-tax-percent', '0');
-  resetEl('bil-amount-received', '');
   document.getElementById('pay-cash') && (document.getElementById('pay-cash').checked = true);
-  const fullBtn = document.getElementById('bil-full-pay-btn');
-  if (fullBtn) fullBtn.classList.add('active');
 
   renderBillMeta();
   renderBillItems();
@@ -611,33 +566,13 @@ async function completeBill() {
     }
   }
 
-  const payMethod = document.querySelector('input[name="payment-method"]:checked')?.value;
-  if (!payMethod) {
-    showToast('Please select a payment method.', 'warning');
-    return;
-  }
+  const payMethod = document.querySelector('input[name="payment-method"]:checked')?.value || 'Cash';
 
   const { grandTotal, subtotal, discountAmt, taxAmt } = calcTotals();
 
-  let finalReceived = grandTotal;
-  let finalChange = 0;
-
-  if (payMethod === 'Cash') {
-    const receivedInput = document.getElementById('bil-amount-received');
-    let received = parseFloat(receivedInput?.value || 0);
-
-    if (isFullPayment || !receivedInput?.value) {
-      received = grandTotal;
-      if (receivedInput) receivedInput.value = grandTotal > 0 ? grandTotal : '';
-    }
-
-    if (received < grandTotal) {
-      showToast(`Amount received (${formatINR(received)}) is less than total (${formatINR(grandTotal)}).`, 'danger');
-      return;
-    }
-    finalReceived = received;
-    finalChange = Math.max(0, received - grandTotal);
-  }
+  // Received amount automatically equals Grand Total
+  const finalReceived = grandTotal;
+  const finalChange   = 0;
 
   const shopId = await ensureActiveShop();
 
@@ -725,7 +660,7 @@ function renderRecentBills() {
             <div class="prd-empty-icon">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 2v20l3-2 3 2 3-2 3 2 3-2V2"/></svg>
             </div>
-            <div class="prd-empty-title">No bills yet</div>
+            <div class="prd-empty-title">No bills created</div>
             <div class="prd-empty-desc">Completed bills will appear here.</div>
           </div>
         </td>

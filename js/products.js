@@ -58,6 +58,13 @@ document.addEventListener('DOMContentLoaded', async () => {
   initPagination();
   initExport();
 
+  if (typeof isStaffUser === 'function' && isStaffUser()) {
+    const addBtn = document.getElementById('add-product-btn');
+    if (addBtn) addBtn.style.display = 'none';
+    const catAddForm = document.getElementById('cat-add-form');
+    if (catAddForm) catAddForm.style.display = 'none';
+  }
+
   await loadData();
 });
 
@@ -67,15 +74,17 @@ document.addEventListener('DOMContentLoaded', async () => {
 async function loadData() {
   const shopId = (typeof ensureActiveShop === 'function') ? await ensureActiveShop() : 1;
 
+  const isDemo = localStorage.getItem('flowbase_demo_session') === 'true';
+
   // 1. Load from local cache first for instant rendering
   try {
     const cachedC = localStorage.getItem(LS_CAT_KEY);
-    categoriesData = cachedC ? JSON.parse(cachedC) : [...DEFAULT_CATEGORIES];
+    categoriesData = cachedC ? JSON.parse(cachedC) : (isDemo ? [...DEFAULT_CATEGORIES] : []);
     const cachedP = localStorage.getItem(LS_INV_KEY);
-    productsData = cachedP ? JSON.parse(cachedP) : [...DEFAULT_PRODUCTS];
+    productsData = cachedP ? JSON.parse(cachedP) : (isDemo ? [...DEFAULT_PRODUCTS] : []);
   } catch (_) {
-    categoriesData = [...DEFAULT_CATEGORIES];
-    productsData = [...DEFAULT_PRODUCTS];
+    categoriesData = isDemo ? [...DEFAULT_CATEGORIES] : [];
+    productsData = isDemo ? [...DEFAULT_PRODUCTS] : [];
   }
 
   updateCategoryDropdowns();
@@ -90,7 +99,7 @@ async function loadData() {
         apiRequest(`/shops/${shopId}/categories`).catch(() => null),
       ]);
 
-      if (Array.isArray(rawCats) && rawCats.length > 0) {
+      if (Array.isArray(rawCats)) {
         categoriesData = rawCats;
         localStorage.setItem(LS_CAT_KEY, JSON.stringify(categoriesData));
       }
@@ -98,7 +107,7 @@ async function loadData() {
       const catMap = {};
       categoriesData.forEach(c => { catMap[c.id] = c.name; });
 
-      if (Array.isArray(rawProducts) && rawProducts.length > 0) {
+      if (Array.isArray(rawProducts)) {
         productsData = rawProducts.map(p => {
           const stock = Number(p.stock_quantity || 0);
           const minStock = Number(p.low_stock_threshold || 5);
@@ -157,6 +166,8 @@ function renderCategoryList() {
   const listEl = document.getElementById('category-items-list');
   if (!listEl) return;
 
+  const isStaff = typeof isStaffUser === 'function' && isStaffUser();
+
   if (categoriesData.length === 0) {
     listEl.innerHTML = '<div style="padding:12px; color:var(--color-text-secondary); text-align:center; font-size:12px;">No categories created yet.</div>';
     return;
@@ -168,10 +179,12 @@ function renderCategoryList() {
         <div class="category-item-name">${escHtml(c.name)}</div>
         <div class="category-item-desc">${escHtml(c.description || 'No description')}</div>
       </div>
+      ${!isStaff ? `
       <div style="display:flex; gap:6px;">
         <button class="prd-action-btn" type="button" data-edit-cat="${c.id}" style="font-size:11px; padding:3px 7px;">Edit</button>
         <button class="prd-action-btn" type="button" data-delete-cat="${c.id}" style="font-size:11px; padding:3px 7px; color:var(--color-danger); border-color:var(--color-danger);">Delete</button>
       </div>
+      ` : ''}
     </div>
   `).join('');
 }
@@ -436,9 +449,9 @@ function renderTable() {
             <div class="prd-empty-icon">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
             </div>
-            <div class="prd-empty-title">${hasFilter ? 'No matching products' : 'No products in catalog'}</div>
-            <div class="prd-empty-desc">${hasFilter ? 'Try clearing your search or adjusting filters.' : 'Add your first product to start managing inventory and sales.'}</div>
-            ${!hasFilter ? `
+            <div class="prd-empty-title">${hasFilter ? 'No matching products' : 'No products added'}</div>
+            <div class="prd-empty-desc">${hasFilter ? 'Try clearing your search or adjusting filters.' : 'Add your first product to get started'}</div>
+            ${!hasFilter && !(typeof isStaffUser === 'function' && isStaffUser()) ? `
               <button class="btn prd-btn-primary" type="button" onclick="openAddProductModal()" style="margin-top:8px;">
                 <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
                 Add Product
@@ -451,6 +464,7 @@ function renderTable() {
     return;
   }
 
+  const isStaff = typeof isStaffUser === 'function' && isStaffUser();
   const start = (currentPage - 1) * pageSize;
   const page  = filteredData.slice(start, start + pageSize);
 
@@ -470,27 +484,22 @@ function renderTable() {
         <td class="text-right text-mono font-medium">${formatINR(item.sellingPrice)}</td>
         <td class="text-right text-mono"><span class="prd-stock-num ${numClass}">${item.currentStock}</span></td>
         <td><span class="badge ${badgeClass}">${status}</span></td>
-        <td class="text-right" style="padding-right:20px;">
-          <div class="prd-actions-wrap" data-item-id="${item.id}">
-            <button class="prd-action-btn" type="button" data-toggle-dropdown="${item.id}" aria-haspopup="true" aria-expanded="false">
-              Actions
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+        <td class="text-right" style="padding-right:16px;">
+          <div style="display:inline-flex; gap:6px; justify-content:flex-end; align-items:center;">
+            <button class="prd-action-btn" type="button" data-action="view" data-id="${item.id}" title="View Details">
+              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              <span>View</span>
             </button>
-            <div class="prd-dropdown" id="prd-dropdown-${item.id}" role="menu">
-              <button class="prd-dropdown-item" type="button" data-action="view" data-id="${item.id}" role="menuitem">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                View
-              </button>
-              <button class="prd-dropdown-item" type="button" data-action="edit" data-id="${item.id}" role="menuitem">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-                Edit
-              </button>
-              <div class="prd-dropdown-divider"></div>
-              <button class="prd-dropdown-item danger" type="button" data-action="delete" data-id="${item.id}" role="menuitem">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
-                Delete
-              </button>
-            </div>
+            ${!isStaff ? `
+            <button class="prd-action-btn" type="button" data-action="edit" data-id="${item.id}" title="Edit Product">
+              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              <span>Edit</span>
+            </button>
+            <button class="prd-action-btn danger" type="button" data-action="delete" data-id="${item.id}" title="Delete Product" style="color:var(--color-danger); border-color:var(--color-danger);">
+              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+              <span>Delete</span>
+            </button>
+            ` : ''}
           </div>
         </td>
       </tr>
@@ -499,40 +508,17 @@ function renderTable() {
 }
 
 // ============================================
-// TABLE ACTIONS & DROPDOWNS
+// TABLE ACTIONS
 // ============================================
 function initTableActions() {
   document.getElementById('products-tbody')?.addEventListener('click', (e) => {
-    const toggleBtn = e.target.closest('[data-toggle-dropdown]');
-    if (toggleBtn) {
-      const id = toggleBtn.dataset.toggleDropdown;
-      const dd = document.getElementById(`prd-dropdown-${id}`);
-      if (dd) {
-        const isOpen = dd.classList.contains('open');
-        closeAllDropdowns();
-        if (!isOpen) {
-          dd.classList.add('open');
-          toggleBtn.setAttribute('aria-expanded', 'true');
-          activeDropdownId = id;
-        }
-      }
-      return;
-    }
-
     const actionBtn = e.target.closest('[data-action]');
     if (actionBtn) {
       const action = actionBtn.dataset.action;
       const id     = actionBtn.dataset.id;
-      closeAllDropdowns();
       if (action === 'view')   openViewModal(id);
       if (action === 'edit')   openEditModal(id);
       if (action === 'delete') openDeleteModal(id);
-    }
-  });
-
-  document.addEventListener('click', (e) => {
-    if (!e.target.closest('.prd-actions-wrap')) {
-      closeAllDropdowns();
     }
   });
 }
@@ -861,10 +847,15 @@ function openViewModal(productId) {
 
   const editBtn = document.getElementById('prd-view-edit-btn');
   if (editBtn) {
-    editBtn.onclick = () => {
-      closeModal('prd-view-modal');
-      openEditModal(item.id);
-    };
+    if (typeof isStaffUser === 'function' && isStaffUser()) {
+      editBtn.style.display = 'none';
+    } else {
+      editBtn.style.display = '';
+      editBtn.onclick = () => {
+        closeModal('prd-view-modal');
+        openEditModal(item.id);
+      };
+    }
   }
 
   const closeBtn = document.getElementById('prd-view-close');
@@ -992,49 +983,16 @@ function initAppShell() {
     }
   });
 
-  // User Profile Modal
-  const userBtn     = document.getElementById('header-user-btn');
-  const profileModal = document.getElementById('profile-modal');
-  const profileClose = document.getElementById('profile-modal-close');
-  const profileCloseBtn = document.getElementById('profile-close-btn');
-
-  userBtn?.addEventListener('click', () => {
-    try {
-      const user = JSON.parse(localStorage.getItem('flowbase_user') || '{}');
-      const prof = JSON.parse(localStorage.getItem('flowbase_profile') || '{}');
-      const name = prof.name || user.name || 'Shop Admin';
-      const email = user.email || prof.email || 'admin@flowbase.com';
-      const role = prof.role || 'OWNER';
-
-      const avatarEl = document.getElementById('modal-user-avatar');
-      const nameEl   = document.getElementById('modal-user-name');
-      const emailEl  = document.getElementById('modal-user-email');
-      const roleEl   = document.getElementById('modal-user-role');
-
-      if (avatarEl) avatarEl.textContent = name.slice(0, 2).toUpperCase();
-      if (nameEl)   nameEl.textContent   = name;
-      if (emailEl)  emailEl.textContent  = email;
-      if (roleEl)   roleEl.textContent   = role;
-    } catch (_) {}
-    openModal('profile-modal');
-  });
-
-  profileClose?.addEventListener('click', () => closeModal('profile-modal'));
-  profileCloseBtn?.addEventListener('click', () => closeModal('profile-modal'));
-
   // Logout Modal
   const logoutBtn       = document.getElementById('logout-btn');
-  const profileLogoutBtn = document.getElementById('profile-logout-btn');
   const logoutCancel    = document.getElementById('logout-cancel');
   const logoutConfirm   = document.getElementById('logout-confirm');
 
   const triggerLogout = () => {
-    closeModal('profile-modal');
     openModal('logout-modal');
   };
 
   logoutBtn?.addEventListener('click', triggerLogout);
-  profileLogoutBtn?.addEventListener('click', triggerLogout);
   logoutCancel?.addEventListener('click', () => closeModal('logout-modal'));
 
   logoutConfirm?.addEventListener('click', () => {

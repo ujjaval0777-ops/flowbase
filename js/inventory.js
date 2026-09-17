@@ -230,6 +230,12 @@ function renderTable() {
         <td class="text-mono">${formatINR(item.sellingPrice)}</td>
         <td><span class="badge ${badgeClass}">${status}</span></td>
         <td>
+          ${(typeof isStaffUser === 'function' && isStaffUser()) ? `
+          <button class="prd-action-btn" type="button" data-action="view" data-id="${item.id}" title="View Details">
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            <span>View</span>
+          </button>
+          ` : `
           <div class="inv-actions-wrap" data-item-id="${item.id}">
             <button class="inv-action-btn" type="button" data-toggle-dropdown="${item.id}" aria-haspopup="true" aria-expanded="false">
               Actions
@@ -237,7 +243,7 @@ function renderTable() {
             </button>
             <div class="inv-dropdown" id="dropdown-${item.id}" role="menu">
               <button class="inv-dropdown-item" type="button" data-action="view" data-id="${item.id}" role="menuitem">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                 View
               </button>
               <button class="inv-dropdown-item" type="button" data-action="edit" data-id="${item.id}" role="menuitem">
@@ -255,6 +261,7 @@ function renderTable() {
               </button>
             </div>
           </div>
+          `}
         </td>
       </tr>
     `;
@@ -607,8 +614,18 @@ function openViewModal(id) {
   `;
 
   // Wire up view modal action buttons
-  document.getElementById('inv-view-edit-btn').onclick   = () => openEditModal(id);
-  document.getElementById('inv-view-adjust-btn').onclick = () => { closeModal('inv-view-modal'); openAdjustModal(id); };
+  const editBtn = document.getElementById('inv-view-edit-btn');
+  const adjustBtn = document.getElementById('inv-view-adjust-btn');
+  const isStaff = typeof isStaffUser === 'function' && isStaffUser();
+
+  if (editBtn) {
+    editBtn.style.display = isStaff ? 'none' : '';
+    if (!isStaff) editBtn.onclick = () => openEditModal(id);
+  }
+  if (adjustBtn) {
+    adjustBtn.style.display = isStaff ? 'none' : '';
+    if (!isStaff) adjustBtn.onclick = () => { closeModal('inv-view-modal'); openAdjustModal(id); };
+  }
 
   openModal('inv-view-modal');
 }
@@ -918,6 +935,11 @@ document.addEventListener('DOMContentLoaded', async () => {
   initExport();
   initModalOverlayClose();
   initEscClose();
+
+  if (typeof isStaffUser === 'function' && isStaffUser()) {
+    const addBtn = document.getElementById('add-inventory-btn');
+    if (addBtn) addBtn.style.display = 'none';
+  }
 
   await loadData();
 });

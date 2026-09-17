@@ -41,7 +41,8 @@ let currentAuthMode = 'login'; // 'login' | 'signup'
 // ============================================
 document.addEventListener('DOMContentLoaded', () => {
   if (typeof isAuthenticated === 'function' && isAuthenticated()) {
-    window.location.href = 'dashboard.html';
+    const isStaff = typeof isStaffUser === 'function' && isStaffUser();
+    window.location.href = isStaff ? 'billing.html' : 'dashboard.html';
     return;
   }
   initRememberMe();
@@ -218,8 +219,10 @@ async function handleLogin() {
       await ensureActiveShop();
 
       showToast('Welcome back!', 'success');
+      const isStaff = (typeof isStaffUser === 'function' && isStaffUser()) || 
+                      (result.role && (result.role.toUpperCase() === 'STAFF' || result.role.toUpperCase() === 'EMPLOYEE'));
       setTimeout(() => {
-        window.location.href = 'dashboard.html';
+        window.location.href = isStaff ? 'billing.html' : 'dashboard.html';
       }, 500);
     } else {
       setLoadingState('login', false);
@@ -305,10 +308,9 @@ async function createAccount() {
     if (result && result.session) {
       // Auto-logged in
       setSession(result);
-      await ensureActiveShop();
-      showToast('Account created successfully!', 'success');
+      showToast('Account created! Let\'s set up your workspace.', 'success');
       setTimeout(() => {
-        window.location.href = 'dashboard.html';
+        window.location.href = 'onboarding.html';
       }, 500);
     } else {
       const msg = result?.message || 'Account created! Please sign in.';

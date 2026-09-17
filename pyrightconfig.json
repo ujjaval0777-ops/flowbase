@@ -1,0 +1,8 @@
+{
+  "include": [
+    "backend-main"
+  ],
+  "extraPaths": [
+    "./backend-main"
+  ]
+}

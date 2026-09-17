@@ -66,15 +66,33 @@ let filteredMembers = [];
 async function loadData() {
   const shopId = await ensureActiveShop();
 
+  const isDemo = localStorage.getItem('flowbase_demo_session') === 'true';
+  const currentUser = (typeof getCurrentUser === 'function') ? getCurrentUser() : null;
+  const currentProfile = (typeof getStoredProfile === 'function') ? getStoredProfile() : null;
+
+  const isStaff = typeof isStaffUser === 'function' && isStaffUser();
+  const userInitialMember = currentUser ? [{
+    id: 1,
+    role: isStaff ? 'STAFF' : 'OWNER',
+    salary: 0,
+    joined_at: new Date().toISOString(),
+    profiles: {
+      id: currentUser.id || 'usr-1',
+      name: currentProfile?.name || currentUser.name || (currentUser.email ? currentUser.email.split('@')[0] : (isStaff ? 'Staff' : 'Shop Owner')),
+      email: currentUser.email || '',
+      phone: currentProfile?.phone || '—'
+    }
+  }] : [];
+
   // 1. Initialise from cached storage or defaults
   try {
     const cachedM = localStorage.getItem(LS_MEMBERS_KEY);
-    membersData = cachedM ? JSON.parse(cachedM) : [...DEFAULT_MEMBERS];
+    membersData = cachedM ? JSON.parse(cachedM) : (isDemo ? [...DEFAULT_MEMBERS] : userInitialMember);
     const cachedS = localStorage.getItem(LS_SALARIES_KEY);
-    salariesData = cachedS ? JSON.parse(cachedS) : [...DEFAULT_SALARIES];
+    salariesData = cachedS ? JSON.parse(cachedS) : (isDemo ? [...DEFAULT_SALARIES] : []);
   } catch (_) {
-    membersData = [...DEFAULT_MEMBERS];
-    salariesData = [...DEFAULT_SALARIES];
+    membersData = isDemo ? [...DEFAULT_MEMBERS] : userInitialMember;
+    salariesData = isDemo ? [...DEFAULT_SALARIES] : [];
   }
 
   // 2. Fetch live data from FastAPI Backend
@@ -85,11 +103,11 @@ async function loadData() {
         apiRequest(`/salaries/${shopId}`).catch(() => [])
       ]);
 
-      if (Array.isArray(rawMembers) && rawMembers.length > 0) {
-        membersData = rawMembers;
+      if (Array.isArray(rawMembers)) {
+        membersData = rawMembers.length > 0 ? rawMembers : userInitialMember;
         localStorage.setItem(LS_MEMBERS_KEY, JSON.stringify(membersData));
       }
-      if (Array.isArray(rawSalaries) && rawSalaries.length > 0) {
+      if (Array.isArray(rawSalaries)) {
         salariesData = rawSalaries;
         localStorage.setItem(LS_SALARIES_KEY, JSON.stringify(salariesData));
       }
@@ -207,11 +225,15 @@ function renderTable() {
         <td class="prd-th-num" style="font-weight:600; font-size:13px;">${salary}</td>
         <td style="color:var(--color-text-secondary); font-size:12px;">${joined}</td>
         <td style="text-align:right;">
+          ${(typeof isStaffUser === 'function' && isStaffUser()) ? `
+          <span style="font-size:12px; color:var(--color-text-secondary);">—</span>
+          ` : `
           <div style="display:flex; gap:6px; justify-content:flex-end;">
             <button class="prd-action-btn" type="button" data-pay-salary="${m.id}" style="font-size:11px; padding:4px 8px; color:var(--color-primary); border-color:var(--color-primary-muted);">Pay Salary</button>
             <button class="prd-action-btn" type="button" data-edit-member="${m.id}" style="font-size:11px; padding:4px 8px;">Edit</button>
             ${!isOwner ? `<button class="prd-action-btn" type="button" data-delete-member="${m.id}" style="font-size:11px; padding:4px 8px; color:var(--color-danger); border-color:var(--color-danger);">Remove</button>` : ''}
           </div>
+          `}
         </td>
       </tr>`;
   }).join('');
@@ -716,6 +738,15 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   document.getElementById('emp-search-input')?.addEventListener('input', applyFilters);
   document.getElementById('emp-filter-role')?.addEventListener('change', applyFilters);
+
+  if (typeof isStaffUser === 'function' && isStaffUser()) {
+    const addBtn = document.getElementById('add-employee-btn');
+    if (addBtn) addBtn.style.display = 'none';
+    const salariesBtn = document.getElementById('view-salaries-btn');
+    if (salariesBtn) salariesBtn.style.display = 'none';
+    const payrollKpi = document.getElementById('kpi-payroll');
+    if (payrollKpi) payrollKpi.style.display = 'none';
+  }
 
   await loadData();
 });
